@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="08" author="execodex">
+        <createTable tableName="booking_segments">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="booking_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_booking_segment_booking" references="bookings(id)"/>
+            </column>
+            <column name="flight_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_booking_segment_flight" references="flights(id)"/>
+            </column>
+            <column name="seat_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_booking_segment_seat" references="seats(id)"/>
+            </column>
+            <column name="fare_class" type="VARCHAR(20)"/>
+            <column name="ticket_number" type="VARCHAR(20)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+        
+        <!-- Add a unique constraint to ensure a seat can only be booked once per flight -->
+        <addUniqueConstraint 
+            tableName="booking_segments" 
+            columnNames="flight_id, seat_id" 
+            constraintName="uk_flight_seat"/>
+    </changeSet>
+
+</databaseChangeLog>

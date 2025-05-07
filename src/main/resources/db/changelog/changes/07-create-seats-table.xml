@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="07" author="execodex">
+        <createTable tableName="seats">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="flight_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_seat_flight" references="flights(id)"/>
+            </column>
+            <column name="seat_number" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <!-- Add a unique constraint to ensure each seat number is unique per flight -->
+        <addUniqueConstraint 
+            tableName="seats" 
+            columnNames="flight_id, seat_number" 
+            constraintName="uk_flight_seat_number"/>
+    </changeSet>
+
+</databaseChangeLog>
