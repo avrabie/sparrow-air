@@ -1,4 +1,10 @@
-# Sparrow Air 2 - PostgreSQL Database Guide
+# Sparrow Air 2
+
+## Project Overview
+
+Sparrow Air 2 is a fun pet project focused on building a reactive airline management system. The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity. We're just getting started, but the goal is to create a fully reactive application that demonstrates best practices for handling airline-related operations like flight management, bookings, and passenger information.
+
+## PostgreSQL Database Guide
 
 This guide provides instructions on how to connect to the PostgreSQL database running in Docker and view the database tables.
 
@@ -133,5 +139,3 @@ The database contains the following tables:
 8. booking_segments
 
 These tables are created and managed using Liquibase migrations defined in the application.
-
-
