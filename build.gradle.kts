@@ -38,9 +38,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.19.7")
     testImplementation("org.testcontainers:postgresql:1.19.7")
     testImplementation("org.testcontainers:r2dbc:1.19.7")
-    // Keeping H2 for now until migration is complete
-//    testRuntimeOnly("io.r2dbc:r2dbc-h2")
-//    testRuntimeOnly("com.h2database:h2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
