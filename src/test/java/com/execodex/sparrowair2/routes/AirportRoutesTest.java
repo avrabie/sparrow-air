@@ -63,7 +63,7 @@ public class AirportRoutesTest {
                 .latitude(40.6413)
                 .longitude(-73.7781)
                 .build();
-        
+
         airportRepository.save(airport).block();
 
         webTestClient.get()
@@ -87,7 +87,7 @@ public class AirportRoutesTest {
                 .latitude(41.9742)
                 .longitude(-87.9073)
                 .build();
-        
+
         airportRepository.save(airport).block();
 
         webTestClient.get()
@@ -111,7 +111,7 @@ public class AirportRoutesTest {
                 .latitude(37.6213)
                 .longitude(-122.3790)
                 .build();
-        
+
         airportRepository.save(airport).block();
 
         // Update the airport
@@ -147,7 +147,7 @@ public class AirportRoutesTest {
                 .latitude(33.6407)
                 .longitude(-84.4277)
                 .build();
-        
+
         airportRepository.save(airport).block();
 
         webTestClient.delete()

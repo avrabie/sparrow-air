@@ -31,7 +31,7 @@ public class AirportRoutes {
                         // POST /airports - Create a new airport
                         .POST("", accept(MediaType.APPLICATION_JSON), airportHandler::createAirport)
                         // PUT /airports/{icaoCode} - Update an existing airport
-//                        .PUT("/{icaoCode}", accept(MediaType.APPLICATION_JSON), airportHandler::updateAirport)
+                        .PUT("/{icaoCode}", accept(MediaType.APPLICATION_JSON), airportHandler::updateAirport)
                         // DELETE /airports/{icaoCode} - Delete an airport
                         .DELETE("/{icaoCode}", airportHandler::deleteAirport)
                 )
