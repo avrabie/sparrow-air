@@ -73,10 +73,7 @@ public class DataDemoProfileConfig {
                             .build()
             );
 
-            // Insert sample airports
-//            Mono<List<String>> listMono = airportService.getAllAirports()
-//                    .map(Airport::getIcaoCode)
-//                    .collectList();
+            // Insert sample airports into the database
             Flux.fromIterable(sampleAirports)
                     .flatMap(airport -> airportService
                             .getAirportByIcaoCode(airport.getIcaoCode())
@@ -96,17 +93,6 @@ public class DataDemoProfileConfig {
                     )
                     .doOnComplete(() -> logger.info("Sample airport data initialization completed"))
                     .blockLast();
-
-
-//            Flux.fromIterable(sampleAirports)
-//                    .flatMap(airport -> airportService.createAirport(airport)
-//                            .onErrorResume(e -> {
-//                                logger.warn("Could not create airport {}: {}", airport.getIcaoCode(), e.getMessage());
-//                                return Mono.empty();
-//                            })
-//                    )
-//                    .doOnComplete(() -> logger.info("Sample airport data initialization completed"))
-//                    .blockLast(); // Block until all operations complete
         };
     }
 }
