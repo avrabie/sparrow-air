@@ -1,9 +1,9 @@
 package com.execodex.sparrowair2.routes;
 
+import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,8 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Disabled
-public class AirportRoutesTest {
+public class AirportRoutesTest extends AbstractTestcontainersTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -24,7 +23,7 @@ public class AirportRoutesTest {
     @BeforeEach
     public void setUp() {
         // Clear the repository before each test
-        airportRepository.deleteAll();
+        airportRepository.deleteAll().block();
     }
 
     @Test
@@ -64,7 +63,8 @@ public class AirportRoutesTest {
                 .longitude(-73.7781)
                 .build();
 
-        airportRepository.save(airport).block();
+        // Save the airport and wait for it to complete
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.get()
                 .uri("/airports")
@@ -88,7 +88,8 @@ public class AirportRoutesTest {
                 .longitude(-87.9073)
                 .build();
 
-        airportRepository.save(airport).block();
+        // Save the airport and wait for it to complete
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.get()
                 .uri("/airports/{icaoCode}", "KORD")
@@ -112,7 +113,8 @@ public class AirportRoutesTest {
                 .longitude(-122.3790)
                 .build();
 
-        airportRepository.save(airport).block();
+        // Save the airport and wait for it to complete
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         // Update the airport
         Airport updatedAirport = Airport.builder()
@@ -148,7 +150,8 @@ public class AirportRoutesTest {
                 .longitude(-84.4277)
                 .build();
 
-        airportRepository.save(airport).block();
+        // Save the airport and wait for it to complete
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.delete()
                 .uri("/airports/{icaoCode}", "KATL")
