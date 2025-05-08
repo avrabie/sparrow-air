@@ -12,6 +12,7 @@ public class HelloRouteHandlers {
 
     public Mono<ServerResponse> handleHelloRequest(ServerRequest serverRequest) {
         Mono<String> hello = Mono.just("Hello World");
+
         return ServerResponse.ok()
                 .body(hello, String.class);
     }

@@ -56,22 +56,6 @@ public class AirportHandler {
                         }
                 );
     }
-//    public Mono<ServerResponse> createAirport(ServerRequest request) {
-//        return request.bodyToMono(Airport.class)
-//                .flatMap(airport -> airportRepository.existsById(airport.getIcaoCode())
-//                        .flatMap(exists -> {
-//                            if (exists) {
-//                                return ServerResponse
-//                                        .status(HttpStatus.CONFLICT)
-//                                        .bodyValue("Airport with ICAO code " + airport.getIcaoCode() + " already exists");
-//                            }
-//                            return airportRepository.insert(airport)
-//                                    .flatMap(savedAirport -> ServerResponse
-//                                            .status(HttpStatus.CREATED)
-//                                            .contentType(APPLICATION_JSON)
-//                                            .bodyValue(savedAirport));
-//                        }));
-//    }
 
 
     // Update an existing airport

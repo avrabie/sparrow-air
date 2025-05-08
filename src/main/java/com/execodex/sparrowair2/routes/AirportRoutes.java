@@ -25,6 +25,7 @@ public class AirportRoutes {
                 .path("/airports", builder -> builder
                         // GET /airports - Get all airports
                         .GET("", accept(MediaType.APPLICATION_JSON), airportHandler::getAllAirports)
+                        .GET("", accept(MediaType.APPLICATION_XML), airportHandler::getAllAirports)
                         // GET /airports/{icaoCode} - Get airport by ICAO code
                         .GET("/{icaoCode}", accept(MediaType.APPLICATION_JSON), airportHandler::getAirportByIcaoCode)
                         // POST /airports - Create a new airport
