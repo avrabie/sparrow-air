@@ -22,6 +22,7 @@ public class AircraftType {
     private String manufacturer;
     private int seatingCapacity;
     private int maxRangeKm;
+    private int mtow;
 
     // Getters, setters, constructors
 }

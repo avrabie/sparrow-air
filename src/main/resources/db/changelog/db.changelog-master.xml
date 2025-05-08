@@ -14,5 +14,6 @@
     <include file="db/changelog/changes/06-create-bookings-table.sql"/>
     <include file="db/changelog/changes/07-create-seats-table.sql"/>
     <include file="db/changelog/changes/08-create-booking-segments-table.sql"/>
+    <include file="db/changelog/changes/09-alter-aircraft-type-mtow.sql"/>
 
 </databaseChangeLog>
