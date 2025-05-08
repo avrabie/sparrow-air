@@ -139,3 +139,31 @@ The database contains the following tables:
 8. booking_segments
 
 These tables are created and managed using Liquibase migrations defined in the application.
+
+## Spring Profiles
+
+The application supports the following Spring profiles:
+
+### datademo
+
+The `datademo` profile initializes the database with sample airport data on startup. This is useful for development and testing purposes.
+
+To activate this profile, you can:
+
+1. Set the `spring.profiles.active` property in your application.properties file:
+   ```
+   spring.profiles.active=datademo
+   ```
+
+2. Or pass it as a command-line argument when running the application:
+   ```bash
+   ./gradlew bootRun --args='--spring.profiles.active=datademo'
+   ```
+
+3. Or set it as an environment variable:
+   ```bash
+   export SPRING_PROFILES_ACTIVE=datademo
+   ./gradlew bootRun
+   ```
+
+When this profile is active, the application will automatically populate the database with sample airport data for major international airports.

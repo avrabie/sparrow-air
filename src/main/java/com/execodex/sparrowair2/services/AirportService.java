@@ -36,7 +36,9 @@ public class AirportService {
                 .onErrorResume(e -> {
                     logger.error("Error retrieving airport with ICAO code: {}", icaoCode, e);
                     return Mono.error(e);
-                });
+                })
+//                .switchIfEmpty(Mono.empty())
+                ;
     }
 
     // Create a new airport
