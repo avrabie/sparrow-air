@@ -23,7 +23,7 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService) {
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService) {
         return args -> {
             logger.info("Initializing sample airport data for 'datademo' profile");
 
@@ -93,78 +93,144 @@ public class DataDemoProfileConfig {
                                 return Mono.empty();
                             })
                     )
+                    .thenMany(generateAircraftType(aircraftTypeService))
                     .doOnComplete(() -> logger.info("Sample airport data initialization completed"))
                     .blockLast();
         };
     }
 
-    @Bean
-    public CommandLineRunner initializeAircraftTypeData(AircraftTypeService aircraftTypeService) {
-        return args -> {
-            logger.info("Initializing sample aircraft type data for 'datademo' profile");
+//    @Bean
+//    public CommandLineRunner initializeAircraftTypeData(AircraftTypeService aircraftTypeService) {
+//        return args -> {
+//            logger.info("Initializing sample aircraft type data for 'datademo' profile");
+//
+//            List<AircraftType> sampleAircraftTypes = Arrays.asList(
+//                    AircraftType.builder()
+//                            .icaoCode("B738")
+//                            .modelName("737-800")
+//                            .manufacturer("Boeing")
+//                            .seatingCapacity(189)
+//                            .maxRangeKm(5765)
+//                            .mtow(79010)
+//                            .build(),
+//                    AircraftType.builder()
+//                            .icaoCode("A320")
+//                            .modelName("A320-200")
+//                            .manufacturer("Airbus")
+//                            .seatingCapacity(180)
+//                            .maxRangeKm(6100)
+//                            .mtow(77000)
+//                            .build(),
+//                    AircraftType.builder()
+//                            .icaoCode("B77W")
+//                            .modelName("777-300ER")
+//                            .manufacturer("Boeing")
+//                            .seatingCapacity(396)
+//                            .maxRangeKm(13650)
+//                            .mtow(351500)
+//                            .build(),
+//                    AircraftType.builder()
+//                            .icaoCode("A388")
+//                            .modelName("A380-800")
+//                            .manufacturer("Airbus")
+//                            .seatingCapacity(853)
+//                            .maxRangeKm(15700)
+//                            .mtow(575000)
+//                            .build(),
+//                    AircraftType.builder()
+//                            .icaoCode("E190")
+//                            .modelName("E190")
+//                            .manufacturer("Embraer")
+//                            .seatingCapacity(114)
+//                            .maxRangeKm(4537)
+//                            .mtow(51800)
+//                            .build()
+//            );
+//
+//            // Insert sample aircraft types into the database
+//            Flux.fromIterable(sampleAircraftTypes)
+//                    .flatMap(aircraftType -> aircraftTypeService
+//                            .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
+//                            .hasElement()
+//                            .flatMap(existingAircraftType -> {
+//                                if (existingAircraftType) {
+//                                    logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
+//                                    return Mono.empty();
+//                                }
+//                                return aircraftTypeService.createAircraftType(aircraftType);
+//                            })
+//                            .onErrorResume(e -> {
+//                                logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
+//                                return Mono.empty();
+//                            })
+//                    )
+//                    .doOnComplete(() -> logger.info("Sample aircraft type data initialization completed"))
+//                    .blockLast();
+//        };
+//    }
 
-            List<AircraftType> sampleAircraftTypes = Arrays.asList(
-                    AircraftType.builder()
-                            .icaoCode("B738")
-                            .modelName("737-800")
-                            .manufacturer("Boeing")
-                            .seatingCapacity(189)
-                            .maxRangeKm(5765)
-                            .mtow(79010)
-                            .build(),
-                    AircraftType.builder()
-                            .icaoCode("A320")
-                            .modelName("A320-200")
-                            .manufacturer("Airbus")
-                            .seatingCapacity(180)
-                            .maxRangeKm(6100)
-                            .mtow(77000)
-                            .build(),
-                    AircraftType.builder()
-                            .icaoCode("B77W")
-                            .modelName("777-300ER")
-                            .manufacturer("Boeing")
-                            .seatingCapacity(396)
-                            .maxRangeKm(13650)
-                            .mtow(351500)
-                            .build(),
-                    AircraftType.builder()
-                            .icaoCode("A388")
-                            .modelName("A380-800")
-                            .manufacturer("Airbus")
-                            .seatingCapacity(853)
-                            .maxRangeKm(15700)
-                            .mtow(575000)
-                            .build(),
-                    AircraftType.builder()
-                            .icaoCode("E190")
-                            .modelName("E190")
-                            .manufacturer("Embraer")
-                            .seatingCapacity(114)
-                            .maxRangeKm(4537)
-                            .mtow(51800)
-                            .build()
-            );
+    @Bean(name = "aircraftTypeDataGenerator")
+    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService){
+        List<AircraftType> sampleAircraftTypes = Arrays.asList(
+                AircraftType.builder()
+                        .icaoCode("B738")
+                        .modelName("737-800")
+                        .manufacturer("Boeing")
+                        .seatingCapacity(189)
+                        .maxRangeKm(5765)
+                        .mtow(79010)
+                        .build(),
+                AircraftType.builder()
+                        .icaoCode("A320")
+                        .modelName("A320-200")
+                        .manufacturer("Airbus")
+                        .seatingCapacity(180)
+                        .maxRangeKm(6100)
+                        .mtow(77000)
+                        .build(),
+                AircraftType.builder()
+                        .icaoCode("B77W")
+                        .modelName("777-300ER")
+                        .manufacturer("Boeing")
+                        .seatingCapacity(396)
+                        .maxRangeKm(13650)
+                        .mtow(351500)
+                        .build(),
+                AircraftType.builder()
+                        .icaoCode("A388")
+                        .modelName("A380-800")
+                        .manufacturer("Airbus")
+                        .seatingCapacity(853)
+                        .maxRangeKm(15700)
+                        .mtow(575000)
+                        .build(),
+                AircraftType.builder()
+                        .icaoCode("E190")
+                        .modelName("E190")
+                        .manufacturer("Embraer")
+                        .seatingCapacity(114)
+                        .maxRangeKm(4537)
+                        .mtow(51800)
+                        .build()
+        );
 
-            // Insert sample aircraft types into the database
-            Flux.fromIterable(sampleAircraftTypes)
-                    .flatMap(aircraftType -> aircraftTypeService
-                            .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
-                            .hasElement()
-                            .flatMap(existingAircraftType -> {
-                                if (existingAircraftType) {
-                                    logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
-                                    return Mono.empty();
-                                }
-                                return aircraftTypeService.createAircraftType(aircraftType);
-                            })
-                            .onErrorResume(e -> {
-                                logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
+        // Insert sample aircraft types into the database
+        Flux<AircraftType> aircraftTypeFlux = Flux.fromIterable(sampleAircraftTypes)
+                .flatMap(aircraftType -> aircraftTypeService
+                        .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
+                        .hasElement()
+                        .flatMap(existingAircraftType -> {
+                            if (existingAircraftType) {
+                                logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
                                 return Mono.empty();
-                            })
-                    )
-                    .doOnComplete(() -> logger.info("Sample aircraft type data initialization completed"))
-                    .blockLast();
-        };
+                            }
+                            return aircraftTypeService.createAircraftType(aircraftType);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return aircraftTypeFlux;
     }
 }

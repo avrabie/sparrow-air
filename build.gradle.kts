@@ -47,4 +47,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+//    maxParallelForks = 5  // Run tests sequentially
+    forkEvery = 1
+
 }
