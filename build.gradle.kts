@@ -47,7 +47,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-//    maxParallelForks = 5  // Run tests sequentially
-    forkEvery = 1
+    maxParallelForks = 10  // Run tests sequentially
+    forkEvery = 1 // Run tests sequentially, for better isolation but also because ./gradlew test --parallel does not work with TestContainers
 
 }

@@ -11,11 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-//        "spring.r2dbc.pool.initial-size=1",
-//        "spring.r2dbc.pool.max-size=1",
-//        "local.server.port=0"
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
 
     @Autowired

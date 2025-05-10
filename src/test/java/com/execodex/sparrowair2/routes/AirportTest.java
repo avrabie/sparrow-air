@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 //        "spring.r2dbc.pool.initial-size=1",
 //        "spring.r2dbc.pool.max-size=1",
 //        "local.server.port=0"
-        })
+})
 public class AirportTest extends AbstractTestcontainersTest {
 
     @Autowired
