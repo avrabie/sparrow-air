@@ -74,4 +74,22 @@ public class AirportService {
                 )
                 .switchIfEmpty(Mono.empty());
     }
+
+    // Calculates the distance between two airports using Haversine formula, in kilometers
+    public double distance( Airport airport1, Airport airport2 ) {
+        double lat1 = airport1.getLatitude();
+        double lon1 = airport1.getLongitude();
+        double lat2 = airport2.getLatitude();
+        double lon2 = airport2.getLongitude();
+
+        // Haversine formula to calculate the distance between two points on the Earth
+        final int R = 6371; // Radius of the Earth in kilometers
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in kilometers
+    }
 }
