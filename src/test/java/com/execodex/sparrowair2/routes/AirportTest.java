@@ -12,7 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AirportRoutesTest extends AbstractTestcontainersTest {
+public class AirportTest extends AbstractTestcontainersTest {
 
     @Autowired
     private WebTestClient webTestClient;
