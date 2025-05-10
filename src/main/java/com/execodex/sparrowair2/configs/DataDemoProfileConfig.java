@@ -3,9 +3,11 @@ package com.execodex.sparrowair2.configs;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
+import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.services.AircraftTypeService;
 import com.execodex.sparrowair2.services.AirlineService;
 import com.execodex.sparrowair2.services.AirportService;
+import com.execodex.sparrowair2.services.FlightService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Profile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,14 +28,15 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, AirlineService airlineService) {
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, AirlineService airlineService, FlightService flightService) {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
-            // Insert sample airports, aircraft types, and airlines into the database
+            // Insert sample airports, aircraft types, airlines, and flights into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAirline(airlineService))
+                    .thenMany(generateFlight(flightService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
         };
@@ -305,5 +309,78 @@ public class DataDemoProfileConfig {
                         })
                 );
         return airlineFlux;
+    }
+
+    /**
+     * Generates sample flights and inserts them into the database if they do not already exist.
+     *
+     * @param flightService The service to interact with flight data.
+     * @return A Flux of generated Flight objects.
+     */
+    @Bean(name = "flightDataGenerator")
+    public Flux<Flight> generateFlight(FlightService flightService) {
+        List<Flight> sampleFlights = Arrays.asList(
+                Flight.builder()
+                        .airlineIcaoCode("AAL")
+                        .flightNumber("AA123")
+                        .departureAirportIcao("KJFK")
+                        .arrivalAirportIcao("EGLL")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(1))
+                        .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
+                        .aircraftTypeIcao("B77W")
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("BAW")
+                        .flightNumber("BA456")
+                        .departureAirportIcao("EGLL")
+                        .arrivalAirportIcao("RJTT")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(2))
+                        .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
+                        .aircraftTypeIcao("A388")
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("DLH")
+                        .flightNumber("LH789")
+                        .departureAirportIcao("EDDF")
+                        .arrivalAirportIcao("KJFK")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(3))
+                        .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
+                        .aircraftTypeIcao("A320")
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("UAE")
+                        .flightNumber("EK101")
+                        .departureAirportIcao("OMDB")
+                        .arrivalAirportIcao("YSSY")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(4))
+                        .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
+                        .aircraftTypeIcao("A388")
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("SIA")
+                        .flightNumber("SQ222")
+                        .departureAirportIcao("YSSY")
+                        .arrivalAirportIcao("RJTT")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(5))
+                        .scheduledArrival(LocalDateTime.now().plusDays(5).plusHours(10))
+                        .aircraftTypeIcao("B77W")
+                        .status("Scheduled")
+                        .build()
+        );
+
+        // Insert sample flights into the database
+        Flux<Flight> flightFlux = Flux.fromIterable(sampleFlights)
+                .flatMap(flight -> flightService
+                        .createFlight(flight)
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return flightFlux;
     }
 }
