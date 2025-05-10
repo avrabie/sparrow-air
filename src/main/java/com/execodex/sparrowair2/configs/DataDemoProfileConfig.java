@@ -30,7 +30,7 @@ public class DataDemoProfileConfig {
             // Insert sample airports and aircraft types into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
-                    .doOnComplete(() -> logger.info("Sample airport data initialization completed"))
+                    .doOnComplete(() -> logger.info("Sample airport and aircraft data initialization completed"))
                     .blockLast();
         };
     }
@@ -88,7 +88,26 @@ public class DataDemoProfileConfig {
                         .timezone("Europe/Berlin")
                         .latitude(50.0379)
                         .longitude(8.5622)
+                        .build(),
+                Airport.builder()
+                        .icaoCode("LUKK")
+                        .name("Chisinau International Airport")
+                        .city("Chisinau")
+                        .country("Moldova")
+                        .timezone("Europe/Chisinau")
+                        .latitude(46.9271)
+                        .longitude(28.9302)
+                        .build(),
+                Airport.builder()
+                        .icaoCode("LROP")
+                        .name("Bucharest Henri Coanda International Airport")
+                        .city("Bucharest")
+                        .country("Romania")
+                        .timezone("Europe/Bucharest")
+                        .latitude(44.5711)
+                        .longitude(26.0858)
                         .build()
+
         );
 
         // Insert sample airports into the database
@@ -110,6 +129,7 @@ public class DataDemoProfileConfig {
                 );
         return airportFlux;
     }
+
     /**
      * Generates sample aircraft types and inserts them into the database if they do not already exist.
      *
@@ -118,7 +138,7 @@ public class DataDemoProfileConfig {
      */
 
     @Bean(name = "aircraftTypeDataGenerator")
-    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService){
+    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService) {
         List<AircraftType> sampleAircraftTypes = Arrays.asList(
                 AircraftType.builder()
                         .icaoCode("B738")
