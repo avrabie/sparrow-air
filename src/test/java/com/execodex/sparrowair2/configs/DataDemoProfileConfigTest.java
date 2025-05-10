@@ -1,8 +1,10 @@
 package com.execodex.sparrowair2.configs;
 
 import com.execodex.sparrowair2.entities.AircraftType;
+import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.repositories.AirlineRepository;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
 
     @Autowired
     private AircraftTypeRepository aircraftTypeRepository;
+
+    @Autowired
+    private AirlineRepository airlineRepository;
 
     @Test
     public void testSampleAirportsAreCreated() {
@@ -63,6 +68,28 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
                         .collectList()
                         .map(foundCodes -> {
                             System.out.println("[DEBUG_LOG] Found aircraft types: " + foundCodes);
+                            return foundCodes.size() == expectedIcaoCodes.size();
+                        })
+        )
+        .expectNext(true)
+        .verifyComplete();
+    }
+
+    @Test
+    public void testSampleAirlinesAreCreated() {
+        // List of ICAO codes that should be created by the datademo profile
+        List<String> expectedIcaoCodes = Arrays.asList("AAL", "BAW", "DLH", "UAE", "SIA");
+
+        // Fetch all airlines from the repository
+        Flux<Airline> airlines = airlineRepository.findAll();
+
+        // Verify that all expected airlines exist
+        StepVerifier.create(
+                airlines.map(Airline::getIcaoCode)
+                        .filter(expectedIcaoCodes::contains)
+                        .collectList()
+                        .map(foundCodes -> {
+                            System.out.println("[DEBUG_LOG] Found airlines: " + foundCodes);
                             return foundCodes.size() == expectedIcaoCodes.size();
                         })
         )

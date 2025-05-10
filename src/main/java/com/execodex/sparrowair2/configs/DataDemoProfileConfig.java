@@ -1,8 +1,10 @@
 package com.execodex.sparrowair2.configs;
 
 import com.execodex.sparrowair2.entities.AircraftType;
+import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.services.AircraftTypeService;
+import com.execodex.sparrowair2.services.AirlineService;
 import com.execodex.sparrowair2.services.AirportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +25,15 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService) {
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, AirlineService airlineService) {
         return args -> {
-            logger.info("Initializing sample airport data for 'datademo' profile");
+            logger.info("Initializing sample data for 'datademo' profile");
 
-            // Insert sample airports and aircraft types into the database
+            // Insert sample airports, aircraft types, and airlines into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
-                    .doOnComplete(() -> logger.info("Sample airport and aircraft data initialization completed"))
+                    .thenMany(generateAirline(airlineService))
+                    .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
         };
     }
@@ -236,5 +239,71 @@ public class DataDemoProfileConfig {
                         })
                 );
         return aircraftTypeFlux;
+    }
+
+    /**
+     * Generates sample airlines and inserts them into the database if they do not already exist.
+     *
+     * @param airlineService The service to interact with airline data.
+     * @return A Flux of generated Airline objects.
+     */
+    @Bean(name = "airlineDataGenerator")
+    public Flux<Airline> generateAirline(AirlineService airlineService) {
+        List<Airline> sampleAirlines = Arrays.asList(
+                Airline.builder()
+                        .icaoCode("AAL")
+                        .name("American Airlines")
+                        .headquarters("Fort Worth, Texas, United States")
+                        .contactNumber("+1-800-433-7300")
+                        .website("https://www.aa.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("BAW")
+                        .name("British Airways")
+                        .headquarters("London, United Kingdom")
+                        .contactNumber("+44-20-8738-5050")
+                        .website("https://www.britishairways.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("DLH")
+                        .name("Lufthansa")
+                        .headquarters("Cologne, Germany")
+                        .contactNumber("+49-69-86-799-799")
+                        .website("https://www.lufthansa.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("UAE")
+                        .name("Emirates")
+                        .headquarters("Dubai, United Arab Emirates")
+                        .contactNumber("+971-600-555-555")
+                        .website("https://www.emirates.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("SIA")
+                        .name("Singapore Airlines")
+                        .headquarters("Singapore")
+                        .contactNumber("+65-6223-8888")
+                        .website("https://www.singaporeair.com")
+                        .build()
+        );
+
+        // Insert sample airlines into the database
+        Flux<Airline> airlineFlux = Flux.fromIterable(sampleAirlines)
+                .flatMap(airline -> airlineService
+                        .getAirlineByIcaoCode(airline.getIcaoCode())
+                        .hasElement()
+                        .flatMap(existingAirline -> {
+                            if (existingAirline) {
+                                logger.info("Airline {} already exists, skipping creation", airline.getIcaoCode());
+                                return Mono.empty();
+                            }
+                            return airlineService.createAirline(airline);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create airline {}: {}", airline.getIcaoCode(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return airlineFlux;
     }
 }
