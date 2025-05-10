@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("flights")
+@Table(name = "flights")
 public class Flight {
     @Id
     private Long id;
@@ -34,11 +34,14 @@ public class Flight {
     @Column("scheduled_departure")
     private LocalDateTime scheduledDeparture;
 
+    @Column("scheduled_arrival")
+    private LocalDateTime scheduledArrival;
+
     @Column("aircraft_type_icao")
     private String aircraftTypeIcao;
 
     @Column("status")
     private String status;
 
-
+    // Getters, setters, constructors
 }

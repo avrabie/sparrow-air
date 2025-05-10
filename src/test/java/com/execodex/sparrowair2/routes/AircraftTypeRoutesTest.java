@@ -88,7 +88,7 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
 
         webTestClient.get()
                 .uri("/aircraft-types")
-                .accept(MediaType.APPLICATION_XML)
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(AircraftType.class)
