@@ -39,13 +39,13 @@ public class DataDemoProfileConfig {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
-            // Insert sample airports, aircraft types, airlines, flights, passengers, and airline fleet into the database
+            // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAirline(airlineService))
-                    .thenMany(generateFlight(flightService))
-                    .thenMany(generatePassenger(passengerService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
+                    .thenMany(generateFlight(flightService, airlineFleetService))
+                    .thenMany(generatePassenger(passengerService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
         };
@@ -338,73 +338,82 @@ public class DataDemoProfileConfig {
      * Generates sample flights and inserts them into the database if they do not already exist.
      *
      * @param flightService The service to interact with flight data.
+     * @param airlineFleetService The service to interact with airline fleet data.
      * @return A Flux of generated Flight objects.
      */
     @Bean(name = "flightDataGenerator")
-    public Flux<Flight> generateFlight(FlightService flightService) {
-        List<Flight> sampleFlights = Arrays.asList(
-                Flight.builder()
-                        .airlineIcaoCode("AAL")
-                        .flightNumber("AA123")
-                        .departureAirportIcao("KJFK")
-                        .arrivalAirportIcao("EGLL")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(1))
-                        .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
-                        .aircraftTypeIcao("B77W")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("BAW")
-                        .flightNumber("BA456")
-                        .departureAirportIcao("EGLL")
-                        .arrivalAirportIcao("RJTT")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(2))
-                        .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
-                        .aircraftTypeIcao("A388")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("DLH")
-                        .flightNumber("LH789")
-                        .departureAirportIcao("EDDF")
-                        .arrivalAirportIcao("KJFK")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(3))
-                        .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
-                        .aircraftTypeIcao("A320")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("UAE")
-                        .flightNumber("EK101")
-                        .departureAirportIcao("OMDB")
-                        .arrivalAirportIcao("YSSY")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(4))
-                        .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
-                        .aircraftTypeIcao("A388")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("SIA")
-                        .flightNumber("SQ222")
-                        .departureAirportIcao("YSSY")
-                        .arrivalAirportIcao("RJTT")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(5))
-                        .scheduledArrival(LocalDateTime.now().plusDays(5).plusHours(10))
-                        .aircraftTypeIcao("B77W")
-                        .status("Scheduled")
-                        .build()
-        );
+    public Flux<Flight> generateFlight(FlightService flightService, AirlineFleetService airlineFleetService) {
+        // First, get all airline fleet entries
+        return airlineFleetService.getAllAirlineFleet()
+                .collectMap(
+                        airlineFleet -> airlineFleet.getAirlineIcao() + "-" + airlineFleet.getAircraftTypeIcao(),
+                        airlineFleet -> airlineFleet.getId()
+                )
+                .flatMapMany(airlineFleetMap -> {
+                    // Create flights with references to airline fleet entries
+                    List<Flight> sampleFlights = Arrays.asList(
+                            Flight.builder()
+                                    .airlineIcaoCode("AAL")
+                                    .flightNumber("AA123")
+                                    .departureAirportIcao("KJFK")
+                                    .arrivalAirportIcao("EGLL")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(1))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("DLH-B77W", 1L)) // Using DLH's B77W as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("BAW")
+                                    .flightNumber("BA456")
+                                    .departureAirportIcao("EGLL")
+                                    .arrivalAirportIcao("RJTT")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(2))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("UAE-A388", 1L)) // Using UAE's A388 as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("DLH")
+                                    .flightNumber("LH789")
+                                    .departureAirportIcao("EDDF")
+                                    .arrivalAirportIcao("KJFK")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(3))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("BAW-A320", 1L)) // Using BAW's A320 as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("UAE")
+                                    .flightNumber("EK101")
+                                    .departureAirportIcao("OMDB")
+                                    .arrivalAirportIcao("YSSY")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(4))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("UAE-A388", 1L)) // Using UAE's A388
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("SIA")
+                                    .flightNumber("SQ222")
+                                    .departureAirportIcao("YSSY")
+                                    .arrivalAirportIcao("RJTT")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(5))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(5).plusHours(10))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("DLH-B77W", 1L)) // Using DLH's B77W as fallback
+                                    .status("Scheduled")
+                                    .build()
+                    );
 
-        // Insert sample flights into the database
-        Flux<Flight> flightFlux = Flux.fromIterable(sampleFlights)
-                .flatMap(flight -> flightService
-                        .createFlight(flight)
-                        .onErrorResume(e -> {
-                            logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
-                            return Mono.empty();
-                        })
-                );
-        return flightFlux;
+                    // Insert sample flights into the database
+                    return Flux.fromIterable(sampleFlights)
+                            .flatMap(flight -> flightService
+                                    .createFlight(flight)
+                                    .onErrorResume(e -> {
+                                        logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
+                                        return Mono.empty();
+                                    })
+                            );
+                });
     }
 
     /**

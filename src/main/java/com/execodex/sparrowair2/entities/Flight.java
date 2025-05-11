@@ -37,8 +37,8 @@ public class Flight {
     @Column("scheduled_arrival")
     private LocalDateTime scheduledArrival;
 
-    @Column("aircraft_type_icao")
-    private String aircraftTypeIcao;
+    @Column("airline_fleet_id")
+    private Long airlineFleetId; // Reference to AirlineFleet.id
 
     @Column("status")
     private String status;

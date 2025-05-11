@@ -3,9 +3,11 @@ package com.execodex.sparrowair2.routes;
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.entities.Airline;
+import com.execodex.sparrowair2.entities.AirlineFleet;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import com.execodex.sparrowair2.repositories.FlightRepository;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,10 +40,14 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
     @Autowired
     private AircraftTypeRepository aircraftTypeRepository;
 
+    @Autowired
+    private AirlineFleetRepository airlineFleetRepository;
+
     @BeforeEach
     public void setUp() {
         // Clear the repositories before each test
         flightRepository.deleteAll().block();
+        airlineFleetRepository.deleteAll().block();
 
         // Create test airlines
         Airline airline1 = Airline.builder()
@@ -194,12 +201,90 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         aircraftTypeRepository.insert(aircraftType1).block();
         aircraftTypeRepository.insert(aircraftType2).block();
         aircraftTypeRepository.insert(aircraftType3).block();
+
+        // Create test airline fleet entries
+        AirlineFleet airlineFleet1 = AirlineFleet.builder()
+                .aircraftTypeIcao("B77W")
+                .airlineIcao("AAL")
+                .aircraftAge(LocalDate.of(2015, 5, 12))
+                .seatConfiguration("3-4-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(42)
+                .economySeats(304)
+                .build();
+
+        AirlineFleet airlineFleet2 = AirlineFleet.builder()
+                .aircraftTypeIcao("A388")
+                .airlineIcao("BAW")
+                .aircraftAge(LocalDate.of(2010, 8, 15))
+                .seatConfiguration("3-4-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(14)
+                .businessSeats(76)
+                .economySeats(427)
+                .build();
+
+        AirlineFleet airlineFleet3 = AirlineFleet.builder()
+                .aircraftTypeIcao("A320")
+                .airlineIcao("DLH")
+                .aircraftAge(LocalDate.of(2018, 3, 24))
+                .seatConfiguration("3-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(false)
+                .firstClassSeats(0)
+                .businessSeats(32)
+                .economySeats(120)
+                .build();
+
+        AirlineFleet airlineFleet4 = AirlineFleet.builder()
+                .aircraftTypeIcao("A388")
+                .airlineIcao("UAE")
+                .aircraftAge(LocalDate.of(2012, 11, 7))
+                .seatConfiguration("3-4-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(14)
+                .businessSeats(76)
+                .economySeats(427)
+                .build();
+
+        AirlineFleet airlineFleet5 = AirlineFleet.builder()
+                .aircraftTypeIcao("B77W")
+                .airlineIcao("SIA")
+                .aircraftAge(LocalDate.of(2014, 2, 3))
+                .seatConfiguration("3-4-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(42)
+                .economySeats(304)
+                .build();
+
+        // Save airline fleet entries
+        airlineFleetRepository.insert(airlineFleet1).block();
+        airlineFleetRepository.insert(airlineFleet2).block();
+        airlineFleetRepository.insert(airlineFleet3).block();
+        airlineFleetRepository.insert(airlineFleet4).block();
+        airlineFleetRepository.insert(airlineFleet5).block();
     }
 
     @Test
     public void testCreateFlight() {
         LocalDateTime scheduledDeparture = LocalDateTime.now().plusDays(1);
         LocalDateTime scheduledArrival = scheduledDeparture.plusHours(7);
+
+        // Get the ID of the AAL B77W airline fleet entry
+        AirlineFleet airlineFleet = airlineFleetRepository.findAll()
+                .filter(af -> af.getAirlineIcao().equals("AAL") && af.getAircraftTypeIcao().equals("B77W"))
+                .blockFirst();
 
         Flight flight = Flight.builder()
                 .airlineIcaoCode("AAL")
@@ -208,7 +293,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("EGLL")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("B77W")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Scheduled")
                 .build();
 
@@ -226,7 +311,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                     assert f.getArrivalAirportIcao().equals(flight.getArrivalAirportIcao());
                     assert f.getScheduledDeparture().equals(flight.getScheduledDeparture());
                     assert f.getScheduledArrival().equals(flight.getScheduledArrival());
-                    assert f.getAircraftTypeIcao().equals(flight.getAircraftTypeIcao());
+                    assert f.getAirlineFleetId().equals(flight.getAirlineFleetId());
                     assert f.getStatus().equals(flight.getStatus());
                 });
     }
@@ -237,6 +322,11 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         LocalDateTime scheduledDeparture = LocalDateTime.now().plusDays(2);
         LocalDateTime scheduledArrival = scheduledDeparture.plusHours(12);
 
+        // Get the ID of the BAW A388 airline fleet entry
+        AirlineFleet airlineFleet = airlineFleetRepository.findAll()
+                .filter(af -> af.getAirlineIcao().equals("BAW") && af.getAircraftTypeIcao().equals("A388"))
+                .blockFirst();
+
         Flight flight = Flight.builder()
                 .airlineIcaoCode("BAW")
                 .flightNumber("BA456")
@@ -244,7 +334,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("RJTT")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("A388")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Scheduled")
                 .build();
 
@@ -266,6 +356,11 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         LocalDateTime scheduledDeparture = LocalDateTime.now().plusDays(3);
         LocalDateTime scheduledArrival = scheduledDeparture.plusHours(9);
 
+        // Get the ID of the DLH A320 airline fleet entry
+        AirlineFleet airlineFleet = airlineFleetRepository.findAll()
+                .filter(af -> af.getAirlineIcao().equals("DLH") && af.getAircraftTypeIcao().equals("A320"))
+                .blockFirst();
+
         Flight flight = Flight.builder()
                 .airlineIcaoCode("DLH")
                 .flightNumber("LH789")
@@ -273,7 +368,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("KJFK")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("A320")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Scheduled")
                 .build();
 
@@ -295,6 +390,11 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         LocalDateTime scheduledDeparture = LocalDateTime.now().plusDays(4);
         LocalDateTime scheduledArrival = scheduledDeparture.plusHours(14);
 
+        // Get the ID of the UAE A388 airline fleet entry
+        AirlineFleet airlineFleet = airlineFleetRepository.findAll()
+                .filter(af -> af.getAirlineIcao().equals("UAE") && af.getAircraftTypeIcao().equals("A388"))
+                .blockFirst();
+
         Flight flight = Flight.builder()
                 .airlineIcaoCode("UAE")
                 .flightNumber("EK101")
@@ -302,7 +402,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("YSSY")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("A388")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Scheduled")
                 .build();
 
@@ -318,7 +418,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("YSSY")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("A388")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Delayed") // Updated status
                 .build();
 
@@ -338,6 +438,11 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         LocalDateTime scheduledDeparture = LocalDateTime.now().plusDays(5);
         LocalDateTime scheduledArrival = scheduledDeparture.plusHours(10);
 
+        // Get the ID of the SIA B77W airline fleet entry
+        AirlineFleet airlineFleet = airlineFleetRepository.findAll()
+                .filter(af -> af.getAirlineIcao().equals("SIA") && af.getAircraftTypeIcao().equals("B77W"))
+                .blockFirst();
+
         Flight flight = Flight.builder()
                 .airlineIcaoCode("SIA")
                 .flightNumber("SQ222")
@@ -345,7 +450,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .arrivalAirportIcao("RJTT")
                 .scheduledDeparture(scheduledDeparture)
                 .scheduledArrival(scheduledArrival)
-                .aircraftTypeIcao("B77W")
+                .airlineFleetId(airlineFleet.getId())
                 .status("Scheduled")
                 .build();
 

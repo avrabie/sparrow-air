@@ -17,5 +17,6 @@
     <include file="db/changelog/changes/09-alter-aircraft-type-mtow.sql"/>
     <include file="db/changelog/changes/10-add-scheduled-arrival-to-flights.sql"/>
     <include file="db/changelog/changes/11-create-airline-fleet-table.sql"/>
+    <include file="db/changelog/changes/12-alter-flights-table-replace-aircraft-type-with-airline-fleet.sql"/>
 
 </databaseChangeLog>
