@@ -151,6 +151,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(24)
+                .economySeats(126)
                 .build();
 
         webTestClient.post()
@@ -169,6 +172,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                     assert response.getHasWifi().equals(airlineFleet.getHasWifi());
                     assert response.getHasPowerOutlets().equals(airlineFleet.getHasPowerOutlets());
                     assert response.getHasEntertainmentSystem().equals(airlineFleet.getHasEntertainmentSystem());
+                    assert response.getFirstClassSeats().equals(airlineFleet.getFirstClassSeats());
+                    assert response.getBusinessSeats().equals(airlineFleet.getBusinessSeats());
+                    assert response.getEconomySeats().equals(airlineFleet.getEconomySeats());
                 });
     }
 
@@ -183,6 +189,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(false)
+                .firstClassSeats(0)
+                .businessSeats(32)
+                .economySeats(120)
                 .build();
 
         // Save the airline fleet entry and wait for it to complete
@@ -208,6 +217,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(42)
+                .economySeats(304)
                 .build();
 
         // Save the airline fleet entry and wait for it to complete
@@ -233,6 +245,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(14)
+                .businessSeats(76)
+                .economySeats(427)
                 .build();
 
         AirlineFleet airlineFleet2 = AirlineFleet.builder()
@@ -243,6 +258,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(42)
+                .economySeats(304)
                 .build();
 
         // Save the airline fleet entries and wait for them to complete
@@ -269,6 +287,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(false)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(false)
+                .firstClassSeats(0)
+                .businessSeats(12)
+                .economySeats(88)
                 .build();
 
         // Save the airline fleet entry and wait for it to complete
@@ -284,6 +305,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true) // Updated WiFi availability
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(false)
+                .firstClassSeats(0)
+                .businessSeats(12)
+                .economySeats(88)
                 .build();
 
         webTestClient.put()
@@ -307,6 +331,9 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(24)
+                .economySeats(126)
                 .build();
 
         // Save the airline fleet entry and wait for it to complete

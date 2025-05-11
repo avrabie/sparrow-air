@@ -39,6 +39,9 @@ class AirlineFleetServiceTest {
                 .hasWifi(true)
                 .hasPowerOutlets(true)
                 .hasEntertainmentSystem(true)
+                .firstClassSeats(8)
+                .businessSeats(24)
+                .economySeats(126)
                 .build();
     }
 

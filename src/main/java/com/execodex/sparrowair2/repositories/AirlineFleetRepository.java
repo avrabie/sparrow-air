@@ -13,16 +13,17 @@ public interface AirlineFleetRepository extends ReactiveCrudRepository<AirlineFl
     // ReactiveCrudRepository provides basic CRUD operations with reactive return types
 
     @Query("INSERT INTO airline_fleet (aircraft_type_icao, airline_icao, aircraft_age, seat_configuration, " +
-            "has_wifi, has_power_outlets, has_entertainment_system) " +
+            "has_wifi, has_power_outlets, has_entertainment_system, first_class_seats, business_seats, economy_seats) " +
             "VALUES (:#{#airlineFleet.aircraftTypeIcao}, :#{#airlineFleet.airlineIcao}, :#{#airlineFleet.aircraftAge}, " +
             ":#{#airlineFleet.seatConfiguration}, :#{#airlineFleet.hasWifi}, :#{#airlineFleet.hasPowerOutlets}, " +
-            ":#{#airlineFleet.hasEntertainmentSystem}) " +
+            ":#{#airlineFleet.hasEntertainmentSystem}, :#{#airlineFleet.firstClassSeats}, :#{#airlineFleet.businessSeats}, " +
+            ":#{#airlineFleet.economySeats}) " +
             "RETURNING *")
     Mono<AirlineFleet> insert(AirlineFleet airlineFleet);
-    
+
     // Find all aircraft in a specific airline's fleet
     Flux<AirlineFleet> findByAirlineIcao(String airlineIcao);
-    
+
     // Find all aircraft of a specific type across all airlines
     Flux<AirlineFleet> findByAircraftTypeIcao(String aircraftTypeIcao);
 }

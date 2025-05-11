@@ -487,6 +487,9 @@ public class DataDemoProfileConfig {
                         .hasWifi(true)
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(true)
+                        .firstClassSeats(8)
+                        .businessSeats(24)
+                        .economySeats(126)
                         .build(),
                 AirlineFleet.builder()
                         .aircraftTypeIcao("A320")
@@ -496,6 +499,9 @@ public class DataDemoProfileConfig {
                         .hasWifi(true)
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(false)
+                        .firstClassSeats(0)
+                        .businessSeats(32)
+                        .economySeats(120)
                         .build(),
                 AirlineFleet.builder()
                         .aircraftTypeIcao("B77W")
@@ -505,6 +511,9 @@ public class DataDemoProfileConfig {
                         .hasWifi(true)
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(true)
+                        .firstClassSeats(8)
+                        .businessSeats(42)
+                        .economySeats(304)
                         .build(),
                 AirlineFleet.builder()
                         .aircraftTypeIcao("A388")
@@ -514,6 +523,9 @@ public class DataDemoProfileConfig {
                         .hasWifi(true)
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(true)
+                        .firstClassSeats(14)
+                        .businessSeats(76)
+                        .economySeats(427)
                         .build(),
                 AirlineFleet.builder()
                         .aircraftTypeIcao("E190")
@@ -523,6 +535,9 @@ public class DataDemoProfileConfig {
                         .hasWifi(false)
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(false)
+                        .firstClassSeats(0)
+                        .businessSeats(12)
+                        .economySeats(88)
                         .build()
         );
 

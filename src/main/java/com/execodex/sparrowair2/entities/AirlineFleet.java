@@ -39,4 +39,13 @@ public class AirlineFleet {
 
     @Column(value = "has_entertainment_system")
     private Boolean hasEntertainmentSystem; // Flag for in-flight entertainment system
+
+    @Column(value = "first_class_seats")
+    private Integer firstClassSeats; // Number of first class seats
+
+    @Column(value = "business_seats")
+    private Integer businessSeats; // Number of business class seats
+
+    @Column(value = "economy_seats")
+    private Integer economySeats; // Number of economy class seats
 }
