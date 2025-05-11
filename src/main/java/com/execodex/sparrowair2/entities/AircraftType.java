@@ -22,7 +22,7 @@ public class AircraftType {
     private String manufacturer;
     private int seatingCapacity;
     private int maxRangeKm;
-    private int mtow;
+    private int mtow; // Maximum Takeoff Weight in kg
 
     // Getters, setters, constructors
 }

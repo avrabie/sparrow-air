@@ -4,10 +4,12 @@ import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.entities.Flight;
+import com.execodex.sparrowair2.entities.Passenger;
 import com.execodex.sparrowair2.services.AircraftTypeService;
 import com.execodex.sparrowair2.services.AirlineService;
 import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.FlightService;
+import com.execodex.sparrowair2.services.PassengerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -28,15 +30,18 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, AirlineService airlineService, FlightService flightService) {
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, 
+                                                  AirlineService airlineService, FlightService flightService, 
+                                                  PassengerService passengerService) {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
-            // Insert sample airports, aircraft types, airlines, and flights into the database
+            // Insert sample airports, aircraft types, airlines, flights, and passengers into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateFlight(flightService))
+                    .thenMany(generatePassenger(passengerService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
         };
@@ -396,5 +401,68 @@ public class DataDemoProfileConfig {
                         })
                 );
         return flightFlux;
+    }
+
+    /**
+     * Generates sample passengers and inserts them into the database if they do not already exist.
+     *
+     * @param passengerService The service to interact with passenger data.
+     * @return A Flux of generated Passenger objects.
+     */
+    @Bean(name = "passengerDataGenerator")
+    public Flux<Passenger> generatePassenger(PassengerService passengerService) {
+        List<Passenger> samplePassengers = Arrays.asList(
+                Passenger.builder()
+                        .firstName("John")
+                        .lastName("Doe")
+                        .passportNumber("US123456789")
+                        .nationality("United States")
+                        .email("john.doe@example.com")
+                        .phone("+1-555-123-4567")
+                        .build(),
+                Passenger.builder()
+                        .firstName("Jane")
+                        .lastName("Smith")
+                        .passportNumber("UK987654321")
+                        .nationality("United Kingdom")
+                        .email("jane.smith@example.com")
+                        .phone("+44-20-1234-5678")
+                        .build(),
+                Passenger.builder()
+                        .firstName("Hans")
+                        .lastName("Mueller")
+                        .passportNumber("DE456789123")
+                        .nationality("Germany")
+                        .email("hans.mueller@example.com")
+                        .phone("+49-30-1234-5678")
+                        .build(),
+                Passenger.builder()
+                        .firstName("Yuki")
+                        .lastName("Tanaka")
+                        .passportNumber("JP789123456")
+                        .nationality("Japan")
+                        .email("yuki.tanaka@example.com")
+                        .phone("+81-3-1234-5678")
+                        .build(),
+                Passenger.builder()
+                        .firstName("Maria")
+                        .lastName("Garcia")
+                        .passportNumber("ES321654987")
+                        .nationality("Spain")
+                        .email("maria.garcia@example.com")
+                        .phone("+34-91-1234-5678")
+                        .build()
+        );
+
+        // Insert sample passengers into the database
+        Flux<Passenger> passengerFlux = Flux.fromIterable(samplePassengers)
+                .flatMap(passenger -> passengerService
+                        .createPassenger(passenger)
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create passenger {}: {}", passenger.getPassportNumber(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return passengerFlux;
     }
 }
