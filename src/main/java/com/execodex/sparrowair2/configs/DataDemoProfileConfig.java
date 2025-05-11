@@ -288,6 +288,20 @@ public class DataDemoProfileConfig {
                         .headquarters("Singapore")
                         .contactNumber("+65-6223-8888")
                         .website("https://www.singaporeair.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("THY")
+                        .name("Turkish Airlines")
+                        .headquarters("Istanbul, Turkey")
+                        .contactNumber("+90-212-463-6363")
+                        .website("https://www.turkishairlines.com")
+                        .build(),
+                Airline.builder()
+                        .icaoCode("WZZ")
+                        .name("Wizz Air")
+                        .headquarters("Budapest, Hungary")
+                        .contactNumber("+36-1-777-9300")
+                        .website("https://wizzair.com")
                         .build()
         );
 
