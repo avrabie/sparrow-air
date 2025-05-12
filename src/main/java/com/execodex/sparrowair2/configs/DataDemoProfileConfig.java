@@ -2,10 +2,12 @@ package com.execodex.sparrowair2.configs;
 
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.entities.Airline;
+import com.execodex.sparrowair2.entities.AirlineFleet;
 import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.entities.Passenger;
 import com.execodex.sparrowair2.services.AircraftTypeService;
+import com.execodex.sparrowair2.services.AirlineFleetService;
 import com.execodex.sparrowair2.services.AirlineService;
 import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.FlightService;
@@ -19,6 +21,7 @@ import org.springframework.context.annotation.Profile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -32,15 +35,16 @@ public class DataDemoProfileConfig {
     @Bean
     public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, 
                                                   AirlineService airlineService, FlightService flightService, 
-                                                  PassengerService passengerService) {
+                                                  PassengerService passengerService, AirlineFleetService airlineFleetService) {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
-            // Insert sample airports, aircraft types, airlines, flights, and passengers into the database
+            // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAirline(airlineService))
-                    .thenMany(generateFlight(flightService))
+                    .thenMany(generateAirlineFleet(airlineFleetService))
+                    .thenMany(generateFlight(flightService, airlineFleetService))
                     .thenMany(generatePassenger(passengerService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
@@ -334,73 +338,82 @@ public class DataDemoProfileConfig {
      * Generates sample flights and inserts them into the database if they do not already exist.
      *
      * @param flightService The service to interact with flight data.
+     * @param airlineFleetService The service to interact with airline fleet data.
      * @return A Flux of generated Flight objects.
      */
     @Bean(name = "flightDataGenerator")
-    public Flux<Flight> generateFlight(FlightService flightService) {
-        List<Flight> sampleFlights = Arrays.asList(
-                Flight.builder()
-                        .airlineIcaoCode("AAL")
-                        .flightNumber("AA123")
-                        .departureAirportIcao("KJFK")
-                        .arrivalAirportIcao("EGLL")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(1))
-                        .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
-                        .aircraftTypeIcao("B77W")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("BAW")
-                        .flightNumber("BA456")
-                        .departureAirportIcao("EGLL")
-                        .arrivalAirportIcao("RJTT")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(2))
-                        .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
-                        .aircraftTypeIcao("A388")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("DLH")
-                        .flightNumber("LH789")
-                        .departureAirportIcao("EDDF")
-                        .arrivalAirportIcao("KJFK")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(3))
-                        .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
-                        .aircraftTypeIcao("A320")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("UAE")
-                        .flightNumber("EK101")
-                        .departureAirportIcao("OMDB")
-                        .arrivalAirportIcao("YSSY")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(4))
-                        .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
-                        .aircraftTypeIcao("A388")
-                        .status("Scheduled")
-                        .build(),
-                Flight.builder()
-                        .airlineIcaoCode("SIA")
-                        .flightNumber("SQ222")
-                        .departureAirportIcao("YSSY")
-                        .arrivalAirportIcao("RJTT")
-                        .scheduledDeparture(LocalDateTime.now().plusDays(5))
-                        .scheduledArrival(LocalDateTime.now().plusDays(5).plusHours(10))
-                        .aircraftTypeIcao("B77W")
-                        .status("Scheduled")
-                        .build()
-        );
+    public Flux<Flight> generateFlight(FlightService flightService, AirlineFleetService airlineFleetService) {
+        // First, get all airline fleet entries
+        return airlineFleetService.getAllAirlineFleet()
+                .collectMap(
+                        airlineFleet -> airlineFleet.getAirlineIcao() + "-" + airlineFleet.getAircraftTypeIcao(),
+                        airlineFleet -> airlineFleet.getId()
+                )
+                .flatMapMany(airlineFleetMap -> {
+                    // Create flights with references to airline fleet entries
+                    List<Flight> sampleFlights = Arrays.asList(
+                            Flight.builder()
+                                    .airlineIcaoCode("AAL")
+                                    .flightNumber("AA123")
+                                    .departureAirportIcao("KJFK")
+                                    .arrivalAirportIcao("EGLL")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(1))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("DLH-B77W", 1L)) // Using DLH's B77W as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("BAW")
+                                    .flightNumber("BA456")
+                                    .departureAirportIcao("EGLL")
+                                    .arrivalAirportIcao("RJTT")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(2))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("UAE-A388", 1L)) // Using UAE's A388 as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("DLH")
+                                    .flightNumber("LH789")
+                                    .departureAirportIcao("EDDF")
+                                    .arrivalAirportIcao("KJFK")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(3))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("BAW-A320", 1L)) // Using BAW's A320 as fallback
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("UAE")
+                                    .flightNumber("EK101")
+                                    .departureAirportIcao("OMDB")
+                                    .arrivalAirportIcao("YSSY")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(4))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("UAE-A388", 1L)) // Using UAE's A388
+                                    .status("Scheduled")
+                                    .build(),
+                            Flight.builder()
+                                    .airlineIcaoCode("SIA")
+                                    .flightNumber("SQ222")
+                                    .departureAirportIcao("YSSY")
+                                    .arrivalAirportIcao("RJTT")
+                                    .scheduledDeparture(LocalDateTime.now().plusDays(5))
+                                    .scheduledArrival(LocalDateTime.now().plusDays(5).plusHours(10))
+                                    .airlineFleetId(airlineFleetMap.getOrDefault("DLH-B77W", 1L)) // Using DLH's B77W as fallback
+                                    .status("Scheduled")
+                                    .build()
+                    );
 
-        // Insert sample flights into the database
-        Flux<Flight> flightFlux = Flux.fromIterable(sampleFlights)
-                .flatMap(flight -> flightService
-                        .createFlight(flight)
-                        .onErrorResume(e -> {
-                            logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
-                            return Mono.empty();
-                        })
-                );
-        return flightFlux;
+                    // Insert sample flights into the database
+                    return Flux.fromIterable(sampleFlights)
+                            .flatMap(flight -> flightService
+                                    .createFlight(flight)
+                                    .onErrorResume(e -> {
+                                        logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
+                                        return Mono.empty();
+                                    })
+                            );
+                });
     }
 
     /**
@@ -457,12 +470,110 @@ public class DataDemoProfileConfig {
         // Insert sample passengers into the database
         Flux<Passenger> passengerFlux = Flux.fromIterable(samplePassengers)
                 .flatMap(passenger -> passengerService
-                        .createPassenger(passenger)
+                        .getPassengerByPassportNumber(passenger.getPassportNumber())
+                        .hasElement()
+                        .flatMap(existingPassenger -> {
+                            if (existingPassenger) {
+                                logger.info("Passenger {} already exists, skipping creation", passenger.getPassportNumber());
+                                return Mono.empty();
+                            }
+                            return passengerService.createPassenger(passenger);
+                        })
                         .onErrorResume(e -> {
                             logger.warn("Could not create passenger {}: {}", passenger.getPassportNumber(), e.getMessage());
                             return Mono.empty();
                         })
                 );
         return passengerFlux;
+    }
+
+    /**
+     * Generates sample airline fleet entries and inserts them into the database.
+     *
+     * @param airlineFleetService The service to interact with airline fleet data.
+     * @return A Flux of generated AirlineFleet objects.
+     */
+    @Bean(name = "airlineFleetDataGenerator")
+    public Flux<AirlineFleet> generateAirlineFleet(AirlineFleetService airlineFleetService) {
+        List<AirlineFleet> sampleAirlineFleet = Arrays.asList(
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("B738")
+                        .airlineIcao("AAL")
+                        .registrationNumber("UA12345")
+                        .aircraftAge(LocalDate.of(2015, 5, 12))
+                        .seatConfiguration("3-3")
+                        .hasWifi(true)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(true)
+                        .firstClassSeats(8)
+                        .businessSeats(14)
+                        .premiumEconomySeats(10)
+                        .economySeats(126)
+                        .build(),
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("A320")
+                        .airlineIcao("BAW")
+                        .registrationNumber("UA67890")
+                        .aircraftAge(LocalDate.of(2018, 3, 24))
+                        .seatConfiguration("3-3")
+                        .hasWifi(true)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(false)
+                        .firstClassSeats(0)
+                        .businessSeats(32)
+                        .economySeats(120)
+                        .build(),
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("B77W")
+                        .airlineIcao("DLH")
+                        .registrationNumber("D-AILM")
+                        .aircraftAge(LocalDate.of(2012, 11, 7))
+                        .seatConfiguration("3-4-3")
+                        .hasWifi(true)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(true)
+                        .firstClassSeats(8)
+                        .businessSeats(42)
+                        .economySeats(304)
+                        .build(),
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("A388")
+                        .airlineIcao("UAE")
+                        .registrationNumber("A6-EDB")
+                        .aircraftAge(LocalDate.of(2010, 8, 15))
+                        .seatConfiguration("3-4-3")
+                        .hasWifi(true)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(true)
+                        .firstClassSeats(14)
+                        .businessSeats(76)
+                        .economySeats(427)
+                        .build(),
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("E190")
+                        .airlineIcao("WZZ")
+                        .registrationNumber("HA-LYF")
+                        .aircraftAge(LocalDate.of(2019, 2, 3))
+                        .seatConfiguration("2-2")
+                        .hasWifi(false)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(false)
+                        .firstClassSeats(0)
+                        .businessSeats(12)
+                        .economySeats(88)
+                        .build()
+        );
+
+        // Insert sample airline fleet entries into the database
+        Flux<AirlineFleet> airlineFleetFlux = Flux.fromIterable(sampleAirlineFleet)
+                .flatMap(airlineFleet -> airlineFleetService
+                        .createAirlineFleet(airlineFleet)
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create airline fleet entry for airline {}, aircraft type {}: {}", 
+                                    airlineFleet.getAirlineIcao(), airlineFleet.getAircraftTypeIcao(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return airlineFleetFlux;
     }
 }

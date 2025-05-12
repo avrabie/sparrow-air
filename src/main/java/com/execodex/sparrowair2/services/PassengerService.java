@@ -82,4 +82,14 @@ public class PassengerService {
                 )
                 .switchIfEmpty(Mono.empty());
     }
+
+
+    public Mono<Passenger> getPassengerByPassportNumber(String passportNumber) {
+        return passengerRepository.findByPassportNumber(passportNumber)
+                .doOnError(e -> logger.error("Error retrieving passenger with passport number: {}", passportNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving passenger with passport number: {}", passportNumber, e);
+                    return Mono.error(e);
+                });
+    }
 }

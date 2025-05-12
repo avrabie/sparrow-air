@@ -20,4 +20,6 @@ public interface PassengerRepository extends ReactiveCrudRepository<Passenger, L
 
     // Find passengers by first name and last name
     Flux<Passenger> findByFirstNameAndLastName(String firstName, String lastName);
+
+    Mono<Passenger> findByPassportNumber(String passportNumber);
 }

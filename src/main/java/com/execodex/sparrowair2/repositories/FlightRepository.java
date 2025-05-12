@@ -12,10 +12,10 @@ public interface FlightRepository extends ReactiveCrudRepository<Flight, Long> {
     // ReactiveCrudRepository provides basic CRUD operations with reactive return types
 
     @Query("INSERT INTO flights (airline_icao_code, flight_number, departure_airport_icao, arrival_airport_icao, " +
-            "scheduled_departure, scheduled_arrival, aircraft_type_icao, status) " +
+            "scheduled_departure, scheduled_arrival, airline_fleet_id, status) " +
             "VALUES (:#{#flight.airlineIcaoCode}, :#{#flight.flightNumber}, :#{#flight.departureAirportIcao}, " +
             ":#{#flight.arrivalAirportIcao}, :#{#flight.scheduledDeparture}, :#{#flight.scheduledArrival}, " +
-            ":#{#flight.aircraftTypeIcao}, :#{#flight.status}) " +
+            ":#{#flight.airlineFleetId}, :#{#flight.status}) " +
             "RETURNING *")
     Mono<Flight> insert(Flight flight);
 }
