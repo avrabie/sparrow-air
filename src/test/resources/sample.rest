@@ -1,0 +1,38 @@
+### Sparrow Air API Requests
+
+### 1. Get all airports
+GET http://localhost:8080/airports
+
+### 2. Get all airlines
+GET http://localhost:8080/airlines
+
+### 3. Get flights for a specific airline (Lufthansa - DLH)
+GET http://localhost:8080/flights/airline/DLH
+
+### 4. Get available seats for a specific flight (by flight ID)
+# Replace {flightId} with an actual flight ID from the response of the previous request
+GET http://localhost:8080/seats/flights/1
+
+
+### 5. Get available seats for a specific flight (by airline ICAO and flight number)
+# Replace {airlineIcao} with an airline ICAO code (e.g., DLH)
+# Replace {flightNumber} with a flight number from the response of request #3
+GET http://localhost:8080/seats/airline/DLH/flightNumber/LH999
+
+###
+GET http://localhost:8080/airline-fleet
+
+### 6. Create a new flight
+POST http://localhost:8080/flights
+Content-Type: application/json
+
+{
+  "airlineIcaoCode": "DLH",
+  "flightNumber": "LH999",
+  "departureAirportIcao": "EDDF",
+  "arrivalAirportIcao": "KJFK",
+  "scheduledDeparture": "2023-12-01T10:00:00",
+  "scheduledArrival": "2023-12-01T14:00:00",
+  "airlineFleetId": 2,
+  "status": "SCHEDULED"
+}
