@@ -1,17 +1,7 @@
 package com.execodex.sparrowair2.configs;
 
-import com.execodex.sparrowair2.entities.AircraftType;
-import com.execodex.sparrowair2.entities.Airline;
-import com.execodex.sparrowair2.entities.AirlineFleet;
-import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.entities.Flight;
-import com.execodex.sparrowair2.entities.Passenger;
-import com.execodex.sparrowair2.services.AircraftTypeService;
-import com.execodex.sparrowair2.services.AirlineFleetService;
-import com.execodex.sparrowair2.services.AirlineService;
-import com.execodex.sparrowair2.services.AirportService;
-import com.execodex.sparrowair2.services.FlightService;
-import com.execodex.sparrowair2.services.PassengerService;
+import com.execodex.sparrowair2.entities.*;
+import com.execodex.sparrowair2.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -33,9 +23,9 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService, 
-                                                  AirlineService airlineService, FlightService flightService, 
-                                                  PassengerService passengerService, AirlineFleetService airlineFleetService) {
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService,
+                                                   AirlineService airlineService, FlightService flightService,
+                                                   PassengerService passengerService, AirlineFleetService airlineFleetService) {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
@@ -337,7 +327,7 @@ public class DataDemoProfileConfig {
     /**
      * Generates sample flights and inserts them into the database if they do not already exist.
      *
-     * @param flightService The service to interact with flight data.
+     * @param flightService       The service to interact with flight data.
      * @param airlineFleetService The service to interact with airline fleet data.
      * @return A Flux of generated Flight objects.
      */
@@ -567,13 +557,16 @@ public class DataDemoProfileConfig {
         // Insert sample airline fleet entries into the database
         Flux<AirlineFleet> airlineFleetFlux = Flux.fromIterable(sampleAirlineFleet)
                 .flatMap(airlineFleet -> airlineFleetService
-                        .createAirlineFleet(airlineFleet)
-                        .onErrorResume(e -> {
-                            logger.warn("Could not create airline fleet entry for airline {}, aircraft type {}: {}", 
-                                    airlineFleet.getAirlineIcao(), airlineFleet.getAircraftTypeIcao(), e.getMessage());
-                            return Mono.empty();
-                        })
-                );
+                        .getAirlineFleetByRegistration(airlineFleet.getRegistrationNumber())
+                        .hasElement()
+                        .flatMap(existingAirlineFleet -> {
+                            if (existingAirlineFleet) {
+                                logger.info("Airline fleet entry {} already exists, skipping creation", airlineFleet.getRegistrationNumber());
+                                return Mono.empty();
+                            }
+                            return airlineFleetService.createAirlineFleet(airlineFleet);
+                        }));
+
         return airlineFleetFlux;
     }
 }
