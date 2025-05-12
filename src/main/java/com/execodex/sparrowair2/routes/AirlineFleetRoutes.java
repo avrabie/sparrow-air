@@ -39,6 +39,8 @@ public class AirlineFleetRoutes {
                         .PUT("/{id}", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::updateAirlineFleet)
                         // DELETE /airline-fleet/{id} - Delete an aircraft from the fleet
                         .DELETE("/{id}", airlineFleetHandler::deleteAirlineFleet)
+                        // GET /registration/{registration} - Get aircraft by registration
+                        .GET("/registration/{registration}", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::getAirlineFleetByRegistration)
                 )
                 .build();
     }

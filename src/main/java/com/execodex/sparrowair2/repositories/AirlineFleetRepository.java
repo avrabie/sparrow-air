@@ -12,9 +12,9 @@ public interface AirlineFleetRepository extends ReactiveCrudRepository<AirlineFl
     // The primary key of AirlineFleet is id, which is a Long
     // ReactiveCrudRepository provides basic CRUD operations with reactive return types
 
-    @Query("INSERT INTO airline_fleet (aircraft_type_icao, airline_icao, aircraft_age, seat_configuration, " +
+    @Query("INSERT INTO airline_fleet (aircraft_type_icao, airline_icao, registration_number, aircraft_age, seat_configuration, " +
             "has_wifi, has_power_outlets, has_entertainment_system, first_class_seats, business_seats, economy_seats, premium_economy_seats) " +
-            "VALUES (:#{#airlineFleet.aircraftTypeIcao}, :#{#airlineFleet.airlineIcao}, :#{#airlineFleet.aircraftAge}, " +
+            "VALUES (:#{#airlineFleet.aircraftTypeIcao}, :#{#airlineFleet.airlineIcao}, :#{#airlineFleet.registrationNumber}, :#{#airlineFleet.aircraftAge}, " +
             ":#{#airlineFleet.seatConfiguration}, :#{#airlineFleet.hasWifi}, :#{#airlineFleet.hasPowerOutlets}, " +
             ":#{#airlineFleet.hasEntertainmentSystem}, :#{#airlineFleet.firstClassSeats}, :#{#airlineFleet.businessSeats}, " +
             ":#{#airlineFleet.economySeats}, :#{#airlineFleet.premiumEconomySeats}) " +
@@ -28,4 +28,6 @@ public interface AirlineFleetRepository extends ReactiveCrudRepository<AirlineFl
     Flux<AirlineFleet> findByAircraftTypeIcao(String aircraftTypeIcao);
 
     Mono<Long> countByAirlineIcao(String airlineIcao);
+
+    Mono<AirlineFleet> findByRegistrationNumber(String registrationNumber);
 }

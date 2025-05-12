@@ -111,4 +111,13 @@ public class AirlineFleetService {
                     return Mono.error(e);
                 });
     }
+
+    public Mono<AirlineFleet> getAirlineFleetByRegistration(String registration) {
+        return airlineFleetRepository.findByRegistrationNumber(registration)
+                .doOnError(e -> logger.error("Error retrieving airline fleet with registration: {}", registration, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving airline fleet with registration: {}", registration, e);
+                    return Mono.error(e);
+                });
+    }
 }

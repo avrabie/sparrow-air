@@ -146,6 +146,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet = AirlineFleet.builder()
                 .aircraftTypeIcao("B738")
                 .airlineIcao("AAL")
+                .registrationNumber("UA 12345")
                 .aircraftAge(LocalDate.of(2015, 5, 12))
                 .seatConfiguration("3-3")
                 .hasWifi(true)
@@ -184,6 +185,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet = AirlineFleet.builder()
                 .aircraftTypeIcao("A320")
                 .airlineIcao("BAW")
+                .registrationNumber("UA 12345")
                 .aircraftAge(LocalDate.of(2018, 3, 24))
                 .seatConfiguration("3-3")
                 .hasWifi(true)
@@ -212,6 +214,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet = AirlineFleet.builder()
                 .aircraftTypeIcao("B77W")
                 .airlineIcao("DLH")
+                .registrationNumber("D-ABCD")
                 .aircraftAge(LocalDate.of(2012, 11, 7))
                 .seatConfiguration("3-4-3")
                 .hasWifi(true)
@@ -240,6 +243,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet1 = AirlineFleet.builder()
                 .aircraftTypeIcao("A388")
                 .airlineIcao("UAE")
+                .registrationNumber("A6-EDB")
                 .aircraftAge(LocalDate.of(2010, 8, 15))
                 .seatConfiguration("3-4-3")
                 .hasWifi(true)
@@ -253,6 +257,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet2 = AirlineFleet.builder()
                 .aircraftTypeIcao("B77W")
                 .airlineIcao("UAE")
+                .registrationNumber("A6-EDC")
                 .aircraftAge(LocalDate.of(2013, 5, 20))
                 .seatConfiguration("3-4-3")
                 .hasWifi(true)
@@ -282,6 +287,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet = AirlineFleet.builder()
                 .aircraftTypeIcao("E190")
                 .airlineIcao("WZZ")
+                .registrationNumber("HA-LYB")
                 .aircraftAge(LocalDate.of(2019, 2, 3))
                 .seatConfiguration("2-2")
                 .hasWifi(false)
@@ -300,6 +306,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .id(savedAirlineFleet.getId())
                 .aircraftTypeIcao("E190")
                 .airlineIcao("WZZ")
+                .registrationNumber("HA-LYB")
                 .aircraftAge(LocalDate.of(2019, 2, 3))
                 .seatConfiguration("2-2")
                 .hasWifi(true) // Updated WiFi availability
@@ -326,6 +333,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         AirlineFleet airlineFleet = AirlineFleet.builder()
                 .aircraftTypeIcao("B738")
                 .airlineIcao("AAL")
+                .registrationNumber("N12345")
                 .aircraftAge(LocalDate.of(2015, 5, 12))
                 .seatConfiguration("3-3")
                 .hasWifi(true)
@@ -350,5 +358,35 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void testGetAirlineFleetByRegistration() {
+        // Create a test airline fleet entry with a unique registration number
+        AirlineFleet airlineFleet = AirlineFleet.builder()
+                .aircraftTypeIcao("A320")
+                .airlineIcao("BAW")
+                .registrationNumber("G-ABCD")
+                .aircraftAge(LocalDate.of(2017, 6, 15))
+                .seatConfiguration("3-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(0)
+                .businessSeats(32)
+                .economySeats(148)
+                .build();
+
+        // Save the airline fleet entry and wait for it to complete
+        AirlineFleet savedAirlineFleet = airlineFleetRepository.insert(airlineFleet).block();
+
+        // Test the GET /registration/{registration} endpoint
+        webTestClient.get()
+                .uri("/airline-fleet/registration/{registration}", "G-ABCD")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AirlineFleet.class)
+                .isEqualTo(savedAirlineFleet);
     }
 }

@@ -5,6 +5,7 @@ CREATE TABLE airline_fleet (
     id BIGSERIAL PRIMARY KEY,
     aircraft_type_icao VARCHAR(4) NOT NULL,
     airline_icao VARCHAR(3) NOT NULL,
+    registration_number VARCHAR(20) NOT NULL,
     aircraft_age DATE,
     seat_configuration VARCHAR(50),
     has_wifi BOOLEAN DEFAULT FALSE,

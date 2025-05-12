@@ -115,4 +115,14 @@ public class AirlineFleetHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in AirlineFleetHandler occurred: " + error.getMessage());
     }
+
+    public Mono<ServerResponse> getAirlineFleetByRegistration(ServerRequest request) {
+        String registration = request.pathVariable("registration");
+        return airlineFleetService.getAirlineFleetByRegistration(registration)
+                .flatMap(airlineFleet -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(airlineFleet))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
 }

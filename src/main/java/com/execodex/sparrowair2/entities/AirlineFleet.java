@@ -25,6 +25,9 @@ public class AirlineFleet {
     @Column(value = "airline_icao")
     private String airlineIcao; // Reference to Airline.icaoCode
 
+    @Column(value = "registration_number")
+    private String registrationNumber; // Aircraft registration number (e.g., "N12345")
+
     @Column(value = "aircraft_age")
     private LocalDate aircraftAge; // Manufacture date of the aircraft
 
