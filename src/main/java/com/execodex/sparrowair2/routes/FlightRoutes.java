@@ -28,6 +28,8 @@ public class FlightRoutes {
                         .GET("", accept(MediaType.APPLICATION_XML), flightHandler::getAllFlights)
                         // GET /flights/{id} - Get flight by ID
                         .GET("/{id}", accept(MediaType.APPLICATION_JSON), flightHandler::getFlightById)
+                        // GET all the flights from a specific Airline Icao Code
+                        .GET("/airline/{airlineIcaoCode}", accept(MediaType.APPLICATION_JSON), flightHandler::getFlightsByAirlineIcaoCode)
                         // POST /flights - Create a new flight
                         .POST("", accept(MediaType.APPLICATION_JSON), flightHandler::createFlight)
                         // PUT /flights/{id} - Update an existing flight

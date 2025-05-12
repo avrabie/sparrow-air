@@ -85,4 +85,13 @@ public class FlightHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in FlightHandler occurred: " + error.getMessage());
     }
+
+    public Mono<ServerResponse> getFlightsByAirlineIcaoCode(ServerRequest request) {
+        String airlineIcaoCode = request.pathVariable("airlineIcaoCode");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(flightService.getFlightsByAirlineIcaoCode(airlineIcaoCode), Flight.class)
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
 }

@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDate;
+
 
 @Data
 @NoArgsConstructor
@@ -23,6 +25,8 @@ public class Passenger {
 
     @Column("passport_number")
     private String passportNumber;
+    @Column("date_of_birth")
+    private LocalDate dateOfBirth;
 
     private String nationality;
     private String email;

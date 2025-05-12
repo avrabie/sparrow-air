@@ -1,9 +1,17 @@
 package com.execodex.sparrowair2.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table("seats")
 public class Seat {
     @Id
@@ -20,6 +28,4 @@ public class Seat {
 
     @Column("status")
     private SeatStatus status;
-
-
 }

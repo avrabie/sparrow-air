@@ -92,4 +92,13 @@ public class PassengerService {
                     return Mono.error(e);
                 });
     }
+
+    public Flux<Passenger> getPassengersByDateOfBirth(String dateOfBirth) {
+        return passengerRepository.findByDateOfBirth(dateOfBirth)
+                .doOnError(e -> logger.error("Error retrieving passengers with date of birth: {}", dateOfBirth, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving passengers with date of birth: {}", dateOfBirth, e);
+                    return Flux.error(e);
+                });
+    }
 }

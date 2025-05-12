@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PassengerTest extends AbstractTestcontainersTest {
 
@@ -31,6 +33,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
         Passenger passenger = Passenger.builder()
                 .firstName("John")
                 .lastName("Doe")
+                .dateOfBirth(LocalDate.of(1985, 10, 15)) // Example date of birth
                 .passportNumber("US123456789")
                 .nationality("United States")
                 .email("john.doe@example.com")
@@ -61,6 +64,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
         Passenger passenger = Passenger.builder()
                 .firstName("Jane")
                 .lastName("Smith")
+                .dateOfBirth(LocalDate.of(1992, 3, 25)) // Example date of birth
                 .passportNumber("UK987654321")
                 .nationality("United Kingdom")
                 .email("jane.smith@example.com")
@@ -92,6 +96,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
         Passenger passenger = Passenger.builder()
                 .firstName("Hans")
                 .lastName("Mueller")
+                .dateOfBirth(LocalDate.of(1988, 7, 30)) // Example date of birth
                 .passportNumber("DE456789123")
                 .nationality("Germany")
                 .email("hans.mueller@example.com")
@@ -121,6 +126,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
         Passenger passenger = Passenger.builder()
                 .firstName("Yuki")
                 .lastName("Tanaka")
+                .dateOfBirth(LocalDate.of(1990, 5, 20))
                 .passportNumber("JP789123456")
                 .nationality("Japan")
                 .email("yuki.tanaka@example.com")
@@ -135,6 +141,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
                 .id(savedPassenger.getId()) // Same ID
                 .firstName("Yuki")
                 .lastName("Tanaka")
+                .dateOfBirth(LocalDate.of(1990, 5, 20)) // Same date of birth
                 .passportNumber("JP789123456")
                 .nationality("Japan")
                 .email("yuki.tanaka.updated@example.com") // Updated email
@@ -162,6 +169,7 @@ public class PassengerTest extends AbstractTestcontainersTest {
         Passenger passenger = Passenger.builder()
                 .firstName("Maria")
                 .lastName("Garcia")
+                .dateOfBirth(LocalDate.of(1985, 8, 15))
                 .passportNumber("ES321654987")
                 .nationality("Spain")
                 .email("maria.garcia@example.com")
