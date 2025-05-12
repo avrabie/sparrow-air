@@ -6,6 +6,7 @@ import com.execodex.sparrowair2.entities.SeatStatus;
 import com.execodex.sparrowair2.repositories.SeatRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,9 +16,11 @@ public class SeatService {
 
     private static final Logger logger = LoggerFactory.getLogger(SeatService.class);
     private final SeatRepository seatRepository;
+    private final FlightService flightService;
 
-    public SeatService(SeatRepository seatRepository) {
+    public SeatService(SeatRepository seatRepository, @Lazy FlightService flightService) {
         this.seatRepository = seatRepository;
+        this.flightService = flightService;
     }
 
     // Get all seats
@@ -52,7 +55,15 @@ public class SeatService {
 
     // Create a new seat
     public Mono<Seat> createSeat(Seat seat) {
-        return seatRepository.save(seat)
+        return seatRepository.findByFlightIdAndSeatNumber(seat.getFlightId(), seat.getSeatNumber())
+                .hasElement()
+                .flatMap(exists -> {
+                    if (exists) {
+                        logger.error("Seat with flight ID: {} and seat number: {} already exists", seat.getFlightId(), seat.getSeatNumber());
+                        return Mono.empty();
+                    }
+                    return seatRepository.insert(seat);
+                })
                 .doOnSuccess(s -> logger.info("Created seat with ID: {}", s.getId()))
                 .doOnError(e -> logger.error("Error creating seat", e))
                 .onErrorResume(e -> Mono.error(e));
@@ -126,5 +137,15 @@ public class SeatService {
                 .doOnSuccess(v -> logger.info("Deleted seats for flight ID: {}", flightId))
                 .doOnError(e -> logger.error("Error deleting seats for flight ID: {}", flightId, e))
                 .onErrorResume(e -> Mono.error(e));
+    }
+
+    public Flux<Seat> getSeatsByFlightNumber(String airlineNameIcao, String flightNumber) {
+        return flightService.getFlightByAirlineIcaoCodeAndFlightNumber(airlineNameIcao, flightNumber)
+                .flatMapMany(flight -> getSeatsByFlightId(flight.getId()))
+                .doOnError(e -> logger.error("Error retrieving seats for flight number: {}", flightNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving seats for flight number: {}", flightNumber, e);
+                    return Flux.error(e);
+                });
     }
 }

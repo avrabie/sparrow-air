@@ -34,7 +34,7 @@ public class DataDemoProfileConfig {
                     .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
-                    .thenMany(generateFlight(flightService, airlineFleetService))
+                    .thenMany(generateFlight2(flightService, airlineFleetService))
                     .thenMany(generatePassenger(passengerService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
@@ -334,6 +334,8 @@ public class DataDemoProfileConfig {
     @Bean(name = "flightDataGenerator")
     public Flux<Flight> generateFlight(FlightService flightService, AirlineFleetService airlineFleetService) {
         // First, get all airline fleet entries
+
+
         return airlineFleetService.getAllAirlineFleet()
                 .collectMap(
                         airlineFleet -> airlineFleet.getAirlineIcao() + "-" + airlineFleet.getAircraftTypeIcao(),
@@ -404,6 +406,72 @@ public class DataDemoProfileConfig {
                                     })
                             );
                 });
+    }
+
+
+    @Bean(name = "flightGen2")
+    public Flux<Flight> generateFlight2(FlightService flightService, AirlineFleetService airlineFleetService) {
+        // First, get all airline fleet entries
+        List<Flight> sampleFlights = Arrays.asList(
+                Flight.builder()
+                        .airlineIcaoCode("AAL")
+                        .flightNumber("AA123")
+                        .departureAirportIcao("KJFK")
+                        .arrivalAirportIcao("EGLL")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(1))
+                        .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(7))
+                        .airlineFleetId(1L)
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("BAW")
+                        .flightNumber("BA456")
+                        .departureAirportIcao("EGLL")
+                        .arrivalAirportIcao("RJTT")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(2))
+                        .scheduledArrival(LocalDateTime.now().plusDays(2).plusHours(12))
+                        .airlineFleetId(2L)
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("DLH")
+                        .flightNumber("LH789")
+                        .departureAirportIcao("EDDF")
+                        .arrivalAirportIcao("KJFK")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(3))
+                        .scheduledArrival(LocalDateTime.now().plusDays(3).plusHours(9))
+                        .airlineFleetId(3L) // Using BAW's A320 as fallback
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("UAE")
+                        .flightNumber("EK101")
+                        .departureAirportIcao("OMDB")
+                        .arrivalAirportIcao("YSSY")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(4))
+                        .scheduledArrival(LocalDateTime.now().plusDays(4).plusHours(14))
+                        .airlineFleetId(4L) // Using UAE's A388
+                        .status("Scheduled")
+                        .build());
+
+        return Flux.fromIterable(sampleFlights)
+                .flatMap(flight -> flightService
+                        .getFlightByAirlineIcaoCodeAndFlightNumber(flight.getAirlineIcaoCode(), flight.getFlightNumber())
+                        .hasElement()
+                        .flatMap(existingFlight -> {
+                            if (existingFlight) {
+                                logger.info("Flight {} already exists, skipping creation", flight.getFlightNumber());
+                                return Mono.empty();
+                            }
+                            return flightService.createFlight(flight);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create flight {}: {}", flight.getFlightNumber(), e.getMessage());
+                            return Mono.empty();
+                        })
+
+        );
+
     }
 
     /**
@@ -516,6 +584,7 @@ public class DataDemoProfileConfig {
                         .hasEntertainmentSystem(false)
                         .firstClassSeats(0)
                         .businessSeats(32)
+                        .premiumEconomySeats(10)
                         .economySeats(120)
                         .build(),
                 AirlineFleet.builder()
@@ -528,7 +597,8 @@ public class DataDemoProfileConfig {
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(true)
                         .firstClassSeats(8)
-                        .businessSeats(42)
+                        .businessSeats(22)
+                        .premiumEconomySeats(14)
                         .economySeats(304)
                         .build(),
                 AirlineFleet.builder()
@@ -542,6 +612,7 @@ public class DataDemoProfileConfig {
                         .hasEntertainmentSystem(true)
                         .firstClassSeats(14)
                         .businessSeats(76)
+                        .premiumEconomySeats(10)
                         .economySeats(427)
                         .build(),
                 AirlineFleet.builder()
@@ -555,6 +626,7 @@ public class DataDemoProfileConfig {
                         .hasEntertainmentSystem(false)
                         .firstClassSeats(0)
                         .businessSeats(12)
+                        .premiumEconomySeats(5)
                         .economySeats(88)
                         .build()
         );

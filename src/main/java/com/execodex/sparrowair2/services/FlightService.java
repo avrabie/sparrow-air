@@ -1,6 +1,5 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.AirlineFleet;
 import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.repositories.FlightRepository;
 import org.slf4j.Logger;
@@ -71,8 +70,8 @@ public class FlightService {
                                 Integer premiumEconomySeats = airlineFleet.getPremiumEconomySeats() != null ? airlineFleet.getPremiumEconomySeats() : 0;
                                 Integer economySeats = airlineFleet.getEconomySeats() != null ? airlineFleet.getEconomySeats() : 0;
 
-                                logger.info("Creating seats for flight ID: {}, First Class: {}, Business: {}, Premium Economy: {}, Economy: {}", 
-                                        createdFlight.getId(), firstClassSeats, businessSeats, premiumEconomySeats, economySeats);
+                                logger.info("Creating seats for flight ID: {}, for aircraftTypeIcao {}, First Class: {}, Business: {}, Premium Economy: {}, Economy: {}",
+                                        createdFlight.getId(), airlineFleet.getAircraftTypeIcao(), firstClassSeats, businessSeats, premiumEconomySeats, economySeats);
 
                                 return seatService.createSeatsForFlight(
                                         createdFlight.getId(), 
@@ -176,5 +175,14 @@ public class FlightService {
                             .onErrorResume(e -> Mono.error(e));
                 })
                 .switchIfEmpty(Mono.empty());
+    }
+
+    public Mono<Flight> getFlightByAirlineIcaoCodeAndFlightNumber(String airlineIcaoCode , String flightNumber) {
+        return flightRepository.findByAirlineIcaoCodeAndFlightNumber(airlineIcaoCode, flightNumber)
+                .doOnError(e -> logger.error("Error retrieving flight with flight number: {}", flightNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flight with flight number: {}", flightNumber, e);
+                    return Mono.error(e);
+                });
     }
 }

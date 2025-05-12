@@ -12,6 +12,17 @@ import reactor.core.publisher.Mono;
 public interface SeatRepository extends ReactiveCrudRepository<Seat, Long> {
     // ReactiveCrudRepository provides basic CRUD operations with reactive return types
 
+
+    // Insert a new seat
+    @Query("INSERT INTO seats (flight_id, seat_number, class, status) " +
+            "VALUES (:#{#seat.flightId}, :#{#seat.seatNumber}, :#{#seat.seatClass}, :#{#seat.status}) " +
+            "RETURNING *")
+    Mono<Seat> insert(Seat seat);
+
+    // Find seat by flight_id, seat_number
+    @Query("SELECT * FROM seats WHERE flight_id = :flightId AND seat_number = :seatNumber")
+    Mono<Seat> findByFlightIdAndSeatNumber(Long flightId, String seatNumber);
+
     // Find seats by flight ID
     Flux<Seat> findByFlightId(Long flightId);
 
