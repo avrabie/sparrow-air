@@ -11,6 +11,7 @@ import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import com.execodex.sparrowair2.repositories.FlightRepository;
+import com.execodex.sparrowair2.repositories.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +44,14 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
     @Autowired
     private AirlineFleetRepository airlineFleetRepository;
 
+    @Autowired
+    private SeatRepository seatRepository;
+
     @BeforeEach
     public void setUp() {
         // Clear the repositories before each test
+        // Delete seats first to avoid foreign key constraint violations
+        seatRepository.deleteAll().block();
         flightRepository.deleteAll().block();
         airlineFleetRepository.deleteAll().block();
 
