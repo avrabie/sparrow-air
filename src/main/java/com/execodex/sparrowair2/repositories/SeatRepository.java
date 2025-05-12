@@ -24,6 +24,7 @@ public interface SeatRepository extends ReactiveCrudRepository<Seat, Long> {
     Mono<Seat> findByFlightIdAndSeatNumber(Long flightId, String seatNumber);
 
     // Find seats by flight ID
+    @Query("SELECT * FROM seats WHERE flight_id = :flightId")
     Flux<Seat> findByFlightId(Long flightId);
 
     // Delete seats by flight ID

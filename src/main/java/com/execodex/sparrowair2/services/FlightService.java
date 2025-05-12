@@ -185,4 +185,13 @@ public class FlightService {
                     return Mono.error(e);
                 });
     }
+
+    public Flux<Flight> getFlightsByAirlineIcaoCode(String airlineIcaoCode) {
+        return flightRepository.findByAirlineIcaoCode(airlineIcaoCode)
+                .doOnError(e -> logger.error("Error retrieving flights for airline: {}", airlineIcaoCode, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flights for airline: {}", airlineIcaoCode, e);
+                    return Flux.error(e);
+                });
+    }
 }
