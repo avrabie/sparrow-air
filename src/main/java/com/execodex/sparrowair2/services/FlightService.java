@@ -78,7 +78,8 @@ public class FlightService {
                                         firstClassSeats, 
                                         businessSeats, 
                                         premiumEconomySeats, 
-                                        economySeats
+                                        economySeats,
+                                        airlineFleet.getSeatConfiguration()
                                 ).then(Mono.just(createdFlight));
                             })
                             .onErrorResume(e -> {
@@ -140,7 +141,8 @@ public class FlightService {
                                                         firstClassSeats, 
                                                         businessSeats, 
                                                         premiumEconomySeats, 
-                                                        economySeats
+                                                        economySeats,
+                                                        airlineFleet.getSeatConfiguration()
                                                 ).then(Mono.just(updatedFlight));
                                             })
                                             .onErrorResume(e -> {

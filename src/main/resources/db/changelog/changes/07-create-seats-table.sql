@@ -4,7 +4,7 @@
 CREATE TABLE seats (
     id BIGSERIAL PRIMARY KEY,
     flight_id BIGINT NOT NULL,
-    seat_number VARCHAR(10) NOT NULL,
+    seat_number VARCHAR(30) NOT NULL,
     class VARCHAR(20) NOT NULL,
     status VARCHAR(20) NOT NULL,
     CONSTRAINT fk_seat_flight FOREIGN KEY (flight_id) REFERENCES flights(id)
