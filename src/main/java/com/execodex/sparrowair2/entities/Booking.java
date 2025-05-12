@@ -32,12 +32,5 @@ public class Booking {
     @Column("created_at")
     private LocalDateTime createdAt;
 
-    public Booking(String bookingReference, Long passengerId,
-                   String status) {
-        this.bookingReference = bookingReference;
-        this.passengerId = passengerId;
-        this.status = status;
-        this.createdAt = LocalDateTime.now();
-    }
 
 }
