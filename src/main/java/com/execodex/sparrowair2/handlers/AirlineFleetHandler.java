@@ -99,6 +99,16 @@ public class AirlineFleetHandler {
                 .onErrorResume(this::handleError);
     }
 
+    public Mono<ServerResponse> getTotalAircraftCount(ServerRequest request) {
+        String airlineIcao = request.pathVariable("airlineIcao");
+        return airlineFleetService.getTotalAircraftCountByAirlineIcao(airlineIcao)
+                .flatMap(count -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(count))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse

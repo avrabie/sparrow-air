@@ -29,6 +29,8 @@ public class AirlineFleetRoutes {
                         .GET("/{id}", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::getAirlineFleetById)
                         // GET /airline-fleet/airline/{airlineIcao} - Get all aircraft for a specific airline
                         .GET("/airline/{airlineIcao}", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::getAirlineFleetByAirlineIcao)
+                        // GET /airline/{airlineIcao}/count - Get total aircraft count for a specific airline
+                        .GET("/airline/{airlineIcao}/count", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::getTotalAircraftCount)
                         // GET /airline-fleet/aircraft-type/{aircraftTypeIcao} - Get all aircraft of a specific type
                         .GET("/aircraft-type/{aircraftTypeIcao}", accept(MediaType.APPLICATION_JSON), airlineFleetHandler::getAirlineFleetByAircraftTypeIcao)
                         // POST /airline-fleet - Create a new aircraft in the fleet

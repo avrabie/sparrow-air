@@ -92,4 +92,23 @@ public class AirlineFleetService {
                 )
                 .switchIfEmpty(Mono.empty());
     }
+
+    public Mono<Long> getTotalAircraftCount() {
+        return airlineFleetRepository.count()
+                .doOnError(e -> logger.error("Error retrieving total aircraft count", e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving total aircraft count", e);
+                    return Mono.error(e);
+                });
+    }
+
+    // Get total aircraft count by airline ICAO
+    public Mono<Long> getTotalAircraftCountByAirlineIcao(String airlineIcao) {
+        return airlineFleetRepository.countByAirlineIcao(airlineIcao)
+                .doOnError(e -> logger.error("Error retrieving total aircraft count for airline: {}", airlineIcao, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving total aircraft count for airline: {}", airlineIcao, e);
+                    return Mono.error(e);
+                });
+    }
 }

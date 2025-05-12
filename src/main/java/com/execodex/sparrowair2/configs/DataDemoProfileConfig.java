@@ -470,7 +470,15 @@ public class DataDemoProfileConfig {
         // Insert sample passengers into the database
         Flux<Passenger> passengerFlux = Flux.fromIterable(samplePassengers)
                 .flatMap(passenger -> passengerService
-                        .createPassenger(passenger)
+                        .getPassengerByPassportNumber(passenger.getPassportNumber())
+                        .hasElement()
+                        .flatMap(existingPassenger -> {
+                            if (existingPassenger) {
+                                logger.info("Passenger {} already exists, skipping creation", passenger.getPassportNumber());
+                                return Mono.empty();
+                            }
+                            return passengerService.createPassenger(passenger);
+                        })
                         .onErrorResume(e -> {
                             logger.warn("Could not create passenger {}: {}", passenger.getPassportNumber(), e.getMessage());
                             return Mono.empty();
@@ -497,7 +505,8 @@ public class DataDemoProfileConfig {
                         .hasPowerOutlets(true)
                         .hasEntertainmentSystem(true)
                         .firstClassSeats(8)
-                        .businessSeats(24)
+                        .businessSeats(14)
+                        .premiumEconomySeats(10)
                         .economySeats(126)
                         .build(),
                 AirlineFleet.builder()

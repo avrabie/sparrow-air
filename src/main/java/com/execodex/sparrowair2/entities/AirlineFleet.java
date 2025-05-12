@@ -48,4 +48,7 @@ public class AirlineFleet {
 
     @Column(value = "economy_seats")
     private Integer economySeats; // Number of economy class seats
+
+    @Column(value = "premium_economy_seats")
+    private Integer premiumEconomySeats; // Number of premium economy class seats
 }

@@ -107,4 +107,15 @@ class AirlineFleetServiceTest {
         StepVerifier.create(airlineFleetService.deleteAirlineFleet(1L))
                 .verifyComplete();
     }
+
+
+
+    @Test
+    void getTotalAircraftCountByAirlineIcao() {
+        when(airlineFleetRepository.countByAirlineIcao("AAL")).thenReturn(Mono.just(10L));
+
+        StepVerifier.create(airlineFleetService.getTotalAircraftCountByAirlineIcao("AAL"))
+                .expectNext(10L)
+                .verifyComplete();
+    }
 }
