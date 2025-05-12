@@ -91,10 +91,21 @@ public class PassengerHandler {
                 .onErrorResume(this::handleError);
     }
 
+
+    public Mono<ServerResponse> getPassengersByDateOfBirth(ServerRequest request) {
+        String dateOfBirth = request.pathVariable("dateOfBirth");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(passengerService.getPassengersByDateOfBirth(dateOfBirth), Passenger.class)
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in PassengerHandler occurred: " + error.getMessage());
     }
+
 }

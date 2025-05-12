@@ -29,6 +29,8 @@ public class PassengerRoutes {
                         // GET /passengers/{id} - Get passenger by ID
                         .GET("/{id}", accept(MediaType.APPLICATION_JSON), passengerHandler::getPassengerById)
                         // GET /passengers/search?firstName=John&lastName=Doe - Get passengers by first name and last name
+                        // GET /passangers/dateOfBirth - Get passengers by date of birth
+                        .GET("/search/dateOfBirth/{dateOfBirth}", accept(MediaType.APPLICATION_JSON), passengerHandler::getPassengersByDateOfBirth)
                         .GET("/search", accept(MediaType.APPLICATION_JSON), passengerHandler::getPassengersByFirstNameAndLastName)
                         // POST /passengers - Create a new passenger
                         .POST("", accept(MediaType.APPLICATION_JSON), passengerHandler::createPassenger)
