@@ -1,9 +1,17 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.handlers.FlightHandler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -20,6 +28,151 @@ public class FlightRoutes {
     }
 
     @Bean
+    @RouterOperations({
+            @RouterOperation(
+                    path = "/flights",
+                    method = RequestMethod.GET,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "getAllFlights",
+                    operation = @Operation(
+                            operationId = "getAllFlights",
+                            summary = "Get all flights",
+                            description = "Returns a list of all flights",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights/{id}",
+                    method = RequestMethod.GET,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "getFlightById",
+                    operation = @Operation(
+                            operationId = "getFlightById",
+                            summary = "Get flight by ID",
+                            description = "Returns a flight by ID",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            parameters = {
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights/airline/{airlineIcaoCode}",
+                    method = RequestMethod.GET,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "getFlightsByAirlineIcaoCode",
+                    operation = @Operation(
+                            operationId = "getFlightsByAirlineIcaoCode",
+                            summary = "Get flights by airline ICAO code",
+                            description = "Returns a list of flights by airline ICAO code",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            parameters = {
+                                    @Parameter(name = "airlineIcaoCode", in = ParameterIn.PATH, description = "Airline ICAO code", required = true)
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights",
+                    method = RequestMethod.POST,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "createFlight",
+                    operation = @Operation(
+                            operationId = "createFlight",
+                            summary = "Create a new flight",
+                            description = "Creates a new flight",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                    description = "Flight object to be created",
+                                    content = @Content(
+                                            mediaType = "application/json",
+                                            schema = @io.swagger.v3.oas.annotations.media.Schema(
+                                                    implementation = com.execodex.sparrowair2.entities.Flight.class
+                                            )
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "201",
+                                            description = "Flight created successfully",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights/{id}",
+                    method = RequestMethod.PUT,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "updateFlight",
+                    operation = @Operation(
+                            operationId = "updateFlight",
+                            summary = "Update an existing flight",
+                            description = "Updates an existing flight",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            parameters = {
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                            },
+                            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                    description = "Flight object to be updated",
+                                    content = @Content(
+                                            mediaType = "application/json",
+                                            schema = @io.swagger.v3.oas.annotations.media.Schema(
+                                                    implementation = com.execodex.sparrowair2.entities.Flight.class
+                                            )
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Flight updated successfully",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights/{id}",
+                    method = RequestMethod.DELETE,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "deleteFlight",
+                    operation = @Operation(
+                            operationId = "deleteFlight",
+                            summary = "Delete a flight",
+                            description = "Deletes a flight by ID",
+                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            parameters = {
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "204",
+                                            description = "Flight deleted successfully"
+                                    )
+                            }
+                    )
+            )
+    })
     public RouterFunction<ServerResponse> flightRoutesFunction() {
         return RouterFunctions.route()
                 .path("/flights", builder -> builder
