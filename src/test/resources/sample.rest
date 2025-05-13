@@ -36,3 +36,20 @@ Content-Type: application/json
   "airlineFleetId": 2,
   "status": "SCHEDULED"
 }
+
+
+### 7. Aircraft Types
+GET http://localhost:8080/aircraft-types
+
+### 8. Add a new aircraft type
+POST http://localhost:8080/aircraft-types
+Content-Type: application/json
+
+{
+  "icaoCode": "E220",
+  "modelName": "Embraer E220",
+  "manufacturer": "Embraer",
+  "seatingCapacity": 100,
+  "maxRangeKm": 5000,
+  "mtow": 20000
+}

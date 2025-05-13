@@ -1,11 +1,18 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.handlers.HelloRouteHandlers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
+import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 
 @Configuration
 public class HelloRoutes {
@@ -18,6 +25,22 @@ public class HelloRoutes {
 
 
     @Bean
+    @RouterOperation(
+            path = "/hello",
+            beanClass = HelloRoutes.class,
+            beanMethod = "helloRoute",
+            operation = @Operation(
+                    operationId = "getHello",
+                    summary = "Get Hello",
+                    description = "Returns a hello message",
+                    responses = {
+                            @ApiResponse(
+                                    responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(mediaType = "text/plain")
+                            )
+                    }
+            ))
      public RouterFunction<ServerResponse> helloRoute() {
          return RouterFunctions.route()
                  .GET("/hello", handlers::handleHelloRequest)
