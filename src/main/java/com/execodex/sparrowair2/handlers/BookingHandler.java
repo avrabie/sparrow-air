@@ -63,5 +63,13 @@ public class BookingHandler {
                 .onErrorResume(this::handleError);
     }
 
+    public Mono<ServerResponse> deleteBooking(ServerRequest request) {
+        Long id = Long.parseLong(request.pathVariable("id"));
+        return bookingService.deleteBooking(id)
+                .flatMap(deletedBooking -> ServerResponse.ok().bodyValue(deletedBooking))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
     // Add more methods as needed for other booking operations
 }

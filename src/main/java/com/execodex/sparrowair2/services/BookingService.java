@@ -72,4 +72,16 @@ public class BookingService {
                 .doOnError(e -> logger.error("Error updating booking with ID: {}", id, e))
                 .onErrorResume(e -> Mono.error(e));
     }
+
+    public Mono<Booking> deleteBooking(Long id) {
+        // Find the booking by ID, if it exists then update the status to cancelled, otherwise throw an error
+        return bookingRepository.findById(id)
+                .flatMap(existingBooking -> {
+                    existingBooking.setStatus("CANCELLED");
+                    return bookingRepository.save(existingBooking);
+                })
+                .doOnSuccess(b -> logger.info("Cancelled booking with ID: {}", b.getId()))
+                .doOnError(e -> logger.error("Error cancelling booking with ID: {}", id, e))
+                .onErrorResume(e -> Mono.error(e));
+    }
 }

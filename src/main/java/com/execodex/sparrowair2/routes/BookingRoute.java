@@ -120,6 +120,27 @@ public class BookingRoute {
                                         )
                                 }
                         )
+                ),
+                @RouterOperation(
+                        path = "/bookings/{id}",
+                        method = RequestMethod.DELETE,
+                        beanClass = BookingHandler.class,
+                        beanMethod = "deleteBooking",
+                        operation = @Operation(
+                                operationId = "deleteBooking",
+                                summary = "Delete a booking",
+                                description = "Deletes a booking by ID",
+                                tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
+                                parameters = {
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                },
+                                responses = {
+                                        @ApiResponse(
+                                                responseCode = "204",
+                                                description = "Booking deleted successfully"
+                                        )
+                                }
+                        )
                 )
      })
      public RouterFunction<ServerResponse> bookingRoutes(BookingHandler bookingHandler) {
@@ -128,6 +149,7 @@ public class BookingRoute {
                  .GET("/bookings/{id}", bookingHandler::handleGetBookingById)
                  .POST("/bookings", bookingHandler::createBooking)
                  .PUT("/bookings/{id}", bookingHandler::updateBooking)
+                 .DELETE("/bookings/{id}", bookingHandler::deleteBooking)
                  .build();
      }
 }
