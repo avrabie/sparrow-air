@@ -171,4 +171,13 @@ public class BookingSegmentService {
 //                .doOnSuccess(savedSegment -> System.out.println("Created booking segment with ID: " + savedSegment.getId()))
 //                .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
     }
+
+    public Mono<BookingSegment> getBookingSegmentByFlightIdAndSeatId(Long flightId, Long seatId) {
+        return bookingSegmentRepository.findByFlightIdAndSeatId(flightId, seatId)
+                .doOnError(e -> System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage()))
+                .onErrorResume(e -> {
+                    System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage());
+                    return Mono.error(e);
+                });
+    }
 }
