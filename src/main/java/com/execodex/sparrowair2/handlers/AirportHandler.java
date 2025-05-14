@@ -79,6 +79,57 @@ public class AirportHandler {
                 .onErrorResume(this::handleError);
     }
 
+    // Calculate distance between two airports
+    public Mono<ServerResponse> calculateDistance(ServerRequest request) {
+        String fromIcaoCode = request.queryParam("from").orElse("");
+        String toIcaoCode = request.queryParam("to").orElse("");
+
+        if (fromIcaoCode.isEmpty() || toIcaoCode.isEmpty()) {
+            return ServerResponse.badRequest()
+                    .bodyValue("Both 'from' and 'to' ICAO codes are required");
+        }
+
+        Mono<Airport> fromAirport = airportService.getAirportByIcaoCode(fromIcaoCode);
+        Mono<Airport> toAirport = airportService.getAirportByIcaoCode(toIcaoCode);
+
+        return Mono.zip(fromAirport, toAirport)
+                .flatMap(tuple -> {
+                    Airport airport1 = tuple.getT1();
+                    Airport airport2 = tuple.getT2();
+                    double distance = airportService.distance(airport1, airport2);
+                    return ServerResponse.ok()
+                            .contentType(APPLICATION_JSON)
+                            .bodyValue(new DistanceResponse(fromIcaoCode, toIcaoCode, distance));
+                })
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
+    // Response class for distance calculation
+    private static class DistanceResponse {
+        private final String fromAirport;
+        private final String toAirport;
+        private final double distanceKm;
+
+        public DistanceResponse(String fromAirport, String toAirport, double distanceKm) {
+            this.fromAirport = fromAirport;
+            this.toAirport = toAirport;
+            this.distanceKm = distanceKm;
+        }
+
+        public String getFromAirport() {
+            return fromAirport;
+        }
+
+        public String getToAirport() {
+            return toAirport;
+        }
+
+        public double getDistanceKm() {
+            return distanceKm;
+        }
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse

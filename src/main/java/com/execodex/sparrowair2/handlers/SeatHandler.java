@@ -35,12 +35,7 @@ public class SeatHandler {
                 .onErrorResume(this::handleError);
     }
 
-    // Common error handler
-    private Mono<ServerResponse> handleError(Throwable error) {
-        return ServerResponse
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .bodyValue("An error in SeatHandler occurred: " + error.getMessage());
-    }
+
 
 
     public Mono<ServerResponse> getSeatsByAirlineIcaoAndFlightNumber(ServerRequest request) {
@@ -79,5 +74,12 @@ public class SeatHandler {
                 .contentType(APPLICATION_JSON)
                 .body(seatService.getSeatsByFlightNumber(flightNumber), Seat.class)
                 .onErrorResume(this::handleError);
+    }
+
+    // Common error handler
+    private Mono<ServerResponse> handleError(Throwable error) {
+        return ServerResponse
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .bodyValue("An error in SeatHandler occurred: " + error.getMessage());
     }
 }

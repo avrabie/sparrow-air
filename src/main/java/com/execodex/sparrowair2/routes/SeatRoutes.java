@@ -201,7 +201,9 @@ public class SeatRoutes {
                         .GET("", accept(MediaType.APPLICATION_JSON), seatHandler::getAllSeats)
                         .GET("{seatId}", accept(MediaType.APPLICATION_JSON), seatHandler::getSeatById)
                         .GET("/flights/{flightId}", accept(MediaType.APPLICATION_JSON), seatHandler::getSeatsByFlightId)
+                        // not really the proper way, because you might have multiple flights with the same flight number from different airlines
                         .GET("/flightNumber/{flightNumber}", accept(MediaType.APPLICATION_JSON), seatHandler::getSeatsByFlightNumber)
+                        // proper way, but you need to know the airline ICAO code
                         .GET("airline/{airlineIcao}/flightNumber/{flightNumber}", accept(MediaType.APPLICATION_JSON), seatHandler::getSeatsByAirlineIcaoAndFlightNumber)
                         // update seat
                         .PUT("{seatId}", accept(MediaType.APPLICATION_JSON), seatHandler::updateSeat)

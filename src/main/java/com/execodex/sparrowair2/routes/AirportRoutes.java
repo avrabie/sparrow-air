@@ -48,8 +48,38 @@ public class AirportRoutes {
                                     )
                             }
                     )
-            )
-            ,
+            ),
+            @RouterOperation(
+                    path = "/airports/distance",
+                    method = RequestMethod.GET,
+                    beanClass = AirportHandler.class,
+                    beanMethod = "calculateDistance",
+                    operation = @Operation(
+                            operationId = "calculateDistance",
+                            summary = "Calculate distance between two airports",
+                            description = "Returns the distance in kilometers between two airports identified by their ICAO codes",
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
+                            parameters = {
+                                    @Parameter(name = "from", in = ParameterIn.QUERY, required = true, description = "ICAO code of the departure airport"),
+                                    @Parameter(name = "to", in = ParameterIn.QUERY, required = true, description = "ICAO code of the arrival airport")
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "400",
+                                            description = "Missing required parameters"
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "404",
+                                            description = "One or both airports not found"
+                                    )
+                            }
+                    )
+            ),
             @RouterOperation(
                     path = "/airports/{icaoCode}",
                     method = RequestMethod.GET,
@@ -159,6 +189,8 @@ public class AirportRoutes {
 //                .path("/airports", builder -> builder
                         // GET /airports - Get all airports
                         .GET("airports", accept(MediaType.APPLICATION_JSON), airportHandler::getAllAirports)
+                        // GET /airports/distance - Calculate distance between two airports
+                        .GET("airports/distance", accept(MediaType.APPLICATION_JSON), airportHandler::calculateDistance)
                         // GET /airports/{icaoCode} - Get airport by ICAO code
                         .GET("airports/{icaoCode}", accept(MediaType.APPLICATION_JSON), airportHandler::getAirportByIcaoCode)
                         // POST /airports - Create a new airport
