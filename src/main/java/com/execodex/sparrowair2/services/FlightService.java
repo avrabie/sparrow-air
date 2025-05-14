@@ -196,4 +196,14 @@ public class FlightService {
                     return Flux.error(e);
                 });
     }
+
+    public Mono<Flight> getFlightByFlightNumber(String flightNumber) {
+        return flightRepository.findByFlightNumber(flightNumber)
+                .next()
+                .doOnError(e -> logger.error("Error retrieving flight with flight number: {}", flightNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flight with flight number: {}", flightNumber, e);
+                    return Mono.error(e);
+                });
+    }
 }

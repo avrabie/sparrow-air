@@ -207,4 +207,28 @@ public class SeatService {
                     return Flux.error(e);
                 });
     }
+
+    public Mono<Seat> updateSeat(Long id, Seat seat) {
+        return seatRepository.findById(id)
+                .flatMap(existingSeat -> {
+//                    existingSeat.setFlightId(seat.getFlightId());
+//                    existingSeat.setSeatNumber(seat.getSeatNumber());
+//                    existingSeat.setSeatClass(seat.getSeatClass());
+                    existingSeat.setStatus(seat.getStatus());
+                    return seatRepository.save(existingSeat);
+                })
+                .doOnSuccess(s -> logger.info("Updated seat with ID: {}", s.getId()))
+                .doOnError(e -> logger.error("Error updating seat with ID: {}", id, e))
+                .onErrorResume(e -> Mono.error(e));
+    }
+
+    public Flux<Seat> getSeatsByFlightNumber(String flightNumber) {
+        return flightService.getFlightByFlightNumber(flightNumber)
+                .flatMapMany(flight -> getSeatsByFlightId(flight.getId()))
+                .doOnError(e -> logger.error("Error retrieving seats for flight number: {}", flightNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving seats for flight number: {}", flightNumber, e);
+                    return Flux.error(e);
+                });
+    }
 }
