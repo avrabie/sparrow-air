@@ -59,4 +59,17 @@ public class BookingService {
                     return Mono.error(e);
                 });
     }
+
+    public Mono<Booking> updateBooking(Long id, Booking booking) {
+        return bookingRepository.findById(id)
+                .flatMap(existingBooking -> {
+                    existingBooking.setStatus(booking.getStatus());
+                    //here we would need a state machine to update the status, like if it was cancelled
+                    //atm everything is allowed for status
+                    return bookingRepository.save(existingBooking);
+                })
+                .doOnSuccess(b -> logger.info("Updated booking with ID: {}", b.getId()))
+                .doOnError(e -> logger.error("Error updating booking with ID: {}", id, e))
+                .onErrorResume(e -> Mono.error(e));
+    }
 }

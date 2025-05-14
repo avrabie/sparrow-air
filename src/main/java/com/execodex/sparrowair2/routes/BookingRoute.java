@@ -2,6 +2,7 @@ package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.handlers.BookingHandler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -51,6 +52,9 @@ public class BookingRoute {
                                 summary = "Get booking by ID",
                                 description = "Returns a booking by ID",
                                 tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
+                                parameters = {
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                },
                                 responses = {
                                         @ApiResponse(
                                                 responseCode = "200",
@@ -86,13 +90,44 @@ public class BookingRoute {
                                      )
                              }
                      )
-             )
+             ),
+                @RouterOperation(
+                        path = "/bookings/{id}",
+                        method = RequestMethod.PUT,
+                        beanClass = BookingHandler.class,
+                        beanMethod = "updateBooking",
+                        operation = @Operation(
+                                operationId = "updateBooking",
+                                summary = "Update a booking",
+                                description = "Updates an existing booking",
+                                tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
+                                parameters = {
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                },
+                                requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                        description = "Booking ID",
+                                        required = true,
+                                        content = @Content(
+                                                mediaType = "application/json",
+                                                schema = @Schema(implementation = com.execodex.sparrowair2.entities.Booking.class)  // Assuming you have a Booking class
+                                        )
+                                ),
+                                responses = {
+                                        @ApiResponse(
+                                                responseCode = "200",
+                                                description = "Booking updated successfully",
+                                                content = @Content(mediaType = "application/json")
+                                        )
+                                }
+                        )
+                )
      })
      public RouterFunction<ServerResponse> bookingRoutes(BookingHandler bookingHandler) {
          return RouterFunctions.route()
                  .GET("/bookings", bookingHandler::handleGetAllBookings)
                  .GET("/bookings/{id}", bookingHandler::handleGetBookingById)
                  .POST("/bookings", bookingHandler::createBooking)
+                 .PUT("/bookings/{id}", bookingHandler::updateBooking)
                  .build();
      }
 }

@@ -54,5 +54,14 @@ public class BookingHandler {
                 .onErrorResume(this::handleError);
     }
 
+    public Mono<ServerResponse> updateBooking(ServerRequest request) {
+        Long id = Long.parseLong(request.pathVariable("id"));
+        return request.bodyToMono(Booking.class)
+                .flatMap(booking -> bookingService.updateBooking(id, booking))
+                .flatMap(updatedBooking -> ServerResponse.ok().bodyValue(updatedBooking))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
     // Add more methods as needed for other booking operations
 }
