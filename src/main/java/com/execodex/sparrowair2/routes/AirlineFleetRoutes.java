@@ -92,7 +92,7 @@ public class AirlineFleetRoutes {
                     )
             ),
             @RouterOperation(
-                    path = "/airline/{airlineIcao}/count",
+                    path = "/airline-fleet/airline/{airlineIcao}/count",
                     method = RequestMethod.GET,
                     beanClass = AirlineFleetHandler.class,
                     beanMethod = "getTotalAircraftCount",
