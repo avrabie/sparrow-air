@@ -20,7 +20,7 @@ public interface FlightRepository extends ReactiveCrudRepository<Flight, Long> {
             "RETURNING *")
     Mono<Flight> insert(Flight flight);
 
-    Mono<Flight> findByFlightNumber(String flightNumber);
+    Flux<Flight> findByFlightNumber(String flightNumber);
     Mono<Flight> findByAirlineIcaoCodeAndFlightNumber(String airlineIcaoCode, String flightNumber);
 
     Flux<Flight> findByAirlineIcaoCode(String airlineIcaoCode);

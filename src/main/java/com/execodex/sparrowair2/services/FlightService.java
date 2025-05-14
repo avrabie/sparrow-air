@@ -78,7 +78,8 @@ public class FlightService {
                                         firstClassSeats, 
                                         businessSeats, 
                                         premiumEconomySeats, 
-                                        economySeats
+                                        economySeats,
+                                        airlineFleet.getSeatConfiguration()
                                 ).then(Mono.just(createdFlight));
                             })
                             .onErrorResume(e -> {
@@ -140,7 +141,8 @@ public class FlightService {
                                                         firstClassSeats, 
                                                         businessSeats, 
                                                         premiumEconomySeats, 
-                                                        economySeats
+                                                        economySeats,
+                                                        airlineFleet.getSeatConfiguration()
                                                 ).then(Mono.just(updatedFlight));
                                             })
                                             .onErrorResume(e -> {
@@ -192,6 +194,16 @@ public class FlightService {
                 .onErrorResume(e -> {
                     logger.error("Error retrieving flights for airline: {}", airlineIcaoCode, e);
                     return Flux.error(e);
+                });
+    }
+
+    public Mono<Flight> getFlightByFlightNumber(String flightNumber) {
+        return flightRepository.findByFlightNumber(flightNumber)
+                .next()
+                .doOnError(e -> logger.error("Error retrieving flight with flight number: {}", flightNumber, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flight with flight number: {}", flightNumber, e);
+                    return Mono.error(e);
                 });
     }
 }
