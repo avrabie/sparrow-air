@@ -39,7 +39,7 @@ public class PassengerRoutes {
                             operationId = "getAllPassengers",
                             summary = "Get all passengers",
                             description = "Returns a list of all passengers",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},  // Custom tag here
+                            tags = {"Passengers 👨‍💼"},  // Custom tag here
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -58,7 +58,7 @@ public class PassengerRoutes {
                             operationId = "getPassengerById",
                             summary = "Get passenger by ID",
                             description = "Returns a passenger by ID",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             parameters = {
                                     @Parameter(
                                             name = "id",
@@ -91,7 +91,7 @@ public class PassengerRoutes {
                             operationId = "getPassengersByDateOfBirth",
                             summary = "Get passengers by date of birth",
                             description = "Returns a list of passengers by date of birth",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             parameters = {
                                     @Parameter(
                                             name = "dateOfBirth",
@@ -119,7 +119,7 @@ public class PassengerRoutes {
                             operationId = "getPassengersByFirstNameAndLastName",
                             summary = "Get passengers by first name and last name",
                             description = "Returns a list of passengers by first name and last name",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             parameters = {
                                     @Parameter(
                                             name = "firstName",
@@ -154,7 +154,7 @@ public class PassengerRoutes {
                             operationId = "createPassenger",
                             summary = "Create a new passenger",
                             description = "Creates a new passenger",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Passenger object to be created",
                                     content = @Content(mediaType = "application/json",
@@ -179,7 +179,7 @@ public class PassengerRoutes {
                             operationId = "updatePassenger",
                             summary = "Update an existing passenger",
                             description = "Updates an existing passenger",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             parameters = {
                                     @Parameter(
                                             name = "id",
@@ -218,7 +218,7 @@ public class PassengerRoutes {
                             operationId = "deletePassenger",
                             summary = "Delete a passenger",
                             description = "Deletes a passenger by ID",
-                            tags = {"Passengers \uD83D\uDC68\u200D✈️"},
+                            tags = {"Passengers 👨‍💼"},
                             parameters = {
                                     @Parameter(
                                             name = "id",

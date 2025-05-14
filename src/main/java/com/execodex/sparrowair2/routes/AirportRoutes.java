@@ -39,7 +39,7 @@ public class AirportRoutes {
                             operationId = "getAllAirports",
                             summary = "Get all airports",
                             description = "Returns a list of all airports ✈️🌍",  // Emoji here
-                            tags = {"Airports \uD83D\uDEEC"},  // Custom tag here
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},  // Custom tag here
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -59,7 +59,7 @@ public class AirportRoutes {
                             operationId = "getAirportByIcaoCode",
                             summary = "Get airport by ICAO code",
                             description = "Returns an airport \uD83D\uDEEC by ICAO code",
-                            tags = {"Airports \uD83D\uDEEC"},
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },
@@ -84,7 +84,7 @@ public class AirportRoutes {
                     operation = @Operation(
                             operationId = "createAirport",
                             summary = "Create a new airport",
-                            tags = {"Airports \uD83D\uDEEC"},
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Airport to create",
                                     required = true,
@@ -110,7 +110,7 @@ public class AirportRoutes {
                     operation = @Operation(
                             operationId = "updateAirport",
                             summary = "Update an existing airport",
-                            tags = {"Airports \uD83D\uDEEC"},
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },
@@ -143,7 +143,7 @@ public class AirportRoutes {
                     operation = @Operation(
                             operationId = "deleteAirport",
                             summary = "Delete airport by ICAO code",
-                            tags = {"Airports \uD83D\uDEEC"},
+                            tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },

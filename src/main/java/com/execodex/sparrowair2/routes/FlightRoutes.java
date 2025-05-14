@@ -38,7 +38,7 @@ public class FlightRoutes {
                             operationId = "getAllFlights",
                             summary = "Get all flights",
                             description = "Returns a list of all flights",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -57,7 +57,7 @@ public class FlightRoutes {
                             operationId = "getFlightById",
                             summary = "Get flight by ID",
                             description = "Returns a flight by ID",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
                             },
@@ -79,7 +79,7 @@ public class FlightRoutes {
                             operationId = "getFlightsByAirlineIcaoCode",
                             summary = "Get flights by airline ICAO code",
                             description = "Returns a list of flights by airline ICAO code",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
                                     @Parameter(name = "airlineIcaoCode", in = ParameterIn.PATH, description = "Airline ICAO code", required = true)
                             },
@@ -101,7 +101,7 @@ public class FlightRoutes {
                             operationId = "createFlight",
                             summary = "Create a new flight",
                             description = "Creates a new flight",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Flight object to be created",
                                     content = @Content(
@@ -129,7 +129,7 @@ public class FlightRoutes {
                             operationId = "updateFlight",
                             summary = "Update an existing flight",
                             description = "Updates an existing flight",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
                             },
@@ -160,7 +160,7 @@ public class FlightRoutes {
                             operationId = "deleteFlight",
                             summary = "Delete a flight",
                             description = "Deletes a flight by ID",
-                            tags = {"Flights ✈\uFE0F \uD83D\uDCBA"},
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
                             },

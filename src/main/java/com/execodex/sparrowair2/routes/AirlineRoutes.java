@@ -38,7 +38,7 @@ public class AirlineRoutes {
                             operationId = "getAllAirlines",
                             summary = "Get all airlines",
                             description = "Returns a list of all airlines",
-                            tags = {"Airlines \uD83D\uDC68\u200D✈\uFE0F "},  // Custom tag here
+                            tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},  // Custom tag here
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -57,7 +57,7 @@ public class AirlineRoutes {
                             operationId = "getAirlineByIcaoCode",
                             summary = "Get airline by ICAO code",
                             description = "Returns an airline by ICAO code",
-                            tags = {"Airlines \uD83D\uDC68\u200D✈\uFE0F "},
+                            tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -76,7 +76,7 @@ public class AirlineRoutes {
                             operationId = "createAirline",
                             summary = "Create a new airline",
                             description = "Creates a new airline",
-                            tags = {"Airlines \uD83D\uDC68\u200D✈\uFE0F "},
+                            tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Airline object to be created",
                                     content = @Content(
@@ -102,7 +102,7 @@ public class AirlineRoutes {
                             operationId = "updateAirline",
                             summary = "Update an existing airline",
                             description = "Updates an airline by ICAO code",
-                            tags = {"Airlines \uD83D\uDC68\u200D✈\uFE0F "},
+                            tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Updated airline object",
                                     content = @Content(
@@ -128,7 +128,7 @@ public class AirlineRoutes {
                             operationId = "deleteAirline",
                             summary = "Delete an airline",
                             description = "Deletes an airline by ICAO code",
-                            tags = {"Airlines \uD83D\uDC68\u200D✈\uFE0F "},
+                            tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "204",

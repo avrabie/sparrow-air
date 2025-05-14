@@ -37,7 +37,7 @@ public class AirlineFleetRoutes {
                             operationId = "getAllAirlineFleet",
                             summary = "Get all aircraft in the fleet",
                             description = "Returns a list of all aircraft in the fleet",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -56,7 +56,7 @@ public class AirlineFleetRoutes {
                             operationId = "getAirlineFleetById",
                             summary = "Get aircraft by ID",
                             description = "Returns an aircraft by ID",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
                             },
@@ -78,7 +78,7 @@ public class AirlineFleetRoutes {
                             operationId = "getAirlineFleetByAirlineIcao",
                             summary = "Get all aircraft for a specific airline",
                             description = "Returns a list of all aircraft for a specific airline",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true)
                             },
@@ -100,7 +100,7 @@ public class AirlineFleetRoutes {
                             operationId = "getTotalAircraftCount",
                             summary = "Get total aircraft count for a specific airline",
                             description = "Returns the total number of aircraft for a specific airline",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true)
                             },
@@ -122,7 +122,7 @@ public class AirlineFleetRoutes {
                             operationId = "getAirlineFleetByAircraftTypeIcao",
                             summary = "Get all aircraft of a specific type",
                             description = "Returns a list of all aircraft of a specific type",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "aircraftTypeIcao", in = ParameterIn.PATH, description = "ICAO code of the aircraft type", required = true)
                             },
@@ -144,7 +144,7 @@ public class AirlineFleetRoutes {
                             operationId = "createAirlineFleet",
                             summary = "Create a new aircraft in the fleet",
                             description = "Creates a new aircraft in the fleet",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Aircraft object to be created",
                                     content = @Content(
@@ -172,7 +172,7 @@ public class AirlineFleetRoutes {
                             operationId = "updateAirlineFleet",
                             summary = "Update an existing aircraft in the fleet",
                             description = "Updates an existing aircraft in the fleet",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
                             },
@@ -203,7 +203,7 @@ public class AirlineFleetRoutes {
                             operationId = "deleteAirlineFleet",
                             summary = "Delete an aircraft from the fleet",
                             description = "Deletes an aircraft from the fleet",
-                            tags = {"Airline Fleet \uD83D\uDC68\u200D✈\uFE0F ✈️"},
+                            tags = {"Airline Fleet ✈️"},
                             parameters = {
                                     @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
                             },

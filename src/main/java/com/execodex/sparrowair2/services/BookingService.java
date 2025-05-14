@@ -4,8 +4,10 @@ import com.execodex.sparrowair2.entities.Booking;
 import com.execodex.sparrowair2.repositories.BookingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class BookingService {
@@ -24,6 +26,28 @@ public class BookingService {
                 .onErrorResume(e -> {
                     logger.error("Error retrieving all bookings", e);
                     return Flux.error(e);
+                });
+    }
+
+    public Mono<Booking> createBooking(Booking booking) {
+        return bookingRepository.insert(booking)
+                .doOnSuccess(b -> logger.info("Created booking with ID: {}", b.getId()))
+                .doOnError(e -> {
+                    if (e instanceof DuplicateKeyException) {
+                        logger.error("Duplicate key error when creating booking with ID: {}", booking.getId(), e);
+                    } else {
+                        logger.error("Error creating booking with ID: {}", booking.getId(), e);
+                    }
+                })
+                .onErrorResume(e -> Mono.error(e));
+    }
+
+    public Mono<Booking> getBookingById(Long id) {
+        return bookingRepository.findById(id)
+                .doOnError(e -> logger.error("Error retrieving booking with ID: {}", id, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving booking with ID: {}", id, e);
+                    return Mono.error(e);
                 });
     }
 }

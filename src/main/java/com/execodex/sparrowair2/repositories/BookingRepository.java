@@ -9,8 +9,8 @@ import reactor.core.publisher.Mono;
 public interface BookingRepository extends ReactiveCrudRepository<Booking, Long> {
 
     // insert a booking
-    @Query("INSERT INTO bookings (id, flight_id, passenger_id, seat_id, status) " +
-            "VALUES (:#{#booking.id}, :#{#booking.flightId}, :#{#booking.passengerId}, :#{#booking.seatId}, :#{#booking.status}) RETURNING *")
+    @Query("INSERT INTO bookings (booking_reference, passenger_id, status, created_at) " +
+            "VALUES ( :#{#booking.bookingReference}, :#{#booking.passengerId}, :#{#booking.status}, :#{#booking.createdAt}) RETURNING *")
     Mono<Booking> insert(Booking booking);
     // FIND BY flight id
     @Query("SELECT * FROM bookings WHERE flight_id = :flightId RETURNING *")

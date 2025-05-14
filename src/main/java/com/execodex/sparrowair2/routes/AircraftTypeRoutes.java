@@ -39,7 +39,7 @@ public class AircraftTypeRoutes {
                     operation = @Operation(
                             operationId = "getAllAircraftTypes",
                             summary = "Get all aircraft types",
-                            tags = {"Aircraft Types ✈\uFE0F "},  // Custom tag here
+                            tags = {"Aircraft Types 🛩 "},  // Custom tag here
                             description = "Returns a list of all aircraft types",
                             responses = {
                                     @ApiResponse(
@@ -58,7 +58,7 @@ public class AircraftTypeRoutes {
                     operation = @Operation(
                             operationId = "getAircraftTypeByIcaoCode",
                             summary = "Get aircraft type by ICAO code",
-                            tags = {"Aircraft Types ✈\uFE0F "},
+                            tags = {"Aircraft Types 🛩 "},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },
@@ -83,7 +83,7 @@ public class AircraftTypeRoutes {
                     operation = @Operation(
                             operationId = "createAircraftType",
                             summary = "Create a new aircraft type",
-                            tags = {"Aircraft Types ✈\uFE0F "},
+                            tags = {"Aircraft Types 🛩 "},
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Aircraft type to create",
                                     required = true,
@@ -109,7 +109,7 @@ public class AircraftTypeRoutes {
                     operation = @Operation(
                             operationId = "updateAircraftType",
                             summary = "Update an existing aircraft type",
-                            tags = {"Aircraft Types ✈\uFE0F "},
+                            tags = {"Aircraft Types 🛩 "},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },
@@ -142,7 +142,7 @@ public class AircraftTypeRoutes {
                     operation = @Operation(
                             operationId = "deleteAircraftType",
                             summary = "Delete aircraft type by ICAO code",
-                            tags = {"Aircraft Types ✈\uFE0F "},
+                            tags = {"Aircraft Types 🛩 "},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
                             },
