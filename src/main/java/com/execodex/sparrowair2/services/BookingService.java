@@ -50,4 +50,13 @@ public class BookingService {
                     return Mono.error(e);
                 });
     }
+
+    public Mono<Booking> getBookingByReference(String bookingReference) {
+        return bookingRepository.findByBookingReference(bookingReference)
+                .doOnError(e -> logger.error("Error retrieving booking with reference: {}", bookingReference, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving booking with reference: {}", bookingReference, e);
+                    return Mono.error(e);
+                });
+    }
 }

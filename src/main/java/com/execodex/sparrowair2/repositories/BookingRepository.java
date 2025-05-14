@@ -15,4 +15,6 @@ public interface BookingRepository extends ReactiveCrudRepository<Booking, Long>
     // FIND BY flight id
     @Query("SELECT * FROM bookings WHERE flight_id = :flightId RETURNING *")
     Flux<Booking> findByFlightId(Long flightId);
+
+    Mono<Booking> findByBookingReference(String bookingReference);
 }

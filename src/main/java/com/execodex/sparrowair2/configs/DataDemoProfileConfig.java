@@ -25,7 +25,8 @@ public class DataDemoProfileConfig {
     @Bean
     public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService,
                                                    AirlineService airlineService, FlightService flightService,
-                                                   PassengerService passengerService, AirlineFleetService airlineFleetService) {
+                                                   PassengerService passengerService, AirlineFleetService airlineFleetService,
+                                                   BookingService bookingService) {
         return args -> {
             logger.info("Initializing sample data for 'datademo' profile");
 
@@ -36,6 +37,7 @@ public class DataDemoProfileConfig {
                     .thenMany(generateAirlineFleet(airlineFleetService))
                     .thenMany(generateFlight2(flightService, airlineFleetService))
                     .thenMany(generatePassenger(passengerService))
+                    .thenMany(generateBooking(bookingService, passengerService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
                     .blockLast();
         };
@@ -548,6 +550,80 @@ public class DataDemoProfileConfig {
                         })
                 );
         return passengerFlux;
+    }
+
+    /**
+     * Generates sample booking entries and inserts them into the database.
+     *
+     * @param bookingService The service to interact with booking data.
+     * @param passengerService The service to interact with passenger data.
+     * @return A Flux of generated Booking objects.
+     */
+    @Bean(name = "bookingDataGenerator")
+    public Flux<Booking> generateBooking(BookingService bookingService, PassengerService passengerService) {
+        // Get all passengers to reference in bookings
+        return passengerService.getAllPassengers()
+                .collectList()
+                .flatMapMany(passengers -> {
+                    if (passengers.isEmpty()) {
+                        logger.warn("No passengers found to create bookings for");
+                        return Flux.empty();
+                    }
+
+                    // Create 5 sample bookings
+                    List<Booking> sampleBookings = Arrays.asList(
+                            Booking.builder()
+                                    .bookingReference("BK12345")
+                                    .passengerId(passengers.get(0).getId())
+                                    .status("CONFIRMED")
+                                    .createdAt(LocalDateTime.now())
+                                    .build(),
+                            Booking.builder()
+                                    .bookingReference("BK23456")
+                                    .passengerId(passengers.get(1).getId())
+                                    .status("CONFIRMED")
+                                    .createdAt(LocalDateTime.now())
+                                    .build(),
+                            Booking.builder()
+                                    .bookingReference("BK34567")
+                                    .passengerId(passengers.get(2).getId())
+                                    .status("PENDING")
+                                    .createdAt(LocalDateTime.now())
+                                    .build(),
+                            Booking.builder()
+                                    .bookingReference("BK45678")
+                                    .passengerId(passengers.get(3).getId())
+                                    .status("CONFIRMED")
+                                    .createdAt(LocalDateTime.now())
+                                    .build(),
+                            Booking.builder()
+                                    .bookingReference("BK56789")
+                                    .passengerId(passengers.get(4).getId())
+                                    .status("CANCELLED")
+                                    .createdAt(LocalDateTime.now())
+                                    .build()
+                    );
+
+                    // Insert sample bookings into the database
+                    return Flux.fromIterable(sampleBookings)
+                            .flatMap(booking -> bookingService
+                                    .getBookingByReference(booking.getBookingReference())
+                                    .hasElement()
+                                    .flatMap(existingBooking -> {
+                                        if (existingBooking) {
+                                            logger.info("Booking {} already exists, skipping creation", booking.getBookingReference());
+                                            return Mono.empty();
+                                        }
+                                        return bookingService
+                                                .createBooking(booking)
+                                                .doOnSuccess(b -> logger.info("Created booking with reference: {}", b.getBookingReference()));
+                                    })
+                                    .onErrorResume(e -> {
+                                        logger.warn("Could not create booking {}: {}", booking.getBookingReference(), e.getMessage());
+                                        return Mono.empty();
+                                    })
+                            );
+                });
     }
 
     /**
