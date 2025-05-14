@@ -222,6 +222,17 @@ public class SeatService {
                 .onErrorResume(e -> Mono.error(e));
     }
 
+    public Mono<Seat> updateSeatStatus(Long id, String status) {
+        return seatRepository.findById(id)
+                .flatMap(existingSeat -> {
+                    existingSeat.setStatus(SeatStatus.valueOf(status));
+                    return seatRepository.save(existingSeat);
+                })
+                .doOnSuccess(s -> logger.info("Updated seat status with ID: {}", s.getId()))
+                .doOnError(e -> logger.error("Error updating seat status with ID: {}", id, e))
+                .onErrorResume(e -> Mono.error(e));
+    }
+
     public Flux<Seat> getSeatsByFlightNumber(String flightNumber) {
         return flightService.getFlightByFlightNumber(flightNumber)
                 .flatMapMany(flight -> getSeatsByFlightId(flight.getId()))
