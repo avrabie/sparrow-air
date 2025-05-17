@@ -90,6 +90,54 @@ class BookingSegmentServiceTest {
     }
 
     @Test
+    void testDeleteBookingSegment_SeatStatusUpdatedToAvailable() {
+        // Set up a booking segment with a seat that has a status of BOOKED
+        // Using different IDs to avoid conflicts with other tests
+        BookingSegment bookedSegment = BookingSegment.builder()
+                .id(2L)
+                .bookingId(101L)
+                .flightId(201L)
+                .seatId(301L)
+                .fareClass("ECONOMY")
+                .ticketNumber("TKT12346")
+                .build();
+
+        Seat bookedSeat = Seat.builder()
+                .id(301L)
+                .flightId(201L)
+                .seatNumber("16A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.BOOKED)
+                .build();
+
+        Seat availableSeat = Seat.builder()
+                .id(301L)
+                .flightId(201L)
+                .seatNumber("16A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.AVAILABLE)
+                .build();
+
+        // Mock repository findById to return the booked segment
+        when(bookingSegmentRepository.findById(2L)).thenReturn(Mono.just(bookedSegment));
+
+        // Mock seatService.updateSeatStatus to verify it's called with the correct parameters
+        // and return the seat with AVAILABLE status
+        when(seatService.updateSeatStatus(301L, "AVAILABLE")).thenReturn(Mono.just(availableSeat));
+
+        // Mock repository delete to return empty Mono
+        when(bookingSegmentRepository.delete(any(BookingSegment.class))).thenReturn(Mono.empty());
+
+        // Test the deleteBookingSegment method
+        StepVerifier.create(bookingSegmentService.deleteBookingSegment(2L))
+                .expectNext(bookedSegment)
+                .verifyComplete();
+
+        // Verify that seatService.updateSeatStatus was called with the correct parameters
+        org.mockito.Mockito.verify(seatService).updateSeatStatus(301L, "AVAILABLE");
+    }
+
+    @Test
     void testDeleteBookingSegment_NotFound() {
         // Mock repository findById to return empty Mono (segment not found)
         when(bookingSegmentRepository.findById(999L)).thenReturn(Mono.empty());

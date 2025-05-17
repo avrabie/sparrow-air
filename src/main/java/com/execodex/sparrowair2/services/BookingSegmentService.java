@@ -62,6 +62,12 @@ public class BookingSegmentService {
         //find the seat by seat ID
         Mono<Seat> seatById = seatService.getSeatById(bookingSegment.getSeatId())
                 .switchIfEmpty(Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId())))
+                .filter(seat -> seat.getFlightId().equals(bookingSegment.getFlightId()))
+                .doOnNext(seat -> {
+                    if (!seat.getFlightId().equals(bookingSegment.getFlightId())) {
+                        throw new RuntimeException("Seat with ID " + bookingSegment.getSeatId() + " does not belong to flight ID " + bookingSegment.getFlightId());
+                    }
+                })
 //                .flatMap(seat -> {
 //                    if (seat == null) {
 //                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
@@ -76,8 +82,21 @@ public class BookingSegmentService {
         // check if the flight and seat are available
         return Mono.zip(flightById, seatById)
                 .flatMap(tuple -> {
-//                    Flight flight = tuple.getT1();
-//                    Seat seat = tuple.getT2();
+                    Flight flight = tuple.getT1();
+                    Seat seat = tuple.getT2();
+                    // Check if seat flight ID matches the booking segment flight ID
+                    if (!seat.getFlightId().equals(bookingSegment.getFlightId())) {
+                        return Mono.error(new RuntimeException("Seat with ID " + bookingSegment.getSeatId() + " does not belong to flight ID " + bookingSegment.getFlightId()));
+                    }
+                    // check if seat is available
+                    if (!seat.getStatus().equals(com.execodex.sparrowair2.entities.SeatStatus.AVAILABLE)) {
+                        return Mono.error(new RuntimeException("Seat with ID " + bookingSegment.getSeatId() + " is not available"));
+                    }
+                    // check if flight is not cancelled
+                    if (flight.getStatus().equals("CANCELLED")) {
+                        return Mono.error(new RuntimeException("Flight with ID " + bookingSegment.getFlightId() + " is cancelled"));
+                    }
+
 //                    if (flight == null) {
 //                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
 //                    }
