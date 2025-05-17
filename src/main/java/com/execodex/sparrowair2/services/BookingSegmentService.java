@@ -8,6 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,11 +22,16 @@ public class BookingSegmentService {
     private final BookingSegmentRepository bookingSegmentRepository;
     private final SeatService seatService;
     private final FlightService flightService;
+    private final TransactionalOperator transactionalOperator;
 
-    public BookingSegmentService(BookingSegmentRepository bookingSegmentRepository, SeatService seatService, FlightService flightService) {
+    public BookingSegmentService(BookingSegmentRepository bookingSegmentRepository, 
+                                SeatService seatService, 
+                                FlightService flightService,
+                                ReactiveTransactionManager transactionManager) {
         this.bookingSegmentRepository = bookingSegmentRepository;
         this.seatService = seatService;
         this.flightService = flightService;
+        this.transactionalOperator = TransactionalOperator.create(transactionManager);
     }
 
     public Flux<BookingSegment> getAllBookingSegments() {
@@ -104,25 +113,30 @@ public class BookingSegmentService {
 
     }
 
-    private Mono<BookingSegment> checkAndSaveBookingSegment(BookingSegment bookingSegment) {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    protected Mono<BookingSegment> checkAndSaveBookingSegment(BookingSegment bookingSegment) {
+        // Create a transaction with SERIALIZABLE isolation level to ensure no two customers can reserve the same seat
         return bookingSegmentRepository.findByFlightIdAndSeatId(bookingSegment.getFlightId(), bookingSegment.getSeatId())
                 .hasElement()
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new RuntimeException("Booking segment already exists for flight ID: " + bookingSegment.getFlightId() + " and seat ID: " + bookingSegment.getSeatId()));
                     } else {
+                        // Insert the booking segment
                         return bookingSegmentRepository.insert(bookingSegment)
-                                .doOnSuccess(savedSegment -> {
+                                .flatMap(savedSegment -> {
                                     System.out.println("Created booking segment with ID: " + savedSegment.getId());
-                                    // Update the seat status to RESERVED
-                                    seatService.updateSeatStatus(bookingSegment.getSeatId(), "RESERVED")
+                                    // Update the seat status to RESERVED as part of the same transaction
+                                    return seatService.updateSeatStatus(bookingSegment.getSeatId(), "RESERVED")
                                             .doOnSuccess(seat -> System.out.println("Updated seat status to RESERVED for seat ID: " + seat.getId()))
                                             .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
-                                            .subscribe();
+                                            .thenReturn(savedSegment); // Return the saved booking segment
                                 })
                                 .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
                     }
-                });
+                })
+                // The @Transactional annotation will ensure this is executed in a transaction with SERIALIZABLE isolation level
+                ;
     }
 
     public Mono<BookingSegment> updateBookingSegment(long l, BookingSegment bookingSegment) {

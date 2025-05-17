@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -32,6 +34,9 @@ class BookingSegmentServiceTest {
     @Mock
     private FlightService flightService;
 
+    @Mock
+    private ReactiveTransactionManager transactionManager;
+
     @InjectMocks
     private BookingSegmentService bookingSegmentService;
 
@@ -42,6 +47,11 @@ class BookingSegmentServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        // Set up TransactionalOperator to pass through the original Mono
+        when(transactionManager.getReactiveTransaction(any())).thenReturn(Mono.empty());
+        when(transactionManager.commit(any())).thenReturn(Mono.empty());
+        when(transactionManager.rollback(any())).thenReturn(Mono.empty());
 
         testBookingSegment = BookingSegment.builder()
                 .id(1L)
