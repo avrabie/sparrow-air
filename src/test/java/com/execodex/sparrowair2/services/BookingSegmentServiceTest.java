@@ -184,6 +184,16 @@ class BookingSegmentServiceTest {
         // Mock repository insert to return the test booking segment
         when(bookingSegmentRepository.insert(any(BookingSegment.class))).thenReturn(Mono.just(testBookingSegment));
 
+        // Mock seatService.updateSeatStatus to return a seat with RESERVED status
+        Seat reservedSeat = Seat.builder()
+                .id(300L)
+                .flightId(200L)
+                .seatNumber("15A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.RESERVED)
+                .build();
+        when(seatService.updateSeatStatus(300L, "RESERVED")).thenReturn(Mono.just(reservedSeat));
+
         // Test the createBookingSegment method
         StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
                 .expectNext(testBookingSegment)
@@ -245,5 +255,49 @@ class BookingSegmentServiceTest {
                     throwable instanceof RuntimeException && 
                     throwable.getMessage().contains("Seat with ID 300 is not available"))
                 .verify();
+    }
+
+    @Test
+    void testCreateBookingSegment_SeatStatusChangedToReserved() {
+        // Create a seat with AVAILABLE status
+        Seat availableSeat = Seat.builder()
+                .id(300L)
+                .flightId(200L)
+                .seatNumber("15A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.AVAILABLE)
+                .build();
+
+        // Create a seat with RESERVED status (after booking)
+        Seat reservedSeat = Seat.builder()
+                .id(300L)
+                .flightId(200L)
+                .seatNumber("15A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.RESERVED)
+                .build();
+
+        // Mock flightService to return the test flight
+        when(flightService.getFlightById(200L)).thenReturn(Mono.just(testFlight));
+
+        // Mock seatService to return the available seat
+        when(seatService.getSeatById(300L)).thenReturn(Mono.just(availableSeat));
+
+        // Mock repository findByFlightIdAndSeatId to return empty Mono (no existing booking segment)
+        when(bookingSegmentRepository.findByFlightIdAndSeatId(200L, 300L)).thenReturn(Mono.empty());
+
+        // Mock repository insert to return the test booking segment
+        when(bookingSegmentRepository.insert(any(BookingSegment.class))).thenReturn(Mono.just(testBookingSegment));
+
+        // Mock seatService.updateSeatStatus to return the reserved seat
+        when(seatService.updateSeatStatus(300L, "RESERVED")).thenReturn(Mono.just(reservedSeat));
+
+        // Test the createBookingSegment method
+        StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
+                .expectNext(testBookingSegment)
+                .verifyComplete();
+
+        // Verify that seatService.updateSeatStatus was called with the correct parameters
+        org.mockito.Mockito.verify(seatService).updateSeatStatus(300L, "RESERVED");
     }
 }

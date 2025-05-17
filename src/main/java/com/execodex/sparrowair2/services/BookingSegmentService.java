@@ -112,7 +112,14 @@ public class BookingSegmentService {
                         return Mono.error(new RuntimeException("Booking segment already exists for flight ID: " + bookingSegment.getFlightId() + " and seat ID: " + bookingSegment.getSeatId()));
                     } else {
                         return bookingSegmentRepository.insert(bookingSegment)
-                                .doOnSuccess(savedSegment -> System.out.println("Created booking segment with ID: " + savedSegment.getId()))
+                                .doOnSuccess(savedSegment -> {
+                                    System.out.println("Created booking segment with ID: " + savedSegment.getId());
+                                    // Update the seat status to RESERVED
+                                    seatService.updateSeatStatus(bookingSegment.getSeatId(), "RESERVED")
+                                            .doOnSuccess(seat -> System.out.println("Updated seat status to RESERVED for seat ID: " + seat.getId()))
+                                            .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
+                                            .subscribe();
+                                })
                                 .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
                     }
                 });
