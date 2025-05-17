@@ -10,13 +10,10 @@ import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
-
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 @Configuration
 public class BookingSegmentRoute {
@@ -107,7 +104,7 @@ public class BookingSegmentRoute {
 //                                .POST("", accept(MediaType.APPLICATION_JSON), bookingSegmentHandler::createBookingSegment)
                                 .POST("", bookingSegmentHandler::createBookingSegment)
                                 .PUT("/{id}", bookingSegmentHandler::updateBookingSegment)
-//                        .DELETE("/{id}", bookingSegmentHandler::deleteBookingSegment)
+                                .DELETE("/{id}", bookingSegmentHandler::deleteBookingSegment)
 
                 )
                 .build();

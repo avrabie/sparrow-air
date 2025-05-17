@@ -180,4 +180,25 @@ public class BookingSegmentService {
                     return Mono.error(e);
                 });
     }
+
+    public Mono<BookingSegment> deleteBookingSegment(long l) {
+        return bookingSegmentRepository.findById(l)
+                .flatMap(existingSegment -> {
+                    if (existingSegment == null) {
+                        return Mono.error(new RuntimeException("Booking segment not found with ID: " + l));
+                    } else {
+                        Long seatId = existingSegment.getSeatId();
+                        // Update the seat status to "AVAILABLE" before deleting the booking segment
+                        return seatService.updateSeatStatus(seatId, "AVAILABLE")
+                                .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
+                                .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
+                                .then(Mono.just(existingSegment)); // Return the existing segment for further processing
+                    }
+                })
+                .flatMap(existingSegment -> bookingSegmentRepository
+                        .delete(existingSegment)
+                        .then(Mono.just(existingSegment))
+                        .doOnSuccess(deletedSegment -> System.out.println("Deleted booking segment with ID: " + deletedSegment.getId()))
+                        .doOnError(e -> System.err.println("Error deleting booking segment: " + e.getMessage())));
+    }
 }

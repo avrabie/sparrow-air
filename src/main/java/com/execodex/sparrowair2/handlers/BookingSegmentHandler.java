@@ -101,4 +101,17 @@ public class BookingSegmentHandler {
                 });
         return errorCreatingBookingSegment;
     }
+
+    public Mono<ServerResponse> deleteBookingSegment(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return bookingSegmentService.deleteBookingSegment(Long.parseLong(id))
+                .flatMap(deleted -> ServerResponse
+                        .status(HttpStatus.NO_CONTENT)
+                        .build())
+                .onErrorResume(e -> {
+                    System.err.println("Error deleting booking segment with ID " + id + ": " + e.getMessage());
+                    return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .bodyValue("Error deleting booking segment with ID " + id);
+                });
+    }
 }
