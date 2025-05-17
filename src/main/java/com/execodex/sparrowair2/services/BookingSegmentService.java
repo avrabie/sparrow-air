@@ -47,12 +47,13 @@ public class BookingSegmentService {
         // before saving it, find if we have the same booking segment by flight ID and seat ID
         // find the flight by flight ID
         Mono<Flight> flightById = flightService.getFlightById(bookingSegment.getFlightId())
-                .flatMap(flight -> {
-                    if (flight == null) {
-                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
-                    }
-                    return Mono.just(flight);
-                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId())))
+//                .flatMap(flight -> {
+//                    if (flight == null) {
+//                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
+//                    }
+//                    return Mono.just(flight);
+//                })
                 .doOnError(e -> System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage());
@@ -60,12 +61,13 @@ public class BookingSegmentService {
                 });
         //find the seat by seat ID
         Mono<Seat> seatById = seatService.getSeatById(bookingSegment.getSeatId())
-                .flatMap(seat -> {
-                    if (seat == null) {
-                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
-                    }
-                    return Mono.just(seat);
-                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId())))
+//                .flatMap(seat -> {
+//                    if (seat == null) {
+//                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
+//                    }
+//                    return Mono.just(seat);
+//                })
                 .doOnError(e -> System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage());
@@ -74,14 +76,14 @@ public class BookingSegmentService {
         // check if the flight and seat are available
         return Mono.zip(flightById, seatById)
                 .flatMap(tuple -> {
-                    Flight flight = tuple.getT1();
-                    Seat seat = tuple.getT2();
-                    if (flight == null) {
-                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
-                    }
-                    if (seat == null) {
-                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
-                    }
+//                    Flight flight = tuple.getT1();
+//                    Seat seat = tuple.getT2();
+//                    if (flight == null) {
+//                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
+//                    }
+//                    if (seat == null) {
+//                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
+//                    }
                     // If both flight and seat are available, proceed to check for existing booking segments
                     return checkAndSaveBookingSegment(bookingSegment);
                 });
@@ -128,24 +130,26 @@ public class BookingSegmentService {
 
     public Mono<BookingSegment> createBookingSegment2(BookingSegment bookingSegment) {
         Mono<Flight> flightMono = flightService.getFlightById(bookingSegment.getFlightId())
-                .flatMap(flight -> {
-                    if (flight == null) {
-                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
-                    }
-                    return Mono.just(flight);
-                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId())))
+//                .flatMap(flight -> {
+//                    if (flight == null) {
+//                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
+//                    }
+//                    return Mono.just(flight);
+//                })
                 .doOnError(e -> System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage());
                     return Mono.error(e);
                 });
         Mono<Seat> seatMono = seatService.getSeatById(bookingSegment.getSeatId())
-                .flatMap(seat -> {
-                    if (seat == null) {
-                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
-                    }
-                    return Mono.just(seat);
-                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId())))
+//                .flatMap(seat -> {
+//                    if (seat == null) {
+//                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
+//                    }
+//                    return Mono.just(seat);
+//                })
                 .doOnError(e -> System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage());
@@ -171,6 +175,7 @@ public class BookingSegmentService {
 
     public Mono<BookingSegment> getBookingSegmentByFlightIdAndSeatId(Long flightId, Long seatId) {
         return bookingSegmentRepository.findByFlightIdAndSeatId(flightId, seatId)
+                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with flight ID: " + flightId + " and seat ID: " + seatId)))
                 .doOnError(e -> System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage());

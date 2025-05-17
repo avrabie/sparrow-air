@@ -1,7 +1,10 @@
 package com.execodex.sparrowair2.services;
 
 import com.execodex.sparrowair2.entities.BookingSegment;
+import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.entities.Seat;
+import com.execodex.sparrowair2.entities.SeatClass;
+import com.execodex.sparrowair2.entities.SeatStatus;
 import com.execodex.sparrowair2.repositories.BookingSegmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -32,6 +37,7 @@ class BookingSegmentServiceTest {
 
     private BookingSegment testBookingSegment;
     private Seat testSeat;
+    private Flight testFlight;
 
     @BeforeEach
     void setUp() {
@@ -50,6 +56,19 @@ class BookingSegmentServiceTest {
                 .id(300L)
                 .flightId(200L)
                 .seatNumber("15A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.AVAILABLE)
+                .build();
+
+        testFlight = Flight.builder()
+                .id(200L)
+                .airlineIcaoCode("ABC")
+                .flightNumber("123")
+                .departureAirportIcao("ABCD")
+                .arrivalAirportIcao("EFGH")
+                .scheduledDeparture(LocalDateTime.now().plusDays(1))
+                .scheduledArrival(LocalDateTime.now().plusDays(1).plusHours(2))
+                .status("SCHEDULED")
                 .build();
     }
 
@@ -57,10 +76,10 @@ class BookingSegmentServiceTest {
     void testDeleteBookingSegment_Success() {
         // Mock repository findById to return the test booking segment
         when(bookingSegmentRepository.findById(1L)).thenReturn(Mono.just(testBookingSegment));
-        
+
         // Mock seatService.updateSeatStatus to return the test seat
         when(seatService.updateSeatStatus(anyLong(), anyString())).thenReturn(Mono.just(testSeat));
-        
+
         // Mock repository delete to return empty Mono
         when(bookingSegmentRepository.delete(any(BookingSegment.class))).thenReturn(Mono.empty());
 
@@ -78,6 +97,80 @@ class BookingSegmentServiceTest {
         // Test the deleteBookingSegment method with non-existent ID
         StepVerifier.create(bookingSegmentService.deleteBookingSegment(999L))
                 .expectError(RuntimeException.class)
+                .verify();
+    }
+
+    @Test
+    void testGetBookingSegmentByFlightIdAndSeatId_Success() {
+        // Mock repository findByFlightIdAndSeatId to return the test booking segment
+        when(bookingSegmentRepository.findByFlightIdAndSeatId(200L, 300L)).thenReturn(Mono.just(testBookingSegment));
+
+        // Test the getBookingSegmentByFlightIdAndSeatId method
+        StepVerifier.create(bookingSegmentService.getBookingSegmentByFlightIdAndSeatId(200L, 300L))
+                .expectNext(testBookingSegment)
+                .verifyComplete();
+    }
+
+    @Test
+    void testGetBookingSegmentByFlightIdAndSeatId_NotFound() {
+        // Mock repository findByFlightIdAndSeatId to return empty Mono (segment not found)
+        when(bookingSegmentRepository.findByFlightIdAndSeatId(999L, 999L)).thenReturn(Mono.empty());
+
+        // Test the getBookingSegmentByFlightIdAndSeatId method with non-existent flight ID and seat ID
+        StepVerifier.create(bookingSegmentService.getBookingSegmentByFlightIdAndSeatId(999L, 999L))
+                .expectError(RuntimeException.class)
+                .verify();
+    }
+
+    @Test
+    void testCreateBookingSegment_Success() {
+        // Mock flightService to return the test flight
+        when(flightService.getFlightById(200L)).thenReturn(Mono.just(testFlight));
+
+        // Mock seatService to return the test seat
+        when(seatService.getSeatById(300L)).thenReturn(Mono.just(testSeat));
+
+        // Mock repository findByFlightIdAndSeatId to return empty Mono (no existing booking segment)
+        when(bookingSegmentRepository.findByFlightIdAndSeatId(200L, 300L)).thenReturn(Mono.empty());
+
+        // Mock repository insert to return the test booking segment
+        when(bookingSegmentRepository.insert(any(BookingSegment.class))).thenReturn(Mono.just(testBookingSegment));
+
+        // Test the createBookingSegment method
+        StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
+                .expectNext(testBookingSegment)
+                .verifyComplete();
+    }
+
+    @Test
+    void testCreateBookingSegment_FlightNotFound() {
+        // Mock flightService to return empty Mono (flight not found)
+        when(flightService.getFlightById(200L)).thenReturn(Mono.empty());
+
+        // Mock seatService to return the test seat (even though we won't get to use it)
+        when(seatService.getSeatById(300L)).thenReturn(Mono.just(testSeat));
+
+        // Test the createBookingSegment method with non-existent flight ID
+        StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
+                .expectErrorMatches(throwable -> 
+                    throwable instanceof RuntimeException && 
+                    throwable.getMessage().contains("Flight not found with ID: 200"))
+                .verify();
+    }
+
+    @Test
+    void testCreateBookingSegment_SeatNotFound() {
+        // Mock flightService to return the test flight
+        when(flightService.getFlightById(200L)).thenReturn(Mono.just(testFlight));
+
+        // Mock seatService to return empty Mono (seat not found)
+        when(seatService.getSeatById(300L)).thenReturn(Mono.empty());
+
+        // Test the createBookingSegment method with non-existent seat ID
+        StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
+                .expectErrorMatches(throwable -> 
+                    throwable instanceof RuntimeException && 
+                    throwable.getMessage().contains("Seat not found with ID: 300"))
                 .verify();
     }
 }
