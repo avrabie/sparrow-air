@@ -97,12 +97,6 @@ public class BookingSegmentService {
                         return Mono.error(new RuntimeException("Flight with ID " + bookingSegment.getFlightId() + " is cancelled"));
                     }
 
-//                    if (flight == null) {
-//                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
-//                    }
-//                    if (seat == null) {
-//                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
-//                    }
                     // If both flight and seat are available, proceed to check for existing booking segments
                     return checkAndSaveBookingSegment(bookingSegment);
                 });

@@ -221,4 +221,29 @@ class BookingSegmentServiceTest {
                     throwable.getMessage().contains("Seat not found with ID: 300"))
                 .verify();
     }
+
+    @Test
+    void testCreateBookingSegment_SeatNotAvailable() {
+        // Create a seat that is not available (already booked)
+        Seat bookedSeat = Seat.builder()
+                .id(300L)
+                .flightId(200L)
+                .seatNumber("15A")
+                .seatClass(SeatClass.ECONOMY)
+                .status(SeatStatus.BOOKED)
+                .build();
+
+        // Mock flightService to return the test flight
+        when(flightService.getFlightById(200L)).thenReturn(Mono.just(testFlight));
+
+        // Mock seatService to return the booked seat
+        when(seatService.getSeatById(300L)).thenReturn(Mono.just(bookedSeat));
+
+        // Test the createBookingSegment method with a seat that is not available
+        StepVerifier.create(bookingSegmentService.createBookingSegment(testBookingSegment))
+                .expectErrorMatches(throwable -> 
+                    throwable instanceof RuntimeException && 
+                    throwable.getMessage().contains("Seat with ID 300 is not available"))
+                .verify();
+    }
 }
