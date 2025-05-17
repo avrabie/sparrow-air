@@ -167,9 +167,6 @@ public class BookingSegmentService {
                             .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
                 });
 
-//        return bookingSegmentRepository.insert(bookingSegment)
-//                .doOnSuccess(savedSegment -> System.out.println("Created booking segment with ID: " + savedSegment.getId()))
-//                .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
     }
 
     public Mono<BookingSegment> getBookingSegmentByFlightIdAndSeatId(Long flightId, Long seatId) {
@@ -183,17 +180,14 @@ public class BookingSegmentService {
 
     public Mono<BookingSegment> deleteBookingSegment(long l) {
         return bookingSegmentRepository.findById(l)
+                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with ID: " + l)))
                 .flatMap(existingSegment -> {
-                    if (existingSegment == null) {
-                        return Mono.error(new RuntimeException("Booking segment not found with ID: " + l));
-                    } else {
-                        Long seatId = existingSegment.getSeatId();
-                        // Update the seat status to "AVAILABLE" before deleting the booking segment
-                        return seatService.updateSeatStatus(seatId, "AVAILABLE")
-                                .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
-                                .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
-                                .then(Mono.just(existingSegment)); // Return the existing segment for further processing
-                    }
+                    Long seatId = existingSegment.getSeatId();
+                    // Update the seat status to "AVAILABLE" before deleting the booking segment
+                    return seatService.updateSeatStatus(seatId, "AVAILABLE")
+                            .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
+                            .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
+                            .then(Mono.just(existingSegment)); // Return the existing segment for further processing
                 })
                 .flatMap(existingSegment -> bookingSegmentRepository
                         .delete(existingSegment)
