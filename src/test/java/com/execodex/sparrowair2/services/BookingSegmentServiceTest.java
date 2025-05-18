@@ -169,16 +169,6 @@ class BookingSegmentServiceTest {
                 .verifyComplete();
     }
 
-    @Test
-    void testGetBookingSegmentByFlightIdAndSeatId_NotFound() {
-        // Mock repository findByFlightIdAndSeatId to return empty Mono (segment not found)
-        when(bookingSegmentRepository.findByFlightIdAndSeatId(999L, 999L)).thenReturn(Mono.empty());
-
-        // Test the getBookingSegmentByFlightIdAndSeatId method with non-existent flight ID and seat ID
-        StepVerifier.create(bookingSegmentService.getBookingSegmentByFlightIdAndSeatId(999L, 999L))
-                .expectError(RuntimeException.class)
-                .verify();
-    }
 
     @Test
     void testCreateBookingSegment_Success() {

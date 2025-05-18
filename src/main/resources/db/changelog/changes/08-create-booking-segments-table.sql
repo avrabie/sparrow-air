@@ -6,8 +6,8 @@ CREATE TABLE booking_segments (
     booking_id BIGINT NOT NULL,
     flight_id BIGINT NOT NULL,
     seat_id BIGINT NOT NULL,
-    fare_class VARCHAR(20),
-    ticket_number VARCHAR(20) UNIQUE,
+    fare_class VARCHAR(40),
+    ticket_number VARCHAR(60) UNIQUE,
     CONSTRAINT fk_booking_segment_booking FOREIGN KEY (booking_id) REFERENCES bookings(id),
     CONSTRAINT fk_booking_segment_flight FOREIGN KEY (flight_id) REFERENCES flights(id),
     CONSTRAINT fk_booking_segment_seat FOREIGN KEY (seat_id) REFERENCES seats(id)

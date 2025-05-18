@@ -64,7 +64,7 @@ public class SeatService {
                     }
                     return seatRepository.insert(seat);
                 })
-                .doOnSuccess(s -> logger.info("Created seat with ID: {}", s.getId()))
+                .doOnSuccess(s -> logger.info("Created seat"))
                 .doOnError(e -> logger.error("Error creating seat", e))
                 .onErrorResume(e -> Mono.error(e));
     }

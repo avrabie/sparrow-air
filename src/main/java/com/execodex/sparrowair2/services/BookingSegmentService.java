@@ -24,10 +24,10 @@ public class BookingSegmentService {
     private final FlightService flightService;
     private final TransactionalOperator transactionalOperator;
 
-    public BookingSegmentService(BookingSegmentRepository bookingSegmentRepository, 
-                                SeatService seatService, 
-                                FlightService flightService,
-                                ReactiveTransactionManager transactionManager) {
+    public BookingSegmentService(BookingSegmentRepository bookingSegmentRepository,
+                                 SeatService seatService,
+                                 FlightService flightService,
+                                 ReactiveTransactionManager transactionManager) {
         this.bookingSegmentRepository = bookingSegmentRepository;
         this.seatService = seatService;
         this.flightService = flightService;
@@ -116,61 +116,58 @@ public class BookingSegmentService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     protected Mono<BookingSegment> checkAndSaveBookingSegment(BookingSegment bookingSegment) {
         // Create a transaction with SERIALIZABLE isolation level to ensure no two customers can reserve the same seat
-        return bookingSegmentRepository.findByFlightIdAndSeatId(bookingSegment.getFlightId(), bookingSegment.getSeatId())
+        System.out.println("Booking segment data: " + bookingSegment.toString());
+        return bookingSegmentRepository
+                .findByFlightIdAndSeatId(bookingSegment.getFlightId(), bookingSegment.getSeatId())
                 .hasElement()
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new RuntimeException("Booking segment already exists for flight ID: " + bookingSegment.getFlightId() + " and seat ID: " + bookingSegment.getSeatId()));
                     } else {
+                        // log infor about booking segment data
+
                         // Insert the booking segment
                         return bookingSegmentRepository.insert(bookingSegment)
                                 .flatMap(savedSegment -> {
-                                    System.out.println("Created booking segment with ID: " + savedSegment.getId());
+//                                    System.out.println("Created booking segment with ID: " + savedSegment.getId());
                                     // Update the seat status to RESERVED as part of the same transaction
                                     return seatService.updateSeatStatus(bookingSegment.getSeatId(), "RESERVED")
                                             .doOnSuccess(seat -> System.out.println("Updated seat status to RESERVED for seat ID: " + seat.getId()))
                                             .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()))
                                             .thenReturn(savedSegment); // Return the saved booking segment
                                 })
-                                .doOnError(e -> System.err.println("Error creating booking segment: " + e.getMessage()));
+                                .doOnError(e -> System.err.println("Error creating booking segment in checkAndSaveBookingSegment: " + e.getMessage()));
                     }
                 })
                 // The @Transactional annotation will ensure this is executed in a transaction with SERIALIZABLE isolation level
                 ;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Mono<BookingSegment> updateBookingSegment(long l, BookingSegment bookingSegment) {
         return bookingSegmentRepository.findById(l)
+                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with ID: " + l)))
                 .flatMap(existingSegment -> {
-                    if (existingSegment != null) {
-                        bookingSegment.setFareClass(existingSegment.getFareClass());
-                        bookingSegment.setSeatId(existingSegment.getSeatId());
-                        return bookingSegmentRepository.save(bookingSegment)
-                                .doOnSuccess(updatedSegment -> {
-                                    System.out.println("Updated booking segment with ID: " + updatedSegment.getId());
-                                    // Update the seat status if necessary
-                                    seatService.updateSeatStatus(bookingSegment.getSeatId(), "AVAILABLE")
-                                            .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
-                                            .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()));
-                                })
-                                .doOnError(e -> System.err.println("Error updating booking segment: " + e.getMessage()));
+
+                    bookingSegment.setFareClass(existingSegment.getFareClass());
+                    bookingSegment.setSeatId(existingSegment.getSeatId());
+                    return bookingSegmentRepository.save(bookingSegment)
+                            .doOnSuccess(updatedSegment -> {
+                                System.out.println("Updated booking segment with ID: " + updatedSegment.getId());
+                                // Update the seat status if necessary
+                                seatService.updateSeatStatus(bookingSegment.getSeatId(), "AVAILABLE")
+                                        .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
+                                        .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()));
+                            })
+                            .doOnError(e -> System.err.println("Error updating booking segment: " + e.getMessage()));
 
 
-                    } else {
-                        return Mono.error(new RuntimeException("Booking segment not found with ID: " + l));
-                    }
                 });
     }
 
     public Mono<BookingSegment> createBookingSegment2(BookingSegment bookingSegment) {
         Mono<Flight> flightMono = flightService.getFlightById(bookingSegment.getFlightId())
                 .switchIfEmpty(Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId())))
-//                .flatMap(flight -> {
-//                    if (flight == null) {
-//                        return Mono.error(new RuntimeException("Flight not found with ID: " + bookingSegment.getFlightId()));
-//                    }
-//                    return Mono.just(flight);
-//                })
                 .doOnError(e -> System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving flight with ID " + bookingSegment.getFlightId() + ": " + e.getMessage());
@@ -178,12 +175,6 @@ public class BookingSegmentService {
                 });
         Mono<Seat> seatMono = seatService.getSeatById(bookingSegment.getSeatId())
                 .switchIfEmpty(Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId())))
-//                .flatMap(seat -> {
-//                    if (seat == null) {
-//                        return Mono.error(new RuntimeException("Seat not found with ID: " + bookingSegment.getSeatId()));
-//                    }
-//                    return Mono.just(seat);
-//                })
                 .doOnError(e -> System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving seat with ID " + bookingSegment.getSeatId() + ": " + e.getMessage());
@@ -209,7 +200,7 @@ public class BookingSegmentService {
 
     public Mono<BookingSegment> getBookingSegmentByFlightIdAndSeatId(Long flightId, Long seatId) {
         return bookingSegmentRepository.findByFlightIdAndSeatId(flightId, seatId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with flight ID: " + flightId + " and seat ID: " + seatId)))
+//                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with flight ID: " + flightId + " and seat ID: " + seatId)))
                 .doOnError(e -> System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage()))
                 .onErrorResume(e -> {
                     System.err.println("Error retrieving booking segment with flight ID " + flightId + " and seat ID " + seatId + ": " + e.getMessage());
