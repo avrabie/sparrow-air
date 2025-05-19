@@ -91,6 +91,33 @@ public class FlightsComputingRoutes {
                                     )
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/flights-computing/route-minimum-cost",
+                    method = RequestMethod.GET,
+                    beanClass = FlightsComputingHandler.class,
+                    beanMethod = "getRouteMinimumCost",
+                    operation = @Operation(
+                            operationId = "getRouteMinimumCost",
+                            summary = "Get minimum cost route between two airports",
+                            description = "Returns a list of flights that form the minimum cost route between the specified departure and arrival airports",
+                            tags = {"Flights Computing ✈️ \uD83C\uDF10"},
+                            parameters = {
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "departure", description = "ICAO code of the departure airport", required = true),
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "arrival", description = "ICAO code of the arrival airport", required = true)
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "400",
+                                            description = "Bad request - missing or invalid parameters"
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> flightsComputingRoutesFunction() {
@@ -101,6 +128,8 @@ public class FlightsComputingRoutes {
                         .GET("/airports-to-flights", accept(MediaType.APPLICATION_JSON), flightsComputingHandler::getAirportsToFlights)
                         // GET /flights-computing/route - Get route between two airports
                         .GET("/route", accept(MediaType.APPLICATION_JSON), flightsComputingHandler::getRoute)
+                        // GET /flights-computing/route-minimum-cost - Get minimum cost route between two airports
+                        .GET("/route-minimum-cost", accept(MediaType.APPLICATION_JSON), flightsComputingHandler::getRouteMinimumCost)
                 )
                 .build();
     }

@@ -339,4 +339,66 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                         "Expected the route to end at KJFK";
                 });
     }
+
+    @Test
+    public void testGetRouteMinimumCost() {
+        // Test minimum cost route from London to Paris
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route-minimum-cost")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "LFPG")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route contains a flight from EGLL to LFPG
+                    boolean foundDirectFlight = false;
+                    for (Flight flight : response.getResponseBody()) {
+                        if (flight.getDepartureAirportIcao().equals("EGLL") && 
+                            flight.getArrivalAirportIcao().equals("LFPG")) {
+                            foundDirectFlight = true;
+                            break;
+                        }
+                    }
+
+                    assert foundDirectFlight : "Expected to find a direct flight from EGLL to LFPG";
+                });
+
+        // Test minimum cost route from London to New York
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route-minimum-cost")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "KJFK")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route starts at EGLL and ends at KJFK
+                    // This could be a direct flight or a route with connections
+                    List<Flight> flights = response.getResponseBody();
+                    assert !flights.isEmpty() : "Expected a non-empty route";
+
+                    // Check that the first flight departs from EGLL
+                    Flight firstFlight = flights.get(0);
+                    assert firstFlight.getDepartureAirportIcao().equals("EGLL") : 
+                        "Expected the route to start from EGLL";
+
+                    // Check that the last flight arrives at KJFK
+                    Flight lastFlight = flights.get(flights.size() - 1);
+                    assert lastFlight.getArrivalAirportIcao().equals("KJFK") : 
+                        "Expected the route to end at KJFK";
+                });
+    }
 }

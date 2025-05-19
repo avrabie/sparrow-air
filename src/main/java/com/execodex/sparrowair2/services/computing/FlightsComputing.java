@@ -201,4 +201,114 @@ public class FlightsComputing {
                     return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, index + 1);
                 }));
     }
+
+
+    // Using Dijkstra's algorithm to find the minimum cost route
+    public Mono<List<Flight>> getRouteMinimumCost(Airport departureAirport, Airport arrivalAirport){
+        // If departure and arrival are the same, return empty route
+        if (departureAirport.getIcaoCode().equals(arrivalAirport.getIcaoCode())) {
+            return Mono.just(new ArrayList<>());
+        }
+
+        // Get all airports and flights to build the graph
+        Mono<List<Flight>> result = airportService.getAllAirports()
+                .collectList()
+                .flatMap(airports -> {
+                    // Create a map of ICAO code to Airport for easy lookup
+                    Map<String, Airport> airportMap = new HashMap<>();
+                    for (Airport airport : airports) {
+                        airportMap.put(airport.getIcaoCode(), airport);
+                    }
+
+                    // Get all flights to build the graph
+                    return flightService.getAllFlights()
+                            .collectList()
+                            .map(flights -> {
+                                // Apply Dijkstra's algorithm to find the shortest path
+                                return applyDijkstra(departureAirport, arrivalAirport, airports, flights, airportMap);
+                            });
+                });
+        return result;
+    }
+
+    private List<Flight> applyDijkstra(Airport source, Airport target, List<Airport> airports, List<Flight> flights, Map<String, Airport> airportMap) {
+        // Create a map of airport ICAO code to its outgoing flights
+        Map<String, List<Flight>> outgoingFlights = new HashMap<>();
+        for (Flight flight : flights) {
+            outgoingFlights.computeIfAbsent(flight.getDepartureAirportIcao(), k -> new ArrayList<>()).add(flight);
+        }
+
+        // Initialize distances with infinity for all airports except the source
+        Map<String, Double> distances = new HashMap<>();
+        Map<String, Flight> previousFlights = new HashMap<>();
+        Set<String> unvisited = new HashSet<>();
+
+        for (Airport airport : airports) {
+            String icaoCode = airport.getIcaoCode();
+            distances.put(icaoCode, Double.MAX_VALUE);
+            unvisited.add(icaoCode);
+        }
+        distances.put(source.getIcaoCode(), 0.0);
+
+        // Dijkstra's algorithm
+        while (!unvisited.isEmpty()) {
+            // Find the unvisited airport with the smallest distance
+            String current = null;
+            double smallestDistance = Double.MAX_VALUE;
+            for (String icaoCode : unvisited) {
+                double distance = distances.get(icaoCode);
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    current = icaoCode;
+                }
+            }
+
+            // If we've reached the target or there's no path to any remaining unvisited airports
+            if (current == null || current.equals(target.getIcaoCode())) {
+                break;
+            }
+
+            // Remove the current airport from unvisited
+            unvisited.remove(current);
+
+            // Get the current airport
+            Airport currentAirport = airportMap.get(current);
+
+            // Update distances to neighbors
+            List<Flight> currentOutgoingFlights = outgoingFlights.getOrDefault(current, Collections.emptyList());
+            for (Flight flight : currentOutgoingFlights) {
+                String neighborIcao = flight.getArrivalAirportIcao();
+                if (!unvisited.contains(neighborIcao)) {
+                    continue; // Skip already visited airports
+                }
+
+                Airport neighborAirport = airportMap.get(neighborIcao);
+                double distance = airportService.distance(currentAirport, neighborAirport);
+                double newDistance = distances.get(current) + distance;
+
+                if (newDistance < distances.get(neighborIcao)) {
+                    distances.put(neighborIcao, newDistance);
+                    previousFlights.put(neighborIcao, flight);
+                }
+            }
+        }
+
+        // Reconstruct the path
+        List<Flight> path = new ArrayList<>();
+        String current = target.getIcaoCode();
+
+        // If there's no path to the target
+        if (!previousFlights.containsKey(current)) {
+            return path; // Return empty path
+        }
+
+        // Build the path by following the previous flights
+        while (!current.equals(source.getIcaoCode())) {
+            Flight flight = previousFlights.get(current);
+            path.add(0, flight); // Add to the beginning of the list
+            current = flight.getDepartureAirportIcao();
+        }
+
+        return path;
+    }
 }

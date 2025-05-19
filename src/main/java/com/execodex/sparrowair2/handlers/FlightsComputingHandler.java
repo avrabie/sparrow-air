@@ -77,4 +77,35 @@ public class FlightsComputingHandler {
             })
             .onErrorResume(this::handleError);
     }
+
+    // Get minimum cost route between two airports
+    public Mono<ServerResponse> getRouteMinimumCost(ServerRequest request) {
+        String departureIcao = request.queryParam("departure").orElse("");
+        String arrivalIcao = request.queryParam("arrival").orElse("");
+
+        if (departureIcao.isEmpty() || arrivalIcao.isEmpty()) {
+            return ServerResponse.badRequest()
+                    .bodyValue("Both departure and arrival airport ICAO codes are required");
+        }
+
+        return Mono.zip(
+                airportService.getAirportByIcaoCode(departureIcao),
+                airportService.getAirportByIcaoCode(arrivalIcao)
+            )
+            .flatMap(tuple -> {
+                Airport departureAirport = tuple.getT1();
+                Airport arrivalAirport = tuple.getT2();
+
+                if (departureAirport == null || arrivalAirport == null) {
+                    return ServerResponse.badRequest()
+                            .bodyValue("One or both of the specified airports could not be found");
+                }
+
+                return flightsComputing.getRouteMinimumCost(departureAirport, arrivalAirport)
+                    .flatMap(route -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(route));
+            })
+            .onErrorResume(this::handleError);
+    }
 }
