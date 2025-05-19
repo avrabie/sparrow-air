@@ -110,6 +110,44 @@ public class SampleDataDemo {
                         .timezone("America/New_York")
                         .latitude(38.9531)
                         .longitude(-77.4470)
+                        .build(),
+                // Adding 3 more major US airports
+                Airport.builder()
+                        .icaoCode("KLAX")
+                        .name("Los Angeles International Airport")
+                        .city("Los Angeles")
+                        .country("United States")
+                        .timezone("America/Los_Angeles")
+                        .latitude(33.9416)
+                        .longitude(-118.4085)
+                        .build(),
+                Airport.builder()
+                        .icaoCode("KORD")
+                        .name("O'Hare International Airport")
+                        .city("Chicago")
+                        .country("United States")
+                        .timezone("America/Chicago")
+                        .latitude(41.9742)
+                        .longitude(-87.9073)
+                        .build(),
+                Airport.builder()
+                        .icaoCode("KATL")
+                        .name("Hartsfield-Jackson Atlanta International Airport")
+                        .city("Atlanta")
+                        .country("United States")
+                        .timezone("America/New_York")
+                        .latitude(33.6407)
+                        .longitude(-84.4277)
+                        .build(),
+                // Adding Toronto airport in Canada
+                Airport.builder()
+                        .icaoCode("CYYZ")
+                        .name("Toronto Pearson International Airport")
+                        .city("Toronto")
+                        .country("Canada")
+                        .timezone("America/Toronto")
+                        .latitude(43.6777)
+                        .longitude(-79.6248)
                         .build()
 
         );
@@ -235,6 +273,14 @@ public class SampleDataDemo {
                         .headquarters("Bucharest, Romania")
                         .contactNumber("+40-21-303-4444")
                         .website("https://www.tarom.ro")
+                        .build(),
+                // Adding Air Canada
+                Airline.builder()
+                        .icaoCode("ACA")
+                        .name("Air Canada")
+                        .headquarters("Montreal, Quebec, Canada")
+                        .contactNumber("+1-888-247-2262")
+                        .website("https://www.aircanada.com")
                         .build()
         );
         return sampleAirlines;
@@ -327,6 +373,21 @@ public class SampleDataDemo {
                         .businessSeats(14)
                         .premiumEconomySeats(0)
                         .economySeats(56)
+                        .build(),
+                // Add a fleet entry for Air Canada
+                AirlineFleet.builder()
+                        .aircraftTypeIcao("A320")
+                        .airlineIcao("ACA")
+                        .registrationNumber("C-FDCA")
+                        .aircraftAge(LocalDate.of(2016, 8, 10))
+                        .seatConfiguration("3-3")
+                        .hasWifi(true)
+                        .hasPowerOutlets(true)
+                        .hasEntertainmentSystem(true)
+                        .firstClassSeats(0)
+                        .businessSeats(16)
+                        .premiumEconomySeats(12)
+                        .economySeats(126)
                         .build()
         );
         return sampleAirlineFleet;
@@ -394,6 +455,49 @@ public class SampleDataDemo {
                         .scheduledDeparture(LocalDateTime.now().plusDays(6))
                         .scheduledArrival(LocalDateTime.now().plusDays(6).plusHours(1))
                         .airlineFleetId(5L) // Using TAR's ATR 72-500
+                        .status("Scheduled")
+                        .build(),
+                // Add a flight from LROP to EGLL
+                Flight.builder()
+                        .airlineIcaoCode("TAR")
+                        .flightNumber("RO789")
+                        .departureAirportIcao("LROP")
+                        .arrivalAirportIcao("EGLL")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(7))
+                        .scheduledArrival(LocalDateTime.now().plusDays(7).plusHours(3))
+                        .airlineFleetId(5L) // Using TAR's ATR 72-500
+                        .status("Scheduled")
+                        .build(),
+                // Add 2 flights in the US by American Airlines (AAL)
+                Flight.builder()
+                        .airlineIcaoCode("AAL")
+                        .flightNumber("AA456")
+                        .departureAirportIcao("KLAX")
+                        .arrivalAirportIcao("KORD")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(8))
+                        .scheduledArrival(LocalDateTime.now().plusDays(8).plusHours(4))
+                        .airlineFleetId(1L) // Using AAL's B738
+                        .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("AAL")
+                        .flightNumber("AA789")
+                        .departureAirportIcao("KORD")
+                        .arrivalAirportIcao("KATL")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(9))
+                        .scheduledArrival(LocalDateTime.now().plusDays(9).plusHours(2))
+                        .airlineFleetId(1L) // Using AAL's B738
+                        .status("Scheduled")
+                        .build(),
+                // Add 1 flight in Canada by Air Canada (ACA)
+                Flight.builder()
+                        .airlineIcaoCode("ACA")
+                        .flightNumber("AC123")
+                        .departureAirportIcao("CYYZ")
+                        .arrivalAirportIcao("KIAD")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(10))
+                        .scheduledArrival(LocalDateTime.now().plusDays(10).plusHours(2))
+                        .airlineFleetId(6L) // Using ACA's A320
                         .status("Scheduled")
                         .build()
         );
