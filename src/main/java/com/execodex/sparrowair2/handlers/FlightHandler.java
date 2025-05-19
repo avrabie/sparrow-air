@@ -94,4 +94,14 @@ public class FlightHandler {
                 .switchIfEmpty(ServerResponse.notFound().build())
                 .onErrorResume(this::handleError);
     }
+
+    // Get all flights from a specific airport code
+    public Mono<ServerResponse> getAllFlightsFromAirportCode(ServerRequest request) {
+        String airportCode = request.pathVariable("airportCode");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(flightService.getAllFlightsFromAirportCode(airportCode), Flight.class)
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
 }
