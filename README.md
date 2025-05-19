@@ -2,8 +2,11 @@
 
 ## Project Overview
 
-Sparrow Air 2 is a fun pet project focused on building a reactive airline management system. The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity. We're just getting started, but the goal is to create a fully reactive application that demonstrates best practices for handling airline-related operations like flight management, bookings, and passenger information.
+Sparrow Air 2 is a fun pet project focused on building a reactive airline management system.
+The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity. We're just getting started, but the goal is to create a fully reactive application that demonstrates best practices for handling airline-related operations like flight management, bookings, and passenger information.
+The project was written with Junie from JetBrains and code completion from Intellij, trying to do a step by step approach to learn and understand the concepts of reactive programming, Spring WebFlux, and PostgreSQL.
 
+## Getting Started
 
 ## Database Configuration
 
