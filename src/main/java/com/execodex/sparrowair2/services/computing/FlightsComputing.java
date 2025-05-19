@@ -96,8 +96,7 @@ public class FlightsComputing {
         Flux<Map<String, Collection<String>>> airpotToAirportsFlights =
                 airportIcaoCodes
                         .flatMap(airportIcaoCode -> flightService
-                                .getAllFlights()
-                                .filter(flight -> flight.getDepartureAirportIcao().equals(airportIcaoCode))
+                                .getAllFlightsFromAirportCode(airportIcaoCode)
                                 .collectMultimap(flight -> flight.getDepartureAirportIcao(),
                                         flight -> flight.getArrivalAirportIcao())
                         );

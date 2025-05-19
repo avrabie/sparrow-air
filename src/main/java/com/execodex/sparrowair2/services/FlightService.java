@@ -206,4 +206,13 @@ public class FlightService {
                     return Mono.error(e);
                 });
     }
+
+    public Flux<Flight> getAllFlightsFromAirportCode(String airportCode) {
+        return flightRepository.findByDepartureAirportIcao(airportCode)
+                .doOnError(e -> logger.error("Error retrieving flights from airport: {}", airportCode, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flights from airport: {}", airportCode, e);
+                    return Flux.error(e);
+                });
+    }
 }
