@@ -1,0 +1,254 @@
+package com.execodex.sparrowair2.routes;
+
+import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
+import com.execodex.sparrowair2.entities.AircraftType;
+import com.execodex.sparrowair2.entities.Airline;
+import com.execodex.sparrowair2.entities.AirlineFleet;
+import com.execodex.sparrowair2.entities.Airport;
+import com.execodex.sparrowair2.entities.Flight;
+import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
+import com.execodex.sparrowair2.repositories.AirlineRepository;
+import com.execodex.sparrowair2.repositories.AirportRepository;
+import com.execodex.sparrowair2.repositories.FlightRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Collection;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @Autowired
+    private FlightRepository flightRepository;
+
+    @Autowired
+    private AirportRepository airportRepository;
+
+    @Autowired
+    private AirlineRepository airlineRepository;
+
+    @Autowired
+    private AircraftTypeRepository aircraftTypeRepository;
+
+    @Autowired
+    private AirlineFleetRepository airlineFleetRepository;
+
+    @BeforeEach
+    public void setUp() {
+        // Clear existing flights
+        flightRepository.deleteAll().block();
+
+        // Create test airports if they don't exist
+        Airport lhr = Airport.builder()
+                .icaoCode("EGLL")
+                .name("London Heathrow Airport")
+                .city("London")
+                .country("United Kingdom")
+                .latitude(51.4775)
+                .longitude(-0.4614)
+                .build();
+
+        Airport cdg = Airport.builder()
+                .icaoCode("LFPG")
+                .name("Paris Charles de Gaulle Airport")
+                .city("Paris")
+                .country("France")
+                .latitude(49.0097)
+                .longitude(2.5479)
+                .build();
+
+        Airport jfk = Airport.builder()
+                .icaoCode("KJFK")
+                .name("John F. Kennedy International Airport")
+                .city("New York")
+                .country("United States")
+                .latitude(40.6413)
+                .longitude(-73.7781)
+                .build();
+
+        // Save airports
+        airportRepository.insert(lhr).block();
+        airportRepository.insert(cdg).block();
+        airportRepository.insert(jfk).block();
+
+        // Create test airlines
+        Airline britishAirways = Airline.builder()
+                .icaoCode("BAW")
+                .name("British Airways")
+                .headquarters("London, UK")
+                .contactNumber("+44 20 1234 5678")
+                .website("https://www.britishairways.com")
+                .build();
+
+        Airline airFrance = Airline.builder()
+                .icaoCode("AFR")
+                .name("Air France")
+                .headquarters("Paris, France")
+                .contactNumber("+33 1 2345 6789")
+                .website("https://www.airfrance.com")
+                .build();
+
+        // Save airlines
+        airlineRepository.insert(britishAirways).block();
+        airlineRepository.insert(airFrance).block();
+
+        // Create test aircraft types
+        AircraftType boeing777 = AircraftType.builder()
+                .icaoCode("B777")
+                .modelName("Boeing 777")
+                .manufacturer("Boeing")
+                .seatingCapacity(396)
+                .maxRangeKm(15843)
+                .mtow(351534)
+                .build();
+
+        AircraftType airbusA320 = AircraftType.builder()
+                .icaoCode("A320")
+                .modelName("Airbus A320")
+                .manufacturer("Airbus")
+                .seatingCapacity(180)
+                .maxRangeKm(6100)
+                .mtow(78000)
+                .build();
+
+        // Save aircraft types
+        aircraftTypeRepository.insert(boeing777).block();
+        aircraftTypeRepository.insert(airbusA320).block();
+
+        // Create test airline fleet entries
+        AirlineFleet bawB777 = AirlineFleet.builder()
+                .aircraftTypeIcao("B777")
+                .airlineIcao("BAW")
+                .registrationNumber("G-ZZZA")
+                .aircraftAge(LocalDate.of(2015, 1, 1))
+                .seatConfiguration("3-4-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(14)
+                .businessSeats(48)
+                .premiumEconomySeats(40)
+                .economySeats(294)
+                .build();
+
+        AirlineFleet afrA320 = AirlineFleet.builder()
+                .aircraftTypeIcao("A320")
+                .airlineIcao("AFR")
+                .registrationNumber("F-HBNA")
+                .aircraftAge(LocalDate.of(2018, 5, 15))
+                .seatConfiguration("3-3")
+                .hasWifi(true)
+                .hasPowerOutlets(true)
+                .hasEntertainmentSystem(true)
+                .firstClassSeats(0)
+                .businessSeats(12)
+                .premiumEconomySeats(0)
+                .economySeats(168)
+                .build();
+
+        // Save airline fleet entries
+        AirlineFleet savedBawB777 = airlineFleetRepository.insert(bawB777).block();
+        AirlineFleet savedAfrA320 = airlineFleetRepository.insert(afrA320).block();
+
+        // Create test flights
+        LocalDateTime now = LocalDateTime.now();
+
+        Flight flight1 = Flight.builder()
+                .airlineIcaoCode("BAW")
+                .flightNumber("BA123")
+                .departureAirportIcao("EGLL")
+                .arrivalAirportIcao("LFPG")
+                .scheduledDeparture(now.plusDays(1))
+                .scheduledArrival(now.plusDays(1).plusHours(2))
+                .airlineFleetId(savedBawB777.getId())
+                .status("Scheduled")
+                .build();
+
+        Flight flight2 = Flight.builder()
+                .airlineIcaoCode("BAW")
+                .flightNumber("BA456")
+                .departureAirportIcao("EGLL")
+                .arrivalAirportIcao("KJFK")
+                .scheduledDeparture(now.plusDays(2))
+                .scheduledArrival(now.plusDays(2).plusHours(8))
+                .airlineFleetId(savedBawB777.getId())
+                .status("Scheduled")
+                .build();
+
+        Flight flight3 = Flight.builder()
+                .airlineIcaoCode("AFR")
+                .flightNumber("AF789")
+                .departureAirportIcao("LFPG")
+                .arrivalAirportIcao("KJFK")
+                .scheduledDeparture(now.plusDays(3))
+                .scheduledArrival(now.plusDays(3).plusHours(9))
+                .airlineFleetId(savedAfrA320.getId())
+                .status("Scheduled")
+                .build();
+
+        // Save flights
+        flightRepository.save(flight1).block();
+        flightRepository.save(flight2).block();
+        flightRepository.save(flight3).block();
+    }
+
+    @Test
+    public void testGetAirportToAirportsFlights() {
+        webTestClient.get()
+                .uri("/flights-computing/airport-to-airports")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Map.class)
+                .consumeWith(response -> {
+                    // Verify that the response contains the expected data
+                    // The response should be a list of maps, where each map has a departure airport as key
+                    // and a collection of arrival airports as value
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // We expect to see EGLL -> [LFPG, KJFK] and LFPG -> [KJFK]
+                    boolean foundEgllToLfpg = false;
+                    boolean foundEgllToKjfk = false;
+                    boolean foundLfpgToKjfk = false;
+
+                    for (Map<String, Collection<String>> map : response.getResponseBody()) {
+                        for (Map.Entry<String, Collection<String>> entry : map.entrySet()) {
+                            String departureAirport = entry.getKey();
+                            Collection<String> arrivalAirports = entry.getValue();
+
+                            if (departureAirport.equals("EGLL")) {
+                                for (String arrivalAirport : arrivalAirports) {
+                                    if (arrivalAirport.equals("LFPG")) {
+                                        foundEgllToLfpg = true;
+                                    } else if (arrivalAirport.equals("KJFK")) {
+                                        foundEgllToKjfk = true;
+                                    }
+                                }
+                            } else if (departureAirport.equals("LFPG")) {
+                                for (String arrivalAirport : arrivalAirports) {
+                                    if (arrivalAirport.equals("KJFK")) {
+                                        foundLfpgToKjfk = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    assert foundEgllToLfpg : "Expected to find flight from EGLL to LFPG";
+                    assert foundEgllToKjfk : "Expected to find flight from EGLL to KJFK";
+                    assert foundLfpgToKjfk : "Expected to find flight from LFPG to KJFK";
+                });
+    }
+}
