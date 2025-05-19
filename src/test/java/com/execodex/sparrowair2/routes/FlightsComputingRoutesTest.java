@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
@@ -77,10 +79,16 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .longitude(-73.7781)
                 .build();
 
-        // Save airports
-        airportRepository.insert(lhr).block();
-        airportRepository.insert(cdg).block();
-        airportRepository.insert(jfk).block();
+        // Save airports if they don't exist
+        airportRepository.findById("EGLL")
+                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(lhr)))
+                .block();
+        airportRepository.findById("LFPG")
+                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(cdg)))
+                .block();
+        airportRepository.findById("KJFK")
+                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(jfk)))
+                .block();
 
         // Create test airlines
         Airline britishAirways = Airline.builder()
@@ -99,9 +107,13 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .website("https://www.airfrance.com")
                 .build();
 
-        // Save airlines
-        airlineRepository.insert(britishAirways).block();
-        airlineRepository.insert(airFrance).block();
+        // Save airlines if they don't exist
+        airlineRepository.findById("BAW")
+                .switchIfEmpty(Mono.defer(() -> airlineRepository.insert(britishAirways)))
+                .block();
+        airlineRepository.findById("AFR")
+                .switchIfEmpty(Mono.defer(() -> airlineRepository.insert(airFrance)))
+                .block();
 
         // Create test aircraft types
         AircraftType boeing777 = AircraftType.builder()
@@ -122,9 +134,13 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .mtow(78000)
                 .build();
 
-        // Save aircraft types
-        aircraftTypeRepository.insert(boeing777).block();
-        aircraftTypeRepository.insert(airbusA320).block();
+        // Save aircraft types if they don't exist
+        aircraftTypeRepository.findById("B777")
+                .switchIfEmpty(Mono.defer(() -> aircraftTypeRepository.insert(boeing777)))
+                .block();
+        aircraftTypeRepository.findById("A320")
+                .switchIfEmpty(Mono.defer(() -> aircraftTypeRepository.insert(airbusA320)))
+                .block();
 
         // Create test airline fleet entries
         AirlineFleet bawB777 = AirlineFleet.builder()
@@ -157,9 +173,13 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .economySeats(168)
                 .build();
 
-        // Save airline fleet entries
-        AirlineFleet savedBawB777 = airlineFleetRepository.insert(bawB777).block();
-        AirlineFleet savedAfrA320 = airlineFleetRepository.insert(afrA320).block();
+        // Save airline fleet entries if they don't exist
+        AirlineFleet savedBawB777 = airlineFleetRepository.findByRegistrationNumber("G-ZZZA")
+                .switchIfEmpty(Mono.defer(() -> airlineFleetRepository.insert(bawB777)))
+                .block();
+        AirlineFleet savedAfrA320 = airlineFleetRepository.findByRegistrationNumber("F-HBNA")
+                .switchIfEmpty(Mono.defer(() -> airlineFleetRepository.insert(afrA320)))
+                .block();
 
         // Create test flights
         LocalDateTime now = LocalDateTime.now();
@@ -197,10 +217,16 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .status("Scheduled")
                 .build();
 
-        // Save flights
-        flightRepository.save(flight1).block();
-        flightRepository.save(flight2).block();
-        flightRepository.save(flight3).block();
+        // Save flights if they don't exist
+        flightRepository.findByAirlineIcaoCodeAndFlightNumber("BAW", "BA123")
+                .switchIfEmpty(Mono.defer(() -> flightRepository.save(flight1)))
+                .block();
+        flightRepository.findByAirlineIcaoCodeAndFlightNumber("BAW", "BA456")
+                .switchIfEmpty(Mono.defer(() -> flightRepository.save(flight2)))
+                .block();
+        flightRepository.findByAirlineIcaoCodeAndFlightNumber("AFR", "AF789")
+                .switchIfEmpty(Mono.defer(() -> flightRepository.save(flight3)))
+                .block();
     }
 
     @Test
@@ -249,6 +275,130 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                     assert foundEgllToLfpg : "Expected to find flight from EGLL to LFPG";
                     assert foundEgllToKjfk : "Expected to find flight from EGLL to KJFK";
                     assert foundLfpgToKjfk : "Expected to find flight from LFPG to KJFK";
+                });
+    }
+
+    @Test
+    public void testGetRoute() {
+        // Test route from London to Paris
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "LFPG")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route contains a flight from EGLL to LFPG
+                    boolean foundDirectFlight = false;
+                    for (Flight flight : response.getResponseBody()) {
+                        if (flight.getDepartureAirportIcao().equals("EGLL") && 
+                            flight.getArrivalAirportIcao().equals("LFPG")) {
+                            foundDirectFlight = true;
+                            break;
+                        }
+                    }
+
+                    assert foundDirectFlight : "Expected to find a direct flight from EGLL to LFPG";
+                });
+
+        // Test route from London to New York
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "KJFK")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route starts at EGLL and ends at KJFK
+                    // This could be a direct flight or a route with connections
+                    List<Flight> flights = response.getResponseBody();
+                    assert !flights.isEmpty() : "Expected a non-empty route";
+
+                    // Check that the first flight departs from EGLL
+                    Flight firstFlight = flights.get(0);
+                    assert firstFlight.getDepartureAirportIcao().equals("EGLL") : 
+                        "Expected the route to start from EGLL";
+
+                    // Check that the last flight arrives at KJFK
+                    Flight lastFlight = flights.get(flights.size() - 1);
+                    assert lastFlight.getArrivalAirportIcao().equals("KJFK") : 
+                        "Expected the route to end at KJFK";
+                });
+    }
+
+    @Test
+    public void testGetRouteMinimumCost() {
+        // Test minimum cost route from London to Paris
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route-minimum-cost")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "LFPG")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route contains a flight from EGLL to LFPG
+                    boolean foundDirectFlight = false;
+                    for (Flight flight : response.getResponseBody()) {
+                        if (flight.getDepartureAirportIcao().equals("EGLL") && 
+                            flight.getArrivalAirportIcao().equals("LFPG")) {
+                            foundDirectFlight = true;
+                            break;
+                        }
+                    }
+
+                    assert foundDirectFlight : "Expected to find a direct flight from EGLL to LFPG";
+                });
+
+        // Test minimum cost route from London to New York
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/flights-computing/route-minimum-cost")
+                        .queryParam("departure", "EGLL")
+                        .queryParam("arrival", "KJFK")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Flight.class)
+                .consumeWith(response -> {
+                    assert response.getResponseBody() != null;
+                    assert !response.getResponseBody().isEmpty();
+
+                    // Verify that the route starts at EGLL and ends at KJFK
+                    // This could be a direct flight or a route with connections
+                    List<Flight> flights = response.getResponseBody();
+                    assert !flights.isEmpty() : "Expected a non-empty route";
+
+                    // Check that the first flight departs from EGLL
+                    Flight firstFlight = flights.get(0);
+                    assert firstFlight.getDepartureAirportIcao().equals("EGLL") : 
+                        "Expected the route to start from EGLL";
+
+                    // Check that the last flight arrives at KJFK
+                    Flight lastFlight = flights.get(flights.size() - 1);
+                    assert lastFlight.getArrivalAirportIcao().equals("KJFK") : 
+                        "Expected the route to end at KJFK";
                 });
     }
 }

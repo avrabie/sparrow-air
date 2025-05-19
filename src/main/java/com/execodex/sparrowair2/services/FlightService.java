@@ -215,4 +215,13 @@ public class FlightService {
                     return Flux.error(e);
                 });
     }
+
+    public Flux<Flight> getAllFlightsToAirportCode(String airportCode) {
+        return flightRepository.findByArrivalAirportIcao(airportCode)
+                .doOnError(e -> logger.error("Error retrieving flights to airport: {}", airportCode, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving flights to airport: {}", airportCode, e);
+                    return Flux.error(e);
+                });
+    }
 }

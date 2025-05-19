@@ -26,4 +26,6 @@ public interface FlightRepository extends ReactiveCrudRepository<Flight, Long> {
     Flux<Flight> findByAirlineIcaoCode(String airlineIcaoCode);
 
     Flux<Flight> findByDepartureAirportIcao(String airportCode);
+
+    Flux<Flight> findByArrivalAirportIcao(String airportCode);
 }

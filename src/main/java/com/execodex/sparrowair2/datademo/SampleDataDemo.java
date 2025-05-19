@@ -499,7 +499,40 @@ public class SampleDataDemo {
                         .scheduledArrival(LocalDateTime.now().plusDays(10).plusHours(2))
                         .airlineFleetId(6L) // Using ACA's A320
                         .status("Scheduled")
+                        .build(),
+                Flight.builder()
+                        .airlineIcaoCode("ACA")
+                        .flightNumber("AC456")
+                        .departureAirportIcao("CYYZ")
+                        .arrivalAirportIcao("KLAX")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(11))
+                        .scheduledArrival(LocalDateTime.now().plusDays(11).plusHours(4))
+                        .airlineFleetId(6L) // Using ACA's A320
+                        .status("Scheduled")
+                        .build(),
+                //add flight from New York to Basel
+                Flight.builder()
+                        .airlineIcaoCode("AAL")
+                        .flightNumber("AA999")
+                        .departureAirportIcao("KJFK")
+                        .arrivalAirportIcao("LFSB")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(12))
+                        .scheduledArrival(LocalDateTime.now().plusDays(12).plusHours(8))
+                        .airlineFleetId(1L) // Using AAL's B738
+                        .status("Scheduled")
+                        .build(),
+                // Add a flight from London to New York
+                Flight.builder()
+                        .airlineIcaoCode("BAW")
+                        .flightNumber("BA789")
+                        .departureAirportIcao("EGLL")
+                        .arrivalAirportIcao("KJFK")
+                        .scheduledDeparture(LocalDateTime.now().plusDays(13))
+                        .scheduledArrival(LocalDateTime.now().plusDays(13).plusHours(7))
+                        .airlineFleetId(2L) // Using BAW's A320
+                        .status("Scheduled")
                         .build()
+
         );
 
 
