@@ -22,7 +22,7 @@ public class FlightsComputingHandler {
     public Mono<ServerResponse> getAirportToAirportsFlights(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(flightsComputing.airpotToAirportsFlights(), Object.class)
+                .body(flightsComputing.airpotToAirportsIcao(), Object.class)
                 .onErrorResume(this::handleError);
     }
 
@@ -31,5 +31,12 @@ public class FlightsComputingHandler {
         return ServerResponse
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in FlightsComputingHandler occurred: " + error.getMessage());
+    }
+
+    public Mono<ServerResponse> getAirportsToFlights(ServerRequest request) {
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(flightsComputing.airpotsToFlights(), Object.class)
+                .onErrorResume(this::handleError);
     }
 }

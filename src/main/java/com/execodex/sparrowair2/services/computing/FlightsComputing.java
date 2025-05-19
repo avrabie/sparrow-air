@@ -89,8 +89,7 @@ public class FlightsComputing {
         return airportListMap;
     }
 
-    public Flux<Map<String, Collection<String>>> airpotToAirportsFlights() {
-
+    public Flux<Map<String, Collection<String>>> airpotToAirportsIcao() {
 
         Flux<String> airportIcaoCodes = airportService.getAllAirports().map(Airport::getIcaoCode);
         Flux<Map<String, Collection<String>>> airpotToAirportsFlights =
@@ -100,9 +99,19 @@ public class FlightsComputing {
                                 .collectMultimap(flight -> flight.getDepartureAirportIcao(),
                                         flight -> flight.getArrivalAirportIcao())
                         );
-
-
         return airpotToAirportsFlights;
+    }
 
+    public Flux<Map<String, Collection<Flight>>> airpotsToFlights() {
+
+        Flux<String> airportIcaoCodes = airportService.getAllAirports().map(Airport::getIcaoCode);
+        Flux<Map<String, Collection<Flight>>> airpotToAirportsFlights =
+                airportIcaoCodes
+                        .flatMap(airportIcaoCode -> flightService
+                                .getAllFlightsFromAirportCode(airportIcaoCode)
+                                .collectMultimap(flight -> flight.getDepartureAirportIcao(),
+                                        flight -> flight)
+                        );
+        return airpotToAirportsFlights;
     }
 }
