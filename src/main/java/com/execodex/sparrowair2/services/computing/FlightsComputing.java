@@ -133,16 +133,12 @@ public class FlightsComputing {
     private Mono<Void> findRoute(Airport departureAirport, Airport arrivalAirport, List<Flight> route, List<Airport> visitedAirports) {
         // Get all flights from the departure airport
 
-
-        return airpotsToFlights()
-                .filter(map -> map.containsKey(departureAirport.getIcaoCode()))
-                .next()
-                .flatMap(airportToFlights -> {
-                    if (!airportToFlights.containsKey(departureAirport.getIcaoCode())) {
+        return flightService.getAllFlightsFromAirportCode(departureAirport.getIcaoCode())
+                .collectList()
+                .flatMap(flights -> {
+                    if (flights.isEmpty()) {
                         return Mono.empty(); // No flights from this airport
                     }
-
-                    Collection<Flight> flights = airportToFlights.get(departureAirport.getIcaoCode());
 
                     // Process each flight recursively
                     return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, 0);

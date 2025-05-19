@@ -173,7 +173,7 @@ public class FlightRoutes {
                     )
             ),
             @RouterOperation(
-                    path = "/flights/airport/{airportCode}",
+                    path = "/flights/from/airport/{airportCode}",
                     method = RequestMethod.GET,
                     beanClass = FlightHandler.class,
                     beanMethod = "getAllFlightsFromAirportCode",
@@ -181,6 +181,28 @@ public class FlightRoutes {
                             operationId = "getAllFlightsFromAirportCode",
                             summary = "Get all flights from a specific airport",
                             description = "Returns a list of flights departing from the specified airport code",
+                            tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
+                            parameters = {
+                                    @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true)
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/flights/to/airport/{airportCode}",
+                    method = RequestMethod.GET,
+                    beanClass = FlightHandler.class,
+                    beanMethod = "getAllFlightsToAirportCode",
+                    operation = @Operation(
+                            operationId = "getAllFlightsToAirportCode",
+                            summary = "Get all flights to a specific airport",
+                            description = "Returns a list of flights arriving at the specified airport code",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
                                     @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true)
@@ -212,7 +234,8 @@ public class FlightRoutes {
                         // DELETE /flights/{id} - Delete a flight
                         .DELETE("/{id}", flightHandler::deleteFlight)
                         // GET /flights/airport/{airportCode} - Get all flights from a specific airport
-                        .GET("/airport/{airportCode}", accept(MediaType.APPLICATION_JSON), flightHandler::getAllFlightsFromAirportCode)
+                        .GET("/from/airport/{airportCode}", accept(MediaType.APPLICATION_JSON), flightHandler::getAllFlightsFromAirportCode)
+                        .GET("/to/airport/{airportCode}", accept(MediaType.APPLICATION_JSON), flightHandler::getAllFlightsToAirportCode)
                 )
                 .build();
     }
