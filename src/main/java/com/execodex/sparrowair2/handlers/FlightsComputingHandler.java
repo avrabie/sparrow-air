@@ -1,5 +1,8 @@
 package com.execodex.sparrowair2.handlers;
 
+import com.execodex.sparrowair2.entities.Airport;
+import com.execodex.sparrowair2.entities.Flight;
+import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.computing.FlightsComputing;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -7,15 +10,19 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class FlightsComputingHandler {
 
     private final FlightsComputing flightsComputing;
+    private final AirportService airportService;
 
-    public FlightsComputingHandler(FlightsComputing flightsComputing) {
+    public FlightsComputingHandler(FlightsComputing flightsComputing, AirportService airportService) {
         this.flightsComputing = flightsComputing;
+        this.airportService = airportService;
     }
 
     // Get airport to airports flights mapping
@@ -38,5 +45,36 @@ public class FlightsComputingHandler {
                 .contentType(APPLICATION_JSON)
                 .body(flightsComputing.airpotsToFlights(), Object.class)
                 .onErrorResume(this::handleError);
+    }
+
+    // Get route between two airports
+    public Mono<ServerResponse> getRoute(ServerRequest request) {
+        String departureIcao = request.queryParam("departure").orElse("");
+        String arrivalIcao = request.queryParam("arrival").orElse("");
+
+        if (departureIcao.isEmpty() || arrivalIcao.isEmpty()) {
+            return ServerResponse.badRequest()
+                    .bodyValue("Both departure and arrival airport ICAO codes are required");
+        }
+
+        return Mono.zip(
+                airportService.getAirportByIcaoCode(departureIcao),
+                airportService.getAirportByIcaoCode(arrivalIcao)
+            )
+            .flatMap(tuple -> {
+                Airport departureAirport = tuple.getT1();
+                Airport arrivalAirport = tuple.getT2();
+
+                if (departureAirport == null || arrivalAirport == null) {
+                    return ServerResponse.badRequest()
+                            .bodyValue("One or both of the specified airports could not be found");
+                }
+
+                return flightsComputing.getRoute(departureAirport, arrivalAirport)
+                    .flatMap(route -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(route));
+            })
+            .onErrorResume(this::handleError);
     }
 }

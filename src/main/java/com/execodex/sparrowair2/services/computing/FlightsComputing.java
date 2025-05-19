@@ -6,6 +6,7 @@ import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.FlightService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -31,28 +32,29 @@ public class FlightsComputing {
      * Returns a map where each key is an airport and the value is a list of airports
      * that can be reached directly from the key airport.
      *
-     * @return A map of airports to their destination airports
+     * @return A Mono emitting a map of airports to their destination airports
      */
-    public Map<Airport, List<Airport>> computeFlightsMatrix() {
+    public Mono<Map<Airport, List<Airport>>> computeFlightsMatrix() {
         // If we already have computed the matrix, return it
         if (!airportListMap.isEmpty()) {
-            return airportListMap;
+            return Mono.just(airportListMap);
         }
 
-        return refreshFlightsMatrix();
+        return refreshFlightsMatrix()
+                .doOnNext(matrix -> airportListMap = matrix);
     }
 
     /**
      * Refreshes the flights matrix by recomputing it.
      * This is useful when flights or airports are added, updated, or deleted.
      *
-     * @return The refreshed flights matrix
+     * @return A Mono emitting the refreshed flights matrix
      */
-    public Map<Airport, List<Airport>> refreshFlightsMatrix() {
+    public Mono<Map<Airport, List<Airport>>> refreshFlightsMatrix() {
         Map<String, Airport> airportMap = new HashMap<>();
 
         // First, get all airports and create a map of ICAO code to Airport
-        airportListMap = airportService.getAllAirports()
+        return airportService.getAllAirports()
                 .collectMap(Airport::getIcaoCode, airport -> airport)
                 .flatMap(airports -> {
                     airportMap.putAll(airports);
@@ -83,10 +85,7 @@ public class FlightsComputing {
                     }
 
                     return result;
-                })
-                .block(); // Block to get the result synchronously
-
-        return airportListMap;
+                });
     }
 
     public Flux<Map<String, Collection<String>>> airpotToAirportsIcao() {
@@ -113,5 +112,97 @@ public class FlightsComputing {
                                         flight -> flight)
                         );
         return airpotToAirportsFlights;
+    }
+
+    // this method will determine the route from one airport to another and will return the list Flights
+    public Mono<List<Flight>> getRoute(Airport departureAirport, Airport arrivalAirport) {
+        // If departure and arrival are the same, return empty route
+        if (departureAirport.getIcaoCode().equals(arrivalAirport.getIcaoCode())) {
+            return Mono.just(new ArrayList<>());
+        }
+
+        List<Flight> route = new ArrayList<>();
+        List<Airport> visitedAirports = new ArrayList<>();
+        visitedAirports.add(departureAirport);
+
+        // Start the search from the departure airport
+        return findRoute(departureAirport, arrivalAirport, route, visitedAirports)
+                .thenReturn(route);
+    }
+
+    private Mono<Void> findRoute(Airport departureAirport, Airport arrivalAirport, List<Flight> route, List<Airport> visitedAirports) {
+        // Get all flights from the departure airport
+
+
+        return airpotsToFlights()
+                .filter(map -> map.containsKey(departureAirport.getIcaoCode()))
+                .next()
+                .flatMap(airportToFlights -> {
+                    if (!airportToFlights.containsKey(departureAirport.getIcaoCode())) {
+                        return Mono.empty(); // No flights from this airport
+                    }
+
+                    Collection<Flight> flights = airportToFlights.get(departureAirport.getIcaoCode());
+
+                    // Process each flight recursively
+                    return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, 0);
+                })
+                .switchIfEmpty(Mono.empty());
+    }
+
+    private Mono<Void> processFlights(Collection<Flight> flights, Airport departureAirport, Airport arrivalAirport, 
+                                     List<Flight> route, List<Airport> visitedAirports, int index) {
+        // Base case: if we've processed all flights
+        if (index >= flights.size()) {
+            return Mono.empty();
+        }
+
+        // Get the current flight
+        Flight flight = (Flight) flights.toArray()[index];
+        String nextAirportIcao = flight.getArrivalAirportIcao();
+
+        // Skip if we've already visited this airport (to avoid cycles)
+        boolean alreadyVisited = visitedAirports.stream()
+                .anyMatch(airport -> airport.getIcaoCode().equals(nextAirportIcao));
+
+        if (alreadyVisited) {
+            // Try the next flight
+            return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, index + 1);
+        }
+
+        // Get the next airport
+        return airportService.getAirportByIcaoCode(nextAirportIcao)
+                .flatMap(nextAirport -> {
+                    // Add the flight to the route
+                    route.add(flight);
+
+                    // Add the next airport to visited airports
+                    visitedAirports.add(nextAirport);
+
+                    // If we've reached the arrival airport, we're done
+                    if (nextAirportIcao.equals(arrivalAirport.getIcaoCode())) {
+                        return Mono.empty();
+                    }
+
+                    // Continue the search from the next airport
+                    return findRoute(nextAirport, arrivalAirport, route, visitedAirports)
+                            .then(Mono.defer(() -> {
+                                // If we've found a route to the arrival airport, we're done
+                                if (route.stream().anyMatch(f -> f.getArrivalAirportIcao().equals(arrivalAirport.getIcaoCode()))) {
+                                    return Mono.empty();
+                                }
+
+                                // If we haven't found a route, backtrack
+                                route.remove(flight);
+                                visitedAirports.remove(nextAirport);
+
+                                // Try the next flight
+                                return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, index + 1);
+                            }));
+                })
+                .switchIfEmpty(Mono.defer(() -> {
+                    // If airport not found, try the next flight
+                    return processFlights(flights, departureAirport, arrivalAirport, route, visitedAirports, index + 1);
+                }));
     }
 }
