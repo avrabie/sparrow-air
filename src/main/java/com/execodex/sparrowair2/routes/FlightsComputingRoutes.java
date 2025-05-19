@@ -45,6 +45,25 @@ public class FlightsComputingRoutes {
                                     )
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/flights-computing/airports-to-flights",
+                    method = RequestMethod.GET,
+                    beanClass = FlightsComputingHandler.class,
+                    beanMethod = "getAirportsToFlights",
+                    operation = @Operation(
+                            operationId = "getAirportsToFlights",
+                            summary = "Get airports to flights mapping",
+                            description = "Returns a mapping of airports to their flights",
+                            tags = {"Flights Computing ✈️ \uD83C\uDF10"},
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> flightsComputingRoutesFunction() {
@@ -52,6 +71,8 @@ public class FlightsComputingRoutes {
                 .path("/flights-computing", builder -> builder
                         // GET /flights-computing/airport-to-airports - Get airport to airports flights mapping
                         .GET("/airport-to-airports", accept(MediaType.APPLICATION_JSON), flightsComputingHandler::getAirportToAirportsFlights)
+                        .GET("/airports-to-flights", accept(MediaType.APPLICATION_JSON), flightsComputingHandler::getAirportsToFlights)
+
                 )
                 .build();
     }
