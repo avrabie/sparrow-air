@@ -60,7 +60,8 @@ public class AircraftTypeRoutes {
                             summary = "Get aircraft type by ICAO code",
                             tags = {"Aircraft Types 🛩 "},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -111,7 +112,8 @@ public class AircraftTypeRoutes {
                             summary = "Update an existing aircraft type",
                             tags = {"Aircraft Types 🛩 "},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Aircraft type to create",
@@ -144,7 +146,8 @@ public class AircraftTypeRoutes {
                             summary = "Delete aircraft type by ICAO code",
                             tags = {"Aircraft Types 🛩 "},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(responseCode = "204", description = "Aircraft type deleted"),

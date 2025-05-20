@@ -76,8 +76,10 @@ public class FlightsComputingRoutes {
                             description = "Returns a list of flights that form a route between the specified departure and arrival airports",
                             tags = {"Flights Computing ✈️ \uD83C\uDF10"},
                             parameters = {
-                                    @io.swagger.v3.oas.annotations.Parameter(name = "departure", description = "ICAO code of the departure airport", required = true),
-                                    @io.swagger.v3.oas.annotations.Parameter(name = "arrival", description = "ICAO code of the arrival airport", required = true)
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "departure", description = "ICAO code of the departure airport", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string"))),
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "arrival", description = "ICAO code of the arrival airport", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -103,8 +105,10 @@ public class FlightsComputingRoutes {
                             description = "Returns a list of flights that form the minimum cost route between the specified departure and arrival airports",
                             tags = {"Flights Computing ✈️ \uD83C\uDF10"},
                             parameters = {
-                                    @io.swagger.v3.oas.annotations.Parameter(name = "departure", description = "ICAO code of the departure airport", required = true),
-                                    @io.swagger.v3.oas.annotations.Parameter(name = "arrival", description = "ICAO code of the arrival airport", required = true)
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "departure", description = "ICAO code of the departure airport", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string"))),
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "arrival", description = "ICAO code of the arrival airport", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(

@@ -58,7 +58,8 @@ public class AirlineFleetRoutes {
                             description = "Returns an aircraft by ID",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -80,7 +81,8 @@ public class AirlineFleetRoutes {
                             description = "Returns a list of all aircraft for a specific airline",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true)
+                                    @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -102,7 +104,8 @@ public class AirlineFleetRoutes {
                             description = "Returns the total number of aircraft for a specific airline",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true)
+                                    @Parameter(name = "airlineIcao", in = ParameterIn.PATH, description = "ICAO code of the airline", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -124,7 +127,8 @@ public class AirlineFleetRoutes {
                             description = "Returns a list of all aircraft of a specific type",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "aircraftTypeIcao", in = ParameterIn.PATH, description = "ICAO code of the aircraft type", required = true)
+                                    @Parameter(name = "aircraftTypeIcao", in = ParameterIn.PATH, description = "ICAO code of the aircraft type", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -174,7 +178,8 @@ public class AirlineFleetRoutes {
                             description = "Updates an existing aircraft in the fleet",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Updated aircraft object",
@@ -205,7 +210,8 @@ public class AirlineFleetRoutes {
                             description = "Deletes an aircraft from the fleet",
                             tags = {"Airline Fleet ✈️"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Aircraft ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(

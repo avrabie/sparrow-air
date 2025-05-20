@@ -59,7 +59,8 @@ public class FlightRoutes {
                             description = "Returns a flight by ID",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -81,7 +82,8 @@ public class FlightRoutes {
                             description = "Returns a list of flights by airline ICAO code",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "airlineIcaoCode", in = ParameterIn.PATH, description = "Airline ICAO code", required = true)
+                                    @Parameter(name = "airlineIcaoCode", in = ParameterIn.PATH, description = "Airline ICAO code", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -131,7 +133,8 @@ public class FlightRoutes {
                             description = "Updates an existing flight",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Flight object to be updated",
@@ -162,7 +165,8 @@ public class FlightRoutes {
                             description = "Deletes a flight by ID",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true)
+                                    @Parameter(name = "id", in = ParameterIn.PATH, description = "Flight ID", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -183,7 +187,8 @@ public class FlightRoutes {
                             description = "Returns a list of flights departing from the specified airport code",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true)
+                                    @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -205,7 +210,8 @@ public class FlightRoutes {
                             description = "Returns a list of flights arriving at the specified airport code",
                             tags = {"Flights \uD83D\uDEEB\uD83D\uDEEC"},
                             parameters = {
-                                    @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true)
+                                    @Parameter(name = "airportCode", in = ParameterIn.PATH, description = "Airport ICAO code", required = true,
+                                              content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(

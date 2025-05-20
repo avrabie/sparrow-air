@@ -56,7 +56,8 @@ public class BookingSegmentRoute {
                             tags = {"Booking Segments \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
                             //todo finish with parameters for id here
                             parameters = {
-                                    @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking Segment ID", required = true)
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking Segment ID", required = true,
+                                    schema = @io.swagger.v3.oas.annotations.media.Schema(type = "integer"))
                             },
                             responses = {
                                     @ApiResponse(
