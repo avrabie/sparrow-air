@@ -33,4 +33,5 @@ public class Booking {
     private LocalDateTime createdAt;
 
 
+    //todo payment_id
 }

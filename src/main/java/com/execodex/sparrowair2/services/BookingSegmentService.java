@@ -144,18 +144,18 @@ public class BookingSegmentService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Mono<BookingSegment> updateBookingSegment(long l, BookingSegment bookingSegment) {
-        return bookingSegmentRepository.findById(l)
-                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with ID: " + l)))
+    public Mono<BookingSegment> updateBookingSegment(long id, BookingSegment bookingSegment) {
+        return bookingSegmentRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Booking segment not found with ID: " + id)))
                 .flatMap(existingSegment -> {
 
-                    bookingSegment.setFareClass(existingSegment.getFareClass());
-                    bookingSegment.setSeatId(existingSegment.getSeatId());
+//                    bookingSegment.setFareClass(existingSegment.getFareClass());
+//                    bookingSegment.setSeatId(existingSegment.getSeatId());
                     return bookingSegmentRepository.save(bookingSegment)
                             .doOnSuccess(updatedSegment -> {
                                 System.out.println("Updated booking segment with ID: " + updatedSegment.getId());
                                 // Update the seat status if necessary
-                                seatService.updateSeatStatus(bookingSegment.getSeatId(), "AVAILABLE")
+                                seatService.updateSeatStatus(existingSegment.getSeatId(), "AVAILABLE")
                                         .doOnSuccess(seat -> System.out.println("Updated seat status for seat ID: " + seat.getId()))
                                         .doOnError(e -> System.err.println("Error updating seat status: " + e.getMessage()));
                             })

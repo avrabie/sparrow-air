@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Sparrow Air 2 is a fun pet project focused on building a reactive airline management system using
+Sparrow Air  is a fun pet project focused on building a reactive airline management system using
 a step by step vibe coding (with manual interventions when it breaks the project or goes too astray).
 The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity. 
 We're just getting started, but the goal is to create a fully reactive application.
