@@ -40,7 +40,12 @@ public class AircraftTypeRoutes {
                             operationId = "getAllAircraftTypes",
                             summary = "Get all aircraft types",
                             tags = {"Aircraft Types 🛩 "},  // Custom tag here
-                            description = "Returns a list of all aircraft types",
+                            description = "Returns a list of all aircraft types, optionally filtered by model name",
+                            parameters = {
+                                    @Parameter(name = "search", in = ParameterIn.QUERY, required = false,
+                                              description = "Search query to filter aircraft types by model name",
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -154,6 +159,32 @@ public class AircraftTypeRoutes {
                                     @ApiResponse(responseCode = "404", description = "Aircraft type not found")
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/aircraft-types/online/{icaoCode}",
+                    method = RequestMethod.GET,
+                    beanClass = AircraftTypeHandler.class,
+                    beanMethod = "parseOnlineAircraftType",
+                    operation = @Operation(
+                            operationId = "parseOnlineAircraftType",
+                            summary = "Parse online aircraft type from Skybrary",
+                            tags = {"Aircraft Types 🛩 "},
+                            parameters = {
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "500",
+                                            description = "Error parsing online aircraft type"
+                                    )
+                            }
+                    )
             )
 
 
@@ -166,6 +197,8 @@ public class AircraftTypeRoutes {
                         .GET("", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::getAllAircraftTypes)
                         // GET /aircraft-types/{icaoCode} - Get aircraft type by ICAO code
                         .GET("/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::getAircraftTypeByIcaoCode)
+                        // GET /aircraft-types/online/{icaoCode} - Parse online aircraft type from Skybrary
+                        .GET("/online/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::parseOnlineAircraftType)
                         // POST /aircraft-types - Create a new aircraft type
                         .POST("", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::createAircraftType)
                         // PUT /aircraft-types/{icaoCode} - Update an existing aircraft type

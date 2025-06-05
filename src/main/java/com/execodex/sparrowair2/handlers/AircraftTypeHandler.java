@@ -20,11 +20,12 @@ public class AircraftTypeHandler {
         this.aircraftTypeService = aircraftTypeService;
     }
 
-    // Get all aircraft types
+    // Get all aircraft types, optionally filtered by model name
     public Mono<ServerResponse> getAllAircraftTypes(ServerRequest request) {
+        String searchQuery = request.queryParam("search").orElse(null);
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(aircraftTypeService.getAllAircraftTypes(), AircraftType.class)
+                .body(aircraftTypeService.getAllAircraftTypes(searchQuery), AircraftType.class)
                 .onErrorResume(this::handleError);
     }
 
@@ -84,5 +85,15 @@ public class AircraftTypeHandler {
         return ServerResponse
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in AircraftTypeHandler occurred: " + error.getMessage());
+    }
+
+    // Parse online aircraft type from Skybrary
+    public Mono<ServerResponse> parseOnlineAircraftType(ServerRequest request) {
+        String aircraftIcaoCode = request.pathVariable("icaoCode");
+        return aircraftTypeService.parseOnlineAircraftType(aircraftIcaoCode)
+                .flatMap(aircraftType -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(aircraftType))
+                .onErrorResume(this::handleError);
     }
 }

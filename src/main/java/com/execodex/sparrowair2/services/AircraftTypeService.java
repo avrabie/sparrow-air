@@ -2,6 +2,7 @@ package com.execodex.sparrowair2.services;
 
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.services.utilities.ParseOnlineAircraftType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -14,19 +15,35 @@ public class AircraftTypeService {
 
     private static final Logger logger = LoggerFactory.getLogger(AircraftTypeService.class);
     private final AircraftTypeRepository aircraftTypeRepository;
+    private final ParseOnlineAircraftType parseOnlineAircraftType;
 
-    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository) {
+    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository, ParseOnlineAircraftType parseOnlineAircraftType) {
         this.aircraftTypeRepository = aircraftTypeRepository;
+        this.parseOnlineAircraftType = parseOnlineAircraftType;
     }
 
-    // Get all aircraft types
+    // Get all aircraft types, optionally filtered by model name
+    public Flux<AircraftType> getAllAircraftTypes(String searchQuery) {
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            return aircraftTypeRepository.findByModelNameContainingIgnoreCase(searchQuery)
+                    .doOnError(e -> logger.error("Error searching aircraft types with query: {}", searchQuery, e))
+                    .onErrorResume(e -> {
+                        logger.error("Error searching aircraft types with query: {}", searchQuery, e);
+                        return Flux.error(e);
+                    });
+        } else {
+            return aircraftTypeRepository.findAll()
+                    .doOnError(e -> logger.error("Error retrieving all aircraft types", e))
+                    .onErrorResume(e -> {
+                        logger.error("Error retrieving all aircraft types", e);
+                        return Flux.error(e);
+                    });
+        }
+    }
+
+    // Get all aircraft types without filtering
     public Flux<AircraftType> getAllAircraftTypes() {
-        return aircraftTypeRepository.findAll()
-                .doOnError(e -> logger.error("Error retrieving all aircraft types", e))
-                .onErrorResume(e -> {
-                    logger.error("Error retrieving all aircraft types", e);
-                    return Flux.error(e);
-                });
+        return getAllAircraftTypes(null);
     }
 
     // Get aircraft type by ICAO code
@@ -71,5 +88,13 @@ public class AircraftTypeService {
                         .onErrorResume(e -> Mono.error(e))
                 )
                 .switchIfEmpty(Mono.empty());
+    }
+
+    // Parse online aircraft type from Skybrary
+    public Mono<com.execodex.sparrowair2.entities.skybrary.AircraftType> parseOnlineAircraftType(String aircraftIcaoCode) {
+        return parseOnlineAircraftType.parseOnlineAircraftType(aircraftIcaoCode)
+                .doOnSuccess(a -> logger.info("Parsed online aircraft type with ICAO code: {}", a.getIcaoCode()))
+                .doOnError(e -> logger.error("Error parsing online aircraft type with ICAO code: {}", aircraftIcaoCode, e))
+                .onErrorResume(e -> Mono.error(e));
     }
 }
