@@ -2,7 +2,7 @@ package com.execodex.sparrowair2.handlers;
 
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.model.AircraftIcaoRequest;
-import com.execodex.sparrowair2.services.utilities.ParseAircraftHtml;
+import com.execodex.sparrowair2.services.utilities.ParseAircraftSkyBrary;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -12,14 +12,12 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
-
 @Component
 public class HelloRouteHandlers {
-    private final ParseAircraftHtml parseAircraftHtml;
+    private final ParseAircraftSkyBrary parseAircraftSkyBrary;
 
-    public HelloRouteHandlers(ParseAircraftHtml parseAircraftHtml) {
-        this.parseAircraftHtml = parseAircraftHtml;
+    public HelloRouteHandlers(ParseAircraftSkyBrary parseAircraftSkyBrary) {
+        this.parseAircraftSkyBrary = parseAircraftSkyBrary;
     }
 
 
@@ -51,7 +49,7 @@ public class HelloRouteHandlers {
                     // Here you would typically call a service to process the request
                 })
                 .flatMapMany(aircraftIcaoRequest -> Flux.fromIterable(aircraftIcaoRequest.getIcaoCodes()))
-                .flatMap(icaoCode -> parseAircraftHtml.parseOnlineAircraft(icaoCode)
+                .flatMap(icaoCode -> parseAircraftSkyBrary.parseOnlineAircraft(icaoCode)
                         .doOnNext(aircraft -> System.out.println("Parsed aircraft: " + aircraft))
                         .onErrorResume(e -> {
                             System.err.println("Error parsing aircraft with ICAO code " + icaoCode + ": " + e.getMessage());

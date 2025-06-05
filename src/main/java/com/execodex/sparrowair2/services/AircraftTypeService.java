@@ -3,7 +3,7 @@ package com.execodex.sparrowair2.services;
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
-import com.execodex.sparrowair2.services.utilities.ParseAircraftHtml;
+import com.execodex.sparrowair2.services.utilities.ParseAircraftSkyBrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -16,12 +16,12 @@ public class AircraftTypeService {
 
     private static final Logger logger = LoggerFactory.getLogger(AircraftTypeService.class);
     private final AircraftTypeRepository aircraftTypeRepository;
-    private final ParseAircraftHtml parseAircraftHtml;
+    private final ParseAircraftSkyBrary parseAircraftSkyBrary;
 
     public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository,
-                               ParseAircraftHtml parseAircraftHtml) {
+                               ParseAircraftSkyBrary parseAircraftSkyBrary) {
         this.aircraftTypeRepository = aircraftTypeRepository;
-        this.parseAircraftHtml = parseAircraftHtml;
+        this.parseAircraftSkyBrary = parseAircraftSkyBrary;
     }
 
     // Get all aircraft types, optionally filtered by model name
@@ -96,7 +96,7 @@ public class AircraftTypeService {
 
     // Parse online aircraft from Skybrary
     public Mono<Aircraft> parseOnlineAircraft(String aircraftIcaoCode) {
-        return parseAircraftHtml.parseOnlineAircraft(aircraftIcaoCode)
+        return parseAircraftSkyBrary.parseOnlineAircraft(aircraftIcaoCode)
                 .doOnSuccess(a -> logger.info("Parsed online aircraft with ICAO code: {}", aircraftIcaoCode))
                 .doOnError(e -> logger.error("Error parsing online aircraft with ICAO code: {}", aircraftIcaoCode, e))
                 .onErrorResume(e -> Mono.error(e));

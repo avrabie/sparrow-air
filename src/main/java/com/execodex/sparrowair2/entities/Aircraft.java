@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 /**
@@ -18,7 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(name = "aircraft")
 public class Aircraft {
     @Id
-    private Long id;
+    private String icaoCode;
     
     private String name;
     private String manufacturer;

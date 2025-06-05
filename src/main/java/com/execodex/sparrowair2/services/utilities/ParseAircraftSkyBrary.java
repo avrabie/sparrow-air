@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +16,10 @@ import java.util.List;
  * Service for parsing aircraft information from HTML files.
  */
 @Service
-public class ParseAircraftHtml {
+public class ParseAircraftSkyBrary {
     private final WebClient webClient;
 
-    public ParseAircraftHtml(WebClient.Builder webClientBuilder) {
+    public ParseAircraftSkyBrary(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder != null ? webClientBuilder.baseUrl("https://skybrary.aero").build() : null;
     }
 
@@ -38,7 +36,11 @@ public class ParseAircraftHtml {
                 .uri(path)
                 .retrieve()
                 .bodyToMono(String.class)
-                .map(this::parseHtmlContent);
+                .map(this::parseHtmlContent)
+                .map(aircraft -> {;
+                    aircraft.setIcaoCode(aircraftIcaoCode.toUpperCase());
+                    return aircraft;
+                });
     }
 
     /**
