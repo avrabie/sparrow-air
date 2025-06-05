@@ -164,10 +164,10 @@ public class AircraftTypeRoutes {
                     path = "/aircraft-types/online/{icaoCode}",
                     method = RequestMethod.GET,
                     beanClass = AircraftTypeHandler.class,
-                    beanMethod = "parseOnlineAircraftType",
+                    beanMethod = "parseOnlineAircraft",
                     operation = @Operation(
-                            operationId = "parseOnlineAircraftType",
-                            summary = "Parse online aircraft type from Skybrary",
+                            operationId = "parseOnlineAircraft",
+                            summary = "Parse online aircraft from Skybrary",
                             tags = {"Aircraft Types 🛩 "},
                             parameters = {
                                     @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
@@ -181,7 +181,7 @@ public class AircraftTypeRoutes {
                                     ),
                                     @ApiResponse(
                                             responseCode = "500",
-                                            description = "Error parsing online aircraft type"
+                                            description = "Error parsing online aircraft"
                                     )
                             }
                     )
@@ -197,8 +197,8 @@ public class AircraftTypeRoutes {
                         .GET("", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::getAllAircraftTypes)
                         // GET /aircraft-types/{icaoCode} - Get aircraft type by ICAO code
                         .GET("/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::getAircraftTypeByIcaoCode)
-                        // GET /aircraft-types/online/{icaoCode} - Parse online aircraft type from Skybrary
-                        .GET("/online/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::parseOnlineAircraftType)
+                        // GET /aircraft-types/online/{icaoCode} - Parse online aircraft from Skybrary
+                        .GET("/online/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::parseOnlineAircraft)
                         // POST /aircraft-types - Create a new aircraft type
                         .POST("", accept(MediaType.APPLICATION_JSON), aircraftTypeHandler::createAircraftType)
                         // PUT /aircraft-types/{icaoCode} - Update an existing aircraft type

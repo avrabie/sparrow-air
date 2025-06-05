@@ -1,7 +1,9 @@
 package com.execodex.sparrowair2.services;
 
+import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.services.utilities.ParseAircraftHtml;
 import com.execodex.sparrowair2.services.utilities.ParseOnlineAircraftType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,14 @@ public class AircraftTypeService {
     private static final Logger logger = LoggerFactory.getLogger(AircraftTypeService.class);
     private final AircraftTypeRepository aircraftTypeRepository;
     private final ParseOnlineAircraftType parseOnlineAircraftType;
+    private final ParseAircraftHtml parseAircraftHtml;
 
-    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository, ParseOnlineAircraftType parseOnlineAircraftType) {
+    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository, 
+                              ParseOnlineAircraftType parseOnlineAircraftType,
+                              ParseAircraftHtml parseAircraftHtml) {
         this.aircraftTypeRepository = aircraftTypeRepository;
         this.parseOnlineAircraftType = parseOnlineAircraftType;
+        this.parseAircraftHtml = parseAircraftHtml;
     }
 
     // Get all aircraft types, optionally filtered by model name
@@ -95,6 +101,14 @@ public class AircraftTypeService {
         return parseOnlineAircraftType.parseOnlineAircraftType(aircraftIcaoCode)
                 .doOnSuccess(a -> logger.info("Parsed online aircraft type with ICAO code: {}", a.getIcaoCode()))
                 .doOnError(e -> logger.error("Error parsing online aircraft type with ICAO code: {}", aircraftIcaoCode, e))
+                .onErrorResume(e -> Mono.error(e));
+    }
+
+    // Parse online aircraft from Skybrary
+    public Mono<Aircraft> parseOnlineAircraft(String aircraftIcaoCode) {
+        return parseAircraftHtml.parseOnlineAircraft(aircraftIcaoCode)
+                .doOnSuccess(a -> logger.info("Parsed online aircraft with ICAO code: {}", aircraftIcaoCode))
+                .doOnError(e -> logger.error("Error parsing online aircraft with ICAO code: {}", aircraftIcaoCode, e))
                 .onErrorResume(e -> Mono.error(e));
     }
 }
