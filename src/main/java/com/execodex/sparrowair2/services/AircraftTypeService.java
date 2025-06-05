@@ -4,7 +4,6 @@ import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
 import com.execodex.sparrowair2.services.utilities.ParseAircraftHtml;
-import com.execodex.sparrowair2.services.utilities.ParseOnlineAircraftType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -17,14 +16,11 @@ public class AircraftTypeService {
 
     private static final Logger logger = LoggerFactory.getLogger(AircraftTypeService.class);
     private final AircraftTypeRepository aircraftTypeRepository;
-    private final ParseOnlineAircraftType parseOnlineAircraftType;
     private final ParseAircraftHtml parseAircraftHtml;
 
-    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository, 
-                              ParseOnlineAircraftType parseOnlineAircraftType,
-                              ParseAircraftHtml parseAircraftHtml) {
+    public AircraftTypeService(AircraftTypeRepository aircraftTypeRepository,
+                               ParseAircraftHtml parseAircraftHtml) {
         this.aircraftTypeRepository = aircraftTypeRepository;
-        this.parseOnlineAircraftType = parseOnlineAircraftType;
         this.parseAircraftHtml = parseAircraftHtml;
     }
 
@@ -96,13 +92,7 @@ public class AircraftTypeService {
                 .switchIfEmpty(Mono.empty());
     }
 
-    // Parse online aircraft type from Skybrary
-    public Mono<com.execodex.sparrowair2.entities.skybrary.AircraftType> parseOnlineAircraftType(String aircraftIcaoCode) {
-        return parseOnlineAircraftType.parseOnlineAircraftType(aircraftIcaoCode)
-                .doOnSuccess(a -> logger.info("Parsed online aircraft type with ICAO code: {}", a.getIcaoCode()))
-                .doOnError(e -> logger.error("Error parsing online aircraft type with ICAO code: {}", aircraftIcaoCode, e))
-                .onErrorResume(e -> Mono.error(e));
-    }
+
 
     // Parse online aircraft from Skybrary
     public Mono<Aircraft> parseOnlineAircraft(String aircraftIcaoCode) {

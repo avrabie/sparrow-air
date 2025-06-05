@@ -88,15 +88,7 @@ public class AircraftTypeHandler {
                 .bodyValue("An error in AircraftTypeHandler occurred: " + error.getMessage());
     }
 
-    // Parse online aircraft type from Skybrary
-    public Mono<ServerResponse> parseOnlineAircraftType(ServerRequest request) {
-        String aircraftIcaoCode = request.pathVariable("icaoCode");
-        return aircraftTypeService.parseOnlineAircraftType(aircraftIcaoCode)
-                .flatMap(aircraftType -> ServerResponse.ok()
-                        .contentType(APPLICATION_JSON)
-                        .bodyValue(aircraftType))
-                .onErrorResume(this::handleError);
-    }
+
 
     // Parse online aircraft from Skybrary
     public Mono<ServerResponse> parseOnlineAircraft(ServerRequest request) {

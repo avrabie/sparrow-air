@@ -64,30 +64,7 @@ public class ParseAircraftHtml {
         return builder.build();
     }
 
-    /**
-     * Parses an HTML file and extracts aircraft information.
-     *
-     * @param filePath The path to the HTML file
-     * @return The extracted Aircraft object
-     * @throws IOException If there's an error reading the file
-     */
-    public Aircraft parseAircraftFromHtml(String filePath) throws IOException {
-        File input = new File(filePath);
-        Document doc = Jsoup.parse(input, "UTF-8");
 
-        Aircraft.AircraftBuilder builder = Aircraft.builder();
-
-        // Extract basic aircraft information
-        extractAircraftData(builder, doc);
-
-        // Extract technical data
-        extractTechnicalData(builder, doc);
-
-        // Extract performance data
-        extractPerformanceData(builder, doc);
-
-        return builder.build();
-    }
 
     /**
      * Extracts basic aircraft information from the HTML document.

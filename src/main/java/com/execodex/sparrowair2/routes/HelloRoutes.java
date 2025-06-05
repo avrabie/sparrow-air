@@ -44,7 +44,7 @@ public class HelloRoutes {
     public RouterFunction<ServerResponse> helloRoute() {
         return RouterFunctions.route()
                 .GET("/hello", handlers::handleHelloRequest)
-                .GET("/anna", accept(MediaType.TEXT_EVENT_STREAM), handlers::handleAnnaRequest)
+                .POST("populate/aircrafts", handlers::handlePopulateAircrafts)
                 .build();
     }
 
