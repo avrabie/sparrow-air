@@ -44,6 +44,7 @@ public class DataDemoProfileConfig {
                     .thenMany(generateBooking(bookingService, passengerService))
                     .thenMany(generateBookingSegment(bookingSegmentService, bookingService, flightService, seatService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
+                    .doOnError(e -> logger.error("Error during sample data initialization", e))
                     .blockLast();
         };
     }
