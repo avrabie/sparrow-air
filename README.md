@@ -125,3 +125,6 @@ To activate this profile, you can:
    ```
 
 When this profile is active, the application will automatically populate the database with sample airport data for major international airports.
+
+## Helper functions:
+`jq -c '.[]' sample-aircraft.json > iaka.json`

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Flux;
 
 import java.io.BufferedReader;
@@ -16,9 +15,9 @@ import java.util.Objects;
 //this should be loaded from the file
 public class AircraftDataDemo2 {
 
-    public static Flux<Aircraft> getDemoAircraftsFromFile() {
+    public static Flux<Aircraft> getDemoAircraftsFromFile(String path) {
         // Create a ClassPathResource for the JSON file
-        ClassPathResource resource = new ClassPathResource("stuff/data/iaka.jsonl");
+        ClassPathResource resource = new ClassPathResource(path);
 
         ObjectMapper mapper = new ObjectMapper();
         Jackson2JsonDecoder decoder = new Jackson2JsonDecoder(mapper);
