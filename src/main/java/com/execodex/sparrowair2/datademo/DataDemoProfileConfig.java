@@ -23,7 +23,8 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftService aircraftService,
+    public CommandLineRunner initializeAirportData(AirportService airportService, AirportNewService airportNewService,
+                                                   AircraftService aircraftService,
                                                    AirlineService airlineService, FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
                                                    BookingService bookingService, SeatService seatService,
@@ -33,6 +34,7 @@ public class DataDemoProfileConfig {
 
             // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirport(airportService)
+                    .thenMany(generateAirportNewFromFile(airportNewService))
                     .thenMany(generateAircraft(aircraftService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
@@ -79,6 +81,22 @@ public class DataDemoProfileConfig {
         return airportFlux;
     }
 
+    @Bean(name = "airportNewDataGeneratorFromFile")
+    public Flux<AirportNew> generateAirportNewFromFile(AirportNewService airportNewService) {
+        Flux<AirportNew> demoAirportsFromFile = AirportDataDemo.getDemoAirportsFromFile("stuff/data/airports/iaka_airports.jsonl");
+        return demoAirportsFromFile.flatMap(airport -> airportNewService
+                .getAirportByIcaoCode(airport.getIcaoCode())
+                .hasElement()
+                .flatMap(existingAirport -> {
+                    if (existingAirport) {
+                        logger.info("Airport {} already exists, skipping creation", airport.getIcaoCode());
+                        return Mono.empty();
+                    }
+                    return airportNewService.createAirport(airport);
+                })
+        );
+    }
+
     @Bean(name = "aircraftDataGenerato")
     public Flux<Aircraft> generateAircraft(AircraftService aircraftService) {
         Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo.getDemoAircraftsFromFile("stuff/data/iaka2.jsonl");
@@ -95,36 +113,7 @@ public class DataDemoProfileConfig {
         );
     }
 
-    /**
-     * Generates sample aircraft types and inserts them into the database if they do not already exist.
-     *
-     * @param aircraftTypeService The service to interact with aircraft type data.
-     * @return A Flux of generated AircraftType objects.
-     */
 
-//    @Bean(name = "aircraftTypeDataGenerator")
-//    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService) {
-//        List<AircraftType> demoAircraftTypes = SampleDataDemo.getDemoAircraftTypes();
-//
-//        // Insert sample aircraft types into the database
-//        Flux<AircraftType> aircraftTypeFlux = Flux.fromIterable(demoAircraftTypes)
-//                .flatMap(aircraftType -> aircraftTypeService
-//                        .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
-//                        .hasElement()
-//                        .flatMap(existingAircraftType -> {
-//                            if (existingAircraftType) {
-//                                logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
-//                                return Mono.empty();
-//                            }
-//                            return aircraftTypeService.createAircraftType(aircraftType);
-//                        })
-//                        .onErrorResume(e -> {
-//                            logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
-//                            return Mono.empty();
-//                        })
-//                );
-//        return aircraftTypeFlux;
-//    }
 
     /**
      * Generates sample airlines and inserts them into the database if they do not already exist.

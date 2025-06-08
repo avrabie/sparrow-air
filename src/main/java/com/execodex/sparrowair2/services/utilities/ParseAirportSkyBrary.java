@@ -138,6 +138,61 @@ public class ParseAirportSkyBrary {
     }
 
     /**
+     * Parses a DMS (Degrees-Minutes-Seconds) string to a decimal degree value.
+     * 
+     * @param dmsString The DMS string (e.g., "51° 28' 39" N" or "0° 27' 41" W")
+     * @param isLatitude True if parsing latitude, false if parsing longitude
+     * @return The decimal degree value
+     */
+    private double parseDMSToDecimal(String dmsString, boolean isLatitude) {
+        // Example formats: "51° 28' 39" N" or "0° 27' 41" W"
+
+        // Remove all non-alphanumeric characters except spaces and cardinal directions
+        String cleanedString = dmsString.replaceAll("[^0-9NSEW\\s]", "").trim();
+
+        // Split by spaces
+        String[] parts = cleanedString.split("\\s+");
+
+        // The last part should be the cardinal direction (N, S, E, W)
+        String direction = parts[parts.length - 1];
+
+        // Parse degrees, minutes, seconds
+        double degrees = 0;
+        double minutes = 0;
+        double seconds = 0;
+
+        // Parse the numeric parts
+        if (parts.length >= 3) {
+            degrees = Double.parseDouble(parts[0]);
+            minutes = Double.parseDouble(parts[1]);
+            seconds = Double.parseDouble(parts[2]);
+        } else if (parts.length == 2) {
+            degrees = Double.parseDouble(parts[0]);
+            minutes = Double.parseDouble(parts[1]);
+        } else if (parts.length == 1) {
+            degrees = Double.parseDouble(parts[0]);
+        }
+
+        // Convert to decimal degrees
+        double decimalDegrees = degrees + (minutes / 60.0) + (seconds / 3600.0);
+
+        // Apply sign based on direction
+        if (isLatitude) {
+            // For latitude: S is negative
+            if (direction.equals("S")) {
+                decimalDegrees = -decimalDegrees;
+            }
+        } else {
+            // For longitude: W is negative
+            if (direction.equals("W")) {
+                decimalDegrees = -decimalDegrees;
+            }
+        }
+
+        return decimalDegrees;
+    }
+
+    /**
      * Extracts airport information from the HTML document.
      *
      * @param airportNew The Airport object to populate
@@ -209,14 +264,14 @@ public class ParseAirportSkyBrary {
             Element latElement = coordinatesElement.selectFirst("span.dms-lat");
             if (latElement != null) {
                 String latText = latElement.text().trim();
-                airportNew.setLatitude(latText);
+                airportNew.setLatitude(parseDMSToDecimal(latText, true));
             }
 
             // Extract longitude
             Element lonElement = coordinatesElement.selectFirst("span.dms-lon");
             if (lonElement != null) {
                 String lonText = lonElement.text().trim();
-                airportNew.setLongitude(lonText);
+                airportNew.setLongitude(parseDMSToDecimal(lonText, false));
             }
         }
 
