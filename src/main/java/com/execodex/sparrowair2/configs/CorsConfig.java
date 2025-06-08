@@ -17,11 +17,13 @@ public class CorsConfig {
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedOrigin("http://localhost:5173");
+        // Using setAllowedOriginPatterns instead of addAllowedOrigin to support credentials with wildcard
+        corsConfig.setAllowedOriginPatterns(Collections.singletonList("*"));
         corsConfig.addAllowedMethod(HttpMethod.GET);
         corsConfig.addAllowedMethod(HttpMethod.POST);
         corsConfig.addAllowedMethod(HttpMethod.PUT);
-        corsConfig.addAllowedHeader("Content-Type");
+        corsConfig.addAllowedMethod(HttpMethod.DELETE);
+        corsConfig.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
