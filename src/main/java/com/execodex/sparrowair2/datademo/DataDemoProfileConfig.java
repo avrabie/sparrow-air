@@ -23,7 +23,8 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftTypeService aircraftTypeService,
+    public CommandLineRunner initializeAirportData(AirportService airportService,
+                                                   AircraftService aircraftService, AircraftTypeService aircraftTypeService,
                                                    AirlineService airlineService, FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
                                                    BookingService bookingService, SeatService seatService,
@@ -34,6 +35,7 @@ public class DataDemoProfileConfig {
             // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirport(airportService)
                     .thenMany(generateAircraftType(aircraftTypeService))
+                    .thenMany(generateAircraft(aircraftService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
                     .thenMany(generateFlight(flightService, airlineFleetService))
@@ -42,6 +44,7 @@ public class DataDemoProfileConfig {
                     .thenMany(generateBooking(bookingService, passengerService))
                     .thenMany(generateBookingSegment(bookingSegmentService, bookingService, flightService, seatService))
                     .doOnComplete(() -> logger.info("Sample data initialization completed"))
+                    .doOnError(e -> logger.error("Error during sample data initialization", e))
                     .blockLast();
         };
     }
@@ -76,6 +79,22 @@ public class DataDemoProfileConfig {
                         })
                 );
         return airportFlux;
+    }
+
+    @Bean(name = "aircraftDataGenerato")
+    public Flux<Aircraft> generateAircraft(AircraftService aircraftService) {
+        Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo3.getDemoAircraftsFromFile("stuff/data/iaka2.jsonl");
+        return demoAircraftsFromFile.flatMap(aircraft -> aircraftService
+                .getAircraftByIcaoCode(aircraft.getIcaoCode())
+                .hasElement()
+                .flatMap(existingAircraft -> {
+                    if (existingAircraft) {
+                        logger.info("Aircraft {} already exists, skipping creation", aircraft.getIcaoCode());
+                        return Mono.empty();
+                    }
+                    return aircraftService.createAircraft(aircraft);
+                })
+        );
     }
 
     /**
@@ -167,7 +186,7 @@ public class DataDemoProfileConfig {
                             return Mono.empty();
                         })
 
-        );
+                );
 
     }
 
@@ -250,7 +269,7 @@ public class DataDemoProfileConfig {
     /**
      * Generates sample booking entries and inserts them into the database.
      *
-     * @param bookingService The service to interact with booking data.
+     * @param bookingService   The service to interact with booking data.
      * @param passengerService The service to interact with passenger data.
      * @return A Flux of generated Booking objects.
      */
@@ -346,10 +365,11 @@ public class DataDemoProfileConfig {
 
         return airlineFleetFlux;
     }
+
     /**
      * Generates sample seats for flights and inserts them into the database.
      *
-     * @param seatService The service to interact with seat data.
+     * @param seatService   The service to interact with seat data.
      * @param flightService The service to interact with flight data.
      * @return A Flux of generated Seat objects.
      */
@@ -425,10 +445,10 @@ public class DataDemoProfileConfig {
                                 // Insert sample seats into the database
                                 return Flux.fromIterable(flightSeats)
                                         .flatMap(seat -> seatService.createSeat(seat)
-                                                .doOnSuccess(s -> logger.info("Created seat {} for flight {}", 
+                                                .doOnSuccess(s -> logger.info("Created seat {} for flight {}",
                                                         s.getSeatNumber(), flight.getFlightNumber()))
                                                 .onErrorResume(e -> {
-                                                    logger.warn("Could not create seat {} for flight {}: {}", 
+                                                    logger.warn("Could not create seat {} for flight {}: {}",
                                                             seat.getSeatNumber(), flight.getFlightNumber(), e.toString());
                                                     return Mono.empty();
                                                 })
@@ -441,16 +461,16 @@ public class DataDemoProfileConfig {
      * Generates sample booking segments and inserts them into the database.
      *
      * @param bookingSegmentService The service to interact with booking segment data.
-     * @param bookingService The service to interact with booking data.
-     * @param flightService The service to interact with flight data.
-     * @param seatService The service to interact with seat data.
+     * @param bookingService        The service to interact with booking data.
+     * @param flightService         The service to interact with flight data.
+     * @param seatService           The service to interact with seat data.
      * @return A Flux of generated BookingSegment objects.
      */
     @Bean(name = "bookingSegmentDataGenerator")
     public Flux<BookingSegment> generateBookingSegment(BookingSegmentService bookingSegmentService,
-                                                      BookingService bookingService,
-                                                      FlightService flightService,
-                                                      SeatService seatService) {
+                                                       BookingService bookingService,
+                                                       FlightService flightService,
+                                                       SeatService seatService) {
         // Get all bookings, flights, and seats to reference in booking segments
         return Mono.zip(
                 bookingService.getAllBookings().collectList(),
@@ -462,7 +482,7 @@ public class DataDemoProfileConfig {
             List<Seat> seats = tuple.getT3();
 
             if (bookings.isEmpty() || flights.isEmpty() || seats.isEmpty()) {
-                logger.warn("Missing data to create booking segments: bookings={}, flights={}, seats={}", 
+                logger.warn("Missing data to create booking segments: bookings={}, flights={}, seats={}",
                         bookings.size(), flights.size(), seats.size());
                 return Flux.empty();
             }
@@ -483,7 +503,7 @@ public class DataDemoProfileConfig {
                 if (!flightSeats.isEmpty()) {
                     // Use a random available seat for the booking segment
                     int size = flightSeats.size();
-                    int randomIndex = (int) (Math.random() * size) -1;
+                    int randomIndex = (int) (Math.random() * size) - 1;
 //                    Seat seat = Math.random() < 0.5 ? flightSeats.get(0) : flightSeats.get(flightSeats.size() - 1);
                     Seat seat = flightSeats.get(randomIndex);
 
@@ -493,7 +513,7 @@ public class DataDemoProfileConfig {
                             .flightId(flight.getId())
                             .seatId(seat.getId())
                             .fareClass(seat.getSeatClass().name())
-                            .ticketNumber("TKT" + booking.getBookingReference() + "-" + flight.getFlightNumber()+ "-" + seat.getSeatNumber())
+                            .ticketNumber("TKT" + booking.getBookingReference() + "-" + flight.getFlightNumber() + "-" + seat.getSeatNumber())
                             .build();
 
                     sampleBookingSegments.add(bookingSegment);

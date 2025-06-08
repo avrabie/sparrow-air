@@ -1,5 +1,6 @@
 package com.execodex.sparrowair2.handlers;
 
+import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.AircraftType;
 import com.execodex.sparrowair2.services.AircraftTypeService;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,11 +21,12 @@ public class AircraftTypeHandler {
         this.aircraftTypeService = aircraftTypeService;
     }
 
-    // Get all aircraft types
+    // Get all aircraft types, optionally filtered by model name
     public Mono<ServerResponse> getAllAircraftTypes(ServerRequest request) {
+        String searchQuery = request.queryParam("search").orElse(null);
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(aircraftTypeService.getAllAircraftTypes(), AircraftType.class)
+                .body(aircraftTypeService.getAllAircraftTypes(searchQuery), AircraftType.class)
                 .onErrorResume(this::handleError);
     }
 
@@ -84,5 +86,17 @@ public class AircraftTypeHandler {
         return ServerResponse
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue("An error in AircraftTypeHandler occurred: " + error.getMessage());
+    }
+
+
+
+    // Parse online aircraft from Skybrary
+    public Mono<ServerResponse> parseOnlineAircraft(ServerRequest request) {
+        String aircraftIcaoCode = request.pathVariable("icaoCode");
+        return aircraftTypeService.parseOnlineAircraft(aircraftIcaoCode)
+                .flatMap(aircraft -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(aircraft))
+                .onErrorResume(this::handleError);
     }
 }

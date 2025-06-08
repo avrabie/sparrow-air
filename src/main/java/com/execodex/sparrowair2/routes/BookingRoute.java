@@ -53,7 +53,8 @@ public class BookingRoute {
                                 description = "Returns a booking by ID",
                                 tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
                                 parameters = {
-                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                                 },
                                 responses = {
                                         @ApiResponse(
@@ -102,7 +103,8 @@ public class BookingRoute {
                                 description = "Updates an existing booking",
                                 tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
                                 parameters = {
-                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true,
+                                        content = @Content(schema = @Schema(type = "string")))
                                 },
                                 requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                         description = "Booking ID",
@@ -132,7 +134,8 @@ public class BookingRoute {
                                 description = "Deletes a booking by ID",
                                 tags = {"Bookings \uD83C\uDFAB\uD83D\uDCBA"},  // Custom tag here
                                 parameters = {
-                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true)
+                                        @io.swagger.v3.oas.annotations.Parameter(name = "id", in = ParameterIn.PATH, description = "Booking ID", required = true,
+                                        content = @Content(schema = @Schema(type = "string")))
                                 },
                                 responses = {
                                         @ApiResponse(

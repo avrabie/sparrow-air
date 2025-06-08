@@ -58,6 +58,10 @@ public class AirlineRoutes {
                             summary = "Get airline by ICAO code",
                             description = "Returns an airline by ICAO code",
                             tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
+                            parameters = {
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "icaoCode", in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
@@ -103,6 +107,10 @@ public class AirlineRoutes {
                             summary = "Update an existing airline",
                             description = "Updates an airline by ICAO code",
                             tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
+                            parameters = {
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "icaoCode", in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Updated airline object",
                                     content = @Content(
@@ -129,6 +137,10 @@ public class AirlineRoutes {
                             summary = "Delete an airline",
                             description = "Deletes an airline by ICAO code",
                             tags = {"Airlines \uD83D\uDEE9 \uD83E\uDDD1\uD83C\uDFFC\u200D✈\uFE0F"},
+                            parameters = {
+                                    @io.swagger.v3.oas.annotations.Parameter(name = "icaoCode", in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
                             responses = {
                                     @ApiResponse(
                                             responseCode = "204",

@@ -29,6 +29,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework:spring-jdbc")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.8")
+    implementation("org.jsoup:jsoup:1.17.2")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")

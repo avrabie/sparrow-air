@@ -179,7 +179,6 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("B77W")
                 .modelName("777-300ER")
                 .manufacturer("Boeing")
-                .seatingCapacity(396)
                 .maxRangeKm(13650)
                 .mtow(351500)
                 .build();
@@ -188,7 +187,6 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A388")
                 .modelName("A380-800")
                 .manufacturer("Airbus")
-                .seatingCapacity(853)
                 .maxRangeKm(15700)
                 .mtow(575000)
                 .build();
@@ -197,7 +195,6 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A320")
                 .modelName("A320-200")
                 .manufacturer("Airbus")
-                .seatingCapacity(180)
                 .maxRangeKm(6100)
                 .mtow(77000)
                 .build();

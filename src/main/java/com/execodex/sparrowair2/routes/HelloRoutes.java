@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
+import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 @Configuration
 public class HelloRoutes {
@@ -41,11 +41,12 @@ public class HelloRoutes {
                             )
                     }
             ))
-     public RouterFunction<ServerResponse> helloRoute() {
-         return RouterFunctions.route()
-                 .GET("/hello", handlers::handleHelloRequest)
-                 .build();
-     }
+    public RouterFunction<ServerResponse> helloRoute() {
+        return RouterFunctions.route()
+                .GET("/hello", handlers::handleHelloRequest)
+                .POST("populate/aircrafts", handlers::handlePopulateAircrafts)
+                .build();
+    }
 
 
 }

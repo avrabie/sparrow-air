@@ -178,6 +178,15 @@ public class SeatRoutes {
                             summary = "Update status seat by ID",
                             description = "Updates a seat by ID",
                             tags = {"Seats \uD83D\uDCBA"},
+                            parameters = {
+                                    @Parameter(
+                                            name = "seatId",
+                                            in = ParameterIn.PATH,
+                                            description = "ID of the seat to be updated",
+                                            required = true,
+                                            schema = @Schema(type = "integer")
+                                    )
+                            },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Seat object to be updated",
                                     required = true,

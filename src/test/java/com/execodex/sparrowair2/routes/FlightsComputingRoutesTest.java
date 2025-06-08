@@ -120,7 +120,6 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("B777")
                 .modelName("Boeing 777")
                 .manufacturer("Boeing")
-                .seatingCapacity(396)
                 .maxRangeKm(15843)
                 .mtow(351534)
                 .build();
@@ -129,7 +128,6 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A320")
                 .modelName("Airbus A320")
                 .manufacturer("Airbus")
-                .seatingCapacity(180)
                 .maxRangeKm(6100)
                 .mtow(78000)
                 .build();

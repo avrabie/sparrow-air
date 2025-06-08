@@ -60,8 +60,10 @@ public class AirportRoutes {
                             description = "Returns the distance in kilometers between two airports identified by their ICAO codes",
                             tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
-                                    @Parameter(name = "from", in = ParameterIn.QUERY, required = true, description = "ICAO code of the departure airport"),
-                                    @Parameter(name = "to", in = ParameterIn.QUERY, required = true, description = "ICAO code of the arrival airport")
+                                    @Parameter(name = "from", in = ParameterIn.QUERY, required = true, description = "ICAO code of the departure airport",
+                                              content = @Content(schema = @Schema(type = "string"))),
+                                    @Parameter(name = "to", in = ParameterIn.QUERY, required = true, description = "ICAO code of the arrival airport",
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -91,7 +93,8 @@ public class AirportRoutes {
                             description = "Returns an airport \uD83D\uDEEC by ICAO code",
                             tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(
@@ -142,7 +145,8 @@ public class AirportRoutes {
                             summary = "Update an existing airport",
                             tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true, 
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Airport to create",
@@ -175,7 +179,8 @@ public class AirportRoutes {
                             summary = "Delete airport by ICAO code",
                             tags = {"Airports \uD83D\uDEEC\uD83C\uDF0E"},
                             parameters = {
-                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true)
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
                             },
                             responses = {
                                     @ApiResponse(responseCode = "204", description = "Airport deleted"),
