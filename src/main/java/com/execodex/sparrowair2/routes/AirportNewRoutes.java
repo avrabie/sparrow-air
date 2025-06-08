@@ -39,8 +39,14 @@ public class AirportNewRoutes {
                     operation = @Operation(
                             operationId = "getAllAirportsNew",
                             summary = "Get all new airports",
-                            description = "Returns a list of all new airports ✈️🌍",
+                            description = "Returns a list of all new airports ✈️🌍. Supports pagination with optional 'page' and 'size' query parameters.",
                             tags = {"Airports New \uD83D\uDEEC\uD83C\uDF0E"},
+                            parameters = {
+                                    @Parameter(name = "page", in = ParameterIn.QUERY, required = false, description = "Page number (zero-based)",
+                                              content = @Content(schema = @Schema(type = "integer"))),
+                                    @Parameter(name = "size", in = ParameterIn.QUERY, required = false, description = "Page size",
+                                              content = @Content(schema = @Schema(type = "integer")))
+                            },
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",

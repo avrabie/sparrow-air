@@ -5,6 +5,8 @@ import com.execodex.sparrowair2.repositories.AirportNewRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +27,21 @@ public class AirportNewService {
                 .doOnError(e -> logger.error("Error retrieving all airports", e))
                 .onErrorResume(e -> {
                     logger.error("Error retrieving all airports", e);
+                    return Flux.error(e);
+                });
+    }
+
+    // Get airports with pagination
+    public Flux<AirportNew> getAllAirports(Integer page, Integer size) {
+        if (page == null || size == null) {
+            return getAllAirports();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return airportNewRepository.findAllBy(pageable)
+                .doOnError(e -> logger.error("Error retrieving airports with pagination", e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving airports with pagination", e);
                     return Flux.error(e);
                 });
     }

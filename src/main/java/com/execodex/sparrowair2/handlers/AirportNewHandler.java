@@ -22,9 +22,12 @@ public class AirportNewHandler {
 
     // Get all airports
     public Mono<ServerResponse> getAllAirports(ServerRequest request) {
+        Integer page = request.queryParam("page").map(Integer::parseInt).orElse(null);
+        Integer size = request.queryParam("size").map(Integer::parseInt).orElse(null);
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(airportNewService.getAllAirports(), AirportNew.class)
+                .body(airportNewService.getAllAirports(page, size), AirportNew.class)
                 .onErrorResume(this::handleError);
     }
 
