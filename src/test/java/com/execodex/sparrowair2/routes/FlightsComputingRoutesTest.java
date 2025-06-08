@@ -1,16 +1,8 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
-import com.execodex.sparrowair2.entities.AircraftType;
-import com.execodex.sparrowair2.entities.Airline;
-import com.execodex.sparrowair2.entities.AirlineFleet;
-import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.entities.Flight;
-import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
-import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
-import com.execodex.sparrowair2.repositories.AirlineRepository;
-import com.execodex.sparrowair2.repositories.AirportRepository;
-import com.execodex.sparrowair2.repositories.FlightRepository;
+import com.execodex.sparrowair2.entities.*;
+import com.execodex.sparrowair2.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +33,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
     private AirlineRepository airlineRepository;
 
     @Autowired
-    private AircraftTypeRepository aircraftTypeRepository;
+    private AircraftRepository aircraftRepository;
 
     @Autowired
     private AirlineFleetRepository airlineFleetRepository;
@@ -116,28 +108,30 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .block();
 
         // Create test aircraft types
-        AircraftType boeing777 = AircraftType.builder()
+        Aircraft boeing777 = Aircraft.builder()
                 .icaoCode("B777")
-                .modelName("Boeing 777")
+                .name("Boeing 777")
                 .manufacturer("Boeing")
-                .maxRangeKm(15843)
-                .mtow(351534)
+                .rangeNm(15843)
+                .maxTakeOffWeightKg(351534)
                 .build();
 
-        AircraftType airbusA320 = AircraftType.builder()
+        Aircraft airbusA320 = Aircraft.builder()
                 .icaoCode("A320")
-                .modelName("Airbus A320")
+                .name("Airbus A320")
                 .manufacturer("Airbus")
-                .maxRangeKm(6100)
-                .mtow(78000)
+                .rangeNm(3300)
+                .maxTakeOffWeightKg(78000)
                 .build();
+
+
 
         // Save aircraft types if they don't exist
-        aircraftTypeRepository.findById("B777")
-                .switchIfEmpty(Mono.defer(() -> aircraftTypeRepository.insert(boeing777)))
+        aircraftRepository.findById("B777")
+                .switchIfEmpty(Mono.defer(() -> aircraftRepository.insert(boeing777)))
                 .block();
-        aircraftTypeRepository.findById("A320")
-                .switchIfEmpty(Mono.defer(() -> aircraftTypeRepository.insert(airbusA320)))
+        aircraftRepository.findById("A320")
+                .switchIfEmpty(Mono.defer(() -> aircraftRepository.insert(airbusA320)))
                 .block();
 
         // Create test airline fleet entries

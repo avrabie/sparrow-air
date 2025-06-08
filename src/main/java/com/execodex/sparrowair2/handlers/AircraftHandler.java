@@ -79,6 +79,16 @@ public class AircraftHandler {
                 .onErrorResume(this::handleError);
     }
 
+    // Parse online aircraft from Skybrary
+    public Mono<ServerResponse> parseOnlineAircraft(ServerRequest request) {
+        String aircraftIcaoCode = request.pathVariable("icaoCode");
+        return aircraftService.parseOnlineAircraft(aircraftIcaoCode)
+                .flatMap(aircraft -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(aircraft))
+                .onErrorResume(this::handleError);
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse

@@ -2,6 +2,7 @@ package com.execodex.sparrowair2.services;
 
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.repositories.AircraftRepository;
+import com.execodex.sparrowair2.services.utilities.ParseAircraftSkyBrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -14,9 +15,11 @@ public class AircraftService {
 
     private static final Logger logger = LoggerFactory.getLogger(AircraftService.class);
     private final AircraftRepository aircraftRepository;
+    private final ParseAircraftSkyBrary parseAircraftSkyBrary;
 
-    public AircraftService(AircraftRepository aircraftRepository) {
+    public AircraftService(AircraftRepository aircraftRepository, ParseAircraftSkyBrary parseAircraftSkyBrary) {
         this.aircraftRepository = aircraftRepository;
+        this.parseAircraftSkyBrary = parseAircraftSkyBrary;
     }
 
     // Get all aircraft
@@ -71,5 +74,13 @@ public class AircraftService {
                         .onErrorResume(e -> Mono.error(e))
                 )
                 .switchIfEmpty(Mono.empty());
+    }
+
+    // Parse online aircraft from Skybrary
+    public Mono<Aircraft> parseOnlineAircraft(String aircraftIcaoCode) {
+        return parseAircraftSkyBrary.parseOnlineAircraft(aircraftIcaoCode)
+                .doOnSuccess(a -> logger.info("Parsed online aircraft with ICAO code: {}", aircraftIcaoCode))
+                .doOnError(e -> logger.error("Error parsing online aircraft with ICAO code: {}", aircraftIcaoCode, e))
+                .onErrorResume(e -> Mono.error(e));
     }
 }
