@@ -20,6 +20,7 @@ public class CorsConfig {
         corsConfig.addAllowedOrigin("http://localhost:5173");
         corsConfig.addAllowedMethod(HttpMethod.GET);
         corsConfig.addAllowedMethod(HttpMethod.POST);
+        corsConfig.addAllowedMethod(HttpMethod.PUT);
         corsConfig.addAllowedHeader("Content-Type");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
