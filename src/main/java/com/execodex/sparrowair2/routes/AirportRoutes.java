@@ -1,5 +1,6 @@
 package com.execodex.sparrowair2.routes;
 
+import com.execodex.sparrowair2.entities.Airport2;
 import com.execodex.sparrowair2.handlers.AirportHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -123,7 +124,7 @@ public class AirportRoutes {
                                     required = true,
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = com.execodex.sparrowair2.entities.Airport.class)
+                                            schema = @Schema(implementation = Airport2.class)
                                     )
                             ),
                             responses = {
@@ -153,7 +154,7 @@ public class AirportRoutes {
                                     required = true,
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = com.execodex.sparrowair2.entities.Airport.class)
+                                            schema = @Schema(implementation = Airport2.class)
                                     )
                             ),
                             responses = {

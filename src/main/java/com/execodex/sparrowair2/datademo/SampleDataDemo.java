@@ -10,9 +10,9 @@ import java.util.List;
 
 public class SampleDataDemo {
 
-    public static List<Airport> getDemoAirports() {
-        List<Airport> sampleAirports = Arrays.asList(
-                Airport.builder()
+    public static List<Airport2> getDemoAirports() {
+        List<Airport2> sampleAirport2s = Arrays.asList(
+                Airport2.builder()
                         .icaoCode("KJFK")
                         .name("John F. Kennedy International Airport")
                         .city("New York")
@@ -21,7 +21,7 @@ public class SampleDataDemo {
                         .latitude(40.6413)
                         .longitude(-73.7781)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("EGLL")
                         .name("London Heathrow Airport")
                         .city("London")
@@ -30,7 +30,7 @@ public class SampleDataDemo {
                         .latitude(51.4700)
                         .longitude(-0.4543)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("RJTT")
                         .name("Tokyo Haneda Airport")
                         .city("Tokyo")
@@ -39,7 +39,7 @@ public class SampleDataDemo {
                         .latitude(35.5494)
                         .longitude(139.7798)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("YSSY")
                         .name("Sydney Kingsford Smith Airport")
                         .city("Sydney")
@@ -48,7 +48,7 @@ public class SampleDataDemo {
                         .latitude(-33.9399)
                         .longitude(151.1753)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("EDDF")
                         .name("Frankfurt Airport")
                         .city("Frankfurt")
@@ -57,7 +57,7 @@ public class SampleDataDemo {
                         .latitude(50.0379)
                         .longitude(8.5622)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("LUKK")
                         .name("Chisinau International Airport")
                         .city("Chisinau")
@@ -66,7 +66,7 @@ public class SampleDataDemo {
                         .latitude(46.9271)
                         .longitude(28.9302)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("LROP")
                         .name("Bucharest Henri Coanda International Airport")
                         .city("Bucharest")
@@ -75,7 +75,7 @@ public class SampleDataDemo {
                         .latitude(44.5711)
                         .longitude(26.0858)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("LFSB")
                         .name("EuroAirport Basel-Mulhouse-Freiburg")
                         .city("Basel")
@@ -84,7 +84,7 @@ public class SampleDataDemo {
                         .latitude(47.5915)
                         .longitude(7.5294)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("LSZH")
                         .name("Zurich Airport")
                         .city("Zurich")
@@ -93,7 +93,7 @@ public class SampleDataDemo {
                         .latitude(47.4502)
                         .longitude(8.5619)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("OMDB")
                         .name("Dubai International Airport")
                         .city("Dubai")
@@ -102,7 +102,7 @@ public class SampleDataDemo {
                         .latitude(25.2532)
                         .longitude(55.3657)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("KIAD")
                         .name("Washington Dulles International Airport")
                         .city("Washington, D.C.")
@@ -112,7 +112,7 @@ public class SampleDataDemo {
                         .longitude(-77.4470)
                         .build(),
                 // Adding 3 more major US airports
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("KLAX")
                         .name("Los Angeles International Airport")
                         .city("Los Angeles")
@@ -121,7 +121,7 @@ public class SampleDataDemo {
                         .latitude(33.9416)
                         .longitude(-118.4085)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("KORD")
                         .name("O'Hare International Airport")
                         .city("Chicago")
@@ -130,7 +130,7 @@ public class SampleDataDemo {
                         .latitude(41.9742)
                         .longitude(-87.9073)
                         .build(),
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("KATL")
                         .name("Hartsfield-Jackson Atlanta International Airport")
                         .city("Atlanta")
@@ -140,7 +140,7 @@ public class SampleDataDemo {
                         .longitude(-84.4277)
                         .build(),
                 // Adding Toronto airport in Canada
-                Airport.builder()
+                Airport2.builder()
                         .icaoCode("CYYZ")
                         .name("Toronto Pearson International Airport")
                         .city("Toronto")
@@ -151,7 +151,7 @@ public class SampleDataDemo {
                         .build()
 
         );
-        return sampleAirports;
+        return sampleAirport2s;
     }
 
 

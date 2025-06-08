@@ -1,7 +1,7 @@
 ### Sparrow Air API Requests
 
-### 1. Get all airports
-GET http://localhost:8080/airports
+### 1. Get all airport2s
+GET http://localhost:8080/airport2s
 
 ### 2. Get all airlines
 GET http://localhost:8080/airlines

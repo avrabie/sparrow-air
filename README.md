@@ -104,7 +104,7 @@ The application supports the following Spring profiles:
 
 ### datademo
 
-The `datademo` profile initializes the database with sample airport data on startup. This is useful for development and testing purposes.
+The `datademo` profile initializes the database with sample airport2 data on startup. This is useful for development and testing purposes.
 
 To activate this profile, you can:
 
@@ -124,7 +124,7 @@ To activate this profile, you can:
    ./gradlew bootRun
    ```
 
-When this profile is active, the application will automatically populate the database with sample airport data for major international airports.
+When this profile is active, the application will automatically populate the database with sample airport2 data for major international airport2s.
 
 ## Helper functions:
 `jq -c '.[]' sample-aircraft.json > iaka.json`

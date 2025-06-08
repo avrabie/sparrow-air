@@ -2,7 +2,7 @@ package com.execodex.sparrowair2.configs;
 
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.Airline;
-import com.execodex.sparrowair2.entities.Airport;
+import com.execodex.sparrowair2.entities.Airport2;
 import com.execodex.sparrowair2.repositories.AircraftRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
 import com.execodex.sparrowair2.repositories.AirportRepository;
@@ -37,11 +37,11 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
         List<String> expectedIcaoCodes = Arrays.asList("KJFK", "EGLL", "RJTT", "YSSY", "EDDF");
 
         // Fetch all airports from the repository
-        Flux<Airport> airports = airportRepository.findAll();
+        Flux<Airport2> airports = airportRepository.findAll();
 
         // Verify that all expected airports exist
         StepVerifier.create(
-                        airports.map(Airport::getIcaoCode)
+                        airports.map(Airport2::getIcaoCode)
                                 .filter(expectedIcaoCodes::contains)
                                 .collectList()
                                 .map(foundCodes -> {
