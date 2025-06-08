@@ -14,7 +14,7 @@ CREATE TABLE airline_fleet (
     first_class_seats INTEGER DEFAULT 0,
     business_seats INTEGER DEFAULT 0,
     economy_seats INTEGER DEFAULT 0,
-    FOREIGN KEY (aircraft_type_icao) REFERENCES aircraft_types(icao_code),
+    FOREIGN KEY (aircraft_type_icao) REFERENCES aircraft(icao_code),
     FOREIGN KEY (airline_icao) REFERENCES airlines(icao_code),
     UNIQUE (airline_icao, registration_number)
 
