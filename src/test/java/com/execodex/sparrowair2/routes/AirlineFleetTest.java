@@ -1,10 +1,10 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
-import com.execodex.sparrowair2.entities.AircraftType;
+import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.AirlineFleet;
-import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.repositories.AircraftRepository;
 import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +26,11 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
     @Autowired
     private AirlineFleetRepository airlineFleetRepository;
 
+//    @Autowired
+//    private AircraftTypeRepository aircraftTypeRepository;
+
     @Autowired
-    private AircraftTypeRepository aircraftTypeRepository;
+    private AircraftRepository aircraftRepository;
 
     @Autowired
     private AirlineRepository airlineRepository;
@@ -38,45 +41,47 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         airlineFleetRepository.deleteAll().block();
 
         // Insert required aircraft types
-        AircraftType b738 = AircraftType.builder()
+        Aircraft b738 = Aircraft.builder()
                 .icaoCode("B738")
-                .modelName("737-800")
+                .name("Boeing 737-800")
                 .manufacturer("Boeing")
-                .maxRangeKm(5765)
-                .mtow(79010)
+                .rangeNm(5765)
+                .maxTakeOffWeightKg(79010)
                 .build();
-
-        AircraftType a320 = AircraftType.builder()
+        Aircraft a320 = Aircraft.builder()
                 .icaoCode("A320")
-                .modelName("A320-200")
+                .name("Airbus A320-200")
                 .manufacturer("Airbus")
-                .maxRangeKm(6100)
-                .mtow(77000)
+                .rangeNm(3300)
+                .maxTakeOffWeightKg(78000)
                 .build();
-
-        AircraftType b77w = AircraftType.builder()
+        Aircraft b77w = Aircraft.builder()
                 .icaoCode("B77W")
-                .modelName("777-300ER")
+                .name("Boeing 777-300ER")
                 .manufacturer("Boeing")
-                .maxRangeKm(13650)
-                .mtow(351500)
+                .rangeNm(7370)
+                .maxTakeOffWeightKg(351500)
                 .build();
 
-        AircraftType a388 = AircraftType.builder()
-                .icaoCode("A388")
-                .modelName("A380-800")
-                .manufacturer("Airbus")
-                .maxRangeKm(15700)
-                .mtow(575000)
-                .build();
+        // Insert required aircraft types
 
-        AircraftType e190 = AircraftType.builder()
-                .icaoCode("E190")
-                .modelName("E190")
-                .manufacturer("Embraer")
-                .maxRangeKm(4537)
-                .mtow(51800)
-                .build();
+
+//
+//        AircraftType a388 = AircraftType.builder()
+//                .icaoCode("A388")
+//                .modelName("A380-800")
+//                .manufacturer("Airbus")
+//                .maxRangeKm(15700)
+//                .mtow(575000)
+//                .build();
+//
+//        AircraftType e190 = AircraftType.builder()
+//                .icaoCode("E190")
+//                .modelName("E190")
+//                .manufacturer("Embraer")
+//                .maxRangeKm(4537)
+//                .mtow(51800)
+//                .build();
 
         // Insert required airlines
         Airline aal = Airline.builder()
@@ -120,14 +125,16 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
                 .build();
 
         // Save aircraft types and airlines
-        aircraftTypeRepository.deleteAll().block();
+//        aircraftTypeRepository.deleteAll().block();
+        aircraftRepository.deleteAll().block();
         airlineRepository.deleteAll().block();
+        aircraftRepository.insert(b738).block();
+        aircraftRepository.insert(a320).block();
+        aircraftRepository.insert(b77w).block();
 
-        aircraftTypeRepository.insert(b738).block();
-        aircraftTypeRepository.insert(a320).block();
-        aircraftTypeRepository.insert(b77w).block();
-        aircraftTypeRepository.insert(a388).block();
-        aircraftTypeRepository.insert(e190).block();
+
+//        aircraftTypeRepository.insert(a388).block();
+//        aircraftTypeRepository.insert(e190).block();
 
         airlineRepository.insert(aal).block();
         airlineRepository.insert(baw).block();
@@ -236,7 +243,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
     public void testGetAirlineFleetByAirlineIcao() {
         // Create test airline fleet entries
         AirlineFleet airlineFleet1 = AirlineFleet.builder()
-                .aircraftTypeIcao("A388")
+                .aircraftTypeIcao("A320")
                 .airlineIcao("UAE")
                 .registrationNumber("A6-EDB")
                 .aircraftAge(LocalDate.of(2010, 8, 15))
@@ -280,7 +287,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
     public void testUpdateAirlineFleet() {
         // Create a test airline fleet entry
         AirlineFleet airlineFleet = AirlineFleet.builder()
-                .aircraftTypeIcao("E190")
+                .aircraftTypeIcao("A320")
                 .airlineIcao("WZZ")
                 .registrationNumber("HA-LYB")
                 .aircraftAge(LocalDate.of(2019, 2, 3))
@@ -299,7 +306,7 @@ public class AirlineFleetTest extends AbstractTestcontainersTest {
         // Update the airline fleet entry
         AirlineFleet updatedAirlineFleet = AirlineFleet.builder()
                 .id(savedAirlineFleet.getId())
-                .aircraftTypeIcao("E190")
+                .aircraftTypeIcao("A320")
                 .airlineIcao("WZZ")
                 .registrationNumber("HA-LYB")
                 .aircraftAge(LocalDate.of(2019, 2, 3))

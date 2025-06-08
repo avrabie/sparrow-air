@@ -1,17 +1,8 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
-import com.execodex.sparrowair2.entities.AircraftType;
-import com.execodex.sparrowair2.entities.Airline;
-import com.execodex.sparrowair2.entities.AirlineFleet;
-import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.entities.Flight;
-import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
-import com.execodex.sparrowair2.repositories.AirlineFleetRepository;
-import com.execodex.sparrowair2.repositories.AirlineRepository;
-import com.execodex.sparrowair2.repositories.AirportRepository;
-import com.execodex.sparrowair2.repositories.FlightRepository;
-import com.execodex.sparrowair2.repositories.SeatRepository;
+import com.execodex.sparrowair2.entities.*;
+import com.execodex.sparrowair2.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +30,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
     private AirportRepository airportRepository;
 
     @Autowired
-    private AircraftTypeRepository aircraftTypeRepository;
+    private AircraftRepository aircraftRepository;
 
     @Autowired
     private AirlineFleetRepository airlineFleetRepository;
@@ -54,6 +45,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         seatRepository.deleteAll().block();
         flightRepository.deleteAll().block();
         airlineFleetRepository.deleteAll().block();
+//        aircraftRepository.deleteAll().block();
 
         // Create test airlines
         Airline airline1 = Airline.builder()
@@ -175,35 +167,34 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         airportRepository.insert(airport6).block();
 
         // Create test aircraft types
-        AircraftType aircraftType1 = AircraftType.builder()
-                .icaoCode("B77W")
-                .modelName("777-300ER")
+        Aircraft aircraftType1 = Aircraft.builder()
+                .icaoCode("B738")
+                .name("Boeing 737-800")
                 .manufacturer("Boeing")
-                .maxRangeKm(13650)
-                .mtow(351500)
+                .rangeNm(5600)
+                .maxTakeOffWeightKg(79400)
                 .build();
-
-        AircraftType aircraftType2 = AircraftType.builder()
-                .icaoCode("A388")
-                .modelName("A380-800")
-                .manufacturer("Airbus")
-                .maxRangeKm(15700)
-                .mtow(575000)
-                .build();
-
-        AircraftType aircraftType3 = AircraftType.builder()
+        Aircraft aircraftType2 = Aircraft.builder()
                 .icaoCode("A320")
-                .modelName("A320-200")
+                .name("Airbus A320-200")
                 .manufacturer("Airbus")
-                .maxRangeKm(6100)
-                .mtow(77000)
+                .rangeNm(3100)
+                .maxTakeOffWeightKg(78000)
                 .build();
+        Aircraft aircraftType3 = Aircraft.builder()
+                .icaoCode("B77W")
+                .name("Boeing 777-300ER")
+                .manufacturer("Boeing")
+                .rangeNm(7400)
+                .maxTakeOffWeightKg(351500)
+                .build();
+
 
         // Save aircraft types
-        aircraftTypeRepository.deleteAll().block();
-        aircraftTypeRepository.insert(aircraftType1).block();
-        aircraftTypeRepository.insert(aircraftType2).block();
-        aircraftTypeRepository.insert(aircraftType3).block();
+        aircraftRepository.deleteAll().block();
+        aircraftRepository.insert(aircraftType1).block();
+        aircraftRepository.insert(aircraftType2).block();
+        aircraftRepository.insert(aircraftType3).block();
 
         // Create test airline fleet entries
         AirlineFleet airlineFleet1 = AirlineFleet.builder()
@@ -221,7 +212,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .build();
 
         AirlineFleet airlineFleet2 = AirlineFleet.builder()
-                .aircraftTypeIcao("A388")
+                .aircraftTypeIcao("B77W")
                 .airlineIcao("BAW")
                 .registrationNumber("UA 388")
                 .aircraftAge(LocalDate.of(2010, 8, 15))
@@ -249,7 +240,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .build();
 
         AirlineFleet airlineFleet4 = AirlineFleet.builder()
-                .aircraftTypeIcao("A388")
+                .aircraftTypeIcao("B77W")
                 .airlineIcao("UAE")
                 .registrationNumber("UA 388")
                 .aircraftAge(LocalDate.of(2012, 11, 7))
@@ -332,7 +323,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
 
         // Get the ID of the BAW A388 airline fleet entry
         AirlineFleet airlineFleet = airlineFleetRepository.findAll()
-                .filter(af -> af.getAirlineIcao().equals("BAW") && af.getAircraftTypeIcao().equals("A388"))
+                .filter(af -> af.getAirlineIcao().equals("BAW") && af.getAircraftTypeIcao().equals("B77W"))
                 .blockFirst();
 
         Flight flight = Flight.builder()
@@ -400,7 +391,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
 
         // Get the ID of the UAE A388 airline fleet entry
         AirlineFleet airlineFleet = airlineFleetRepository.findAll()
-                .filter(af -> af.getAirlineIcao().equals("UAE") && af.getAircraftTypeIcao().equals("A388"))
+                .filter(af -> af.getAirlineIcao().equals("UAE") && af.getAircraftTypeIcao().equals("B77W"))
                 .blockFirst();
 
         Flight flight = Flight.builder()

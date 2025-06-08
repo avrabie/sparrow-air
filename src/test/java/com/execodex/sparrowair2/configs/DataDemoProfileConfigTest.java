@@ -1,9 +1,9 @@
 package com.execodex.sparrowair2.configs;
 
-import com.execodex.sparrowair2.entities.AircraftType;
+import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.repositories.AircraftTypeRepository;
+import com.execodex.sparrowair2.repositories.AircraftRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
     private AirportRepository airportRepository;
 
     @Autowired
-    private AircraftTypeRepository aircraftTypeRepository;
+    private AircraftRepository aircraftRepository;
 
     @Autowired
     private AirlineRepository airlineRepository;
@@ -41,16 +41,16 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
 
         // Verify that all expected airports exist
         StepVerifier.create(
-                airports.map(Airport::getIcaoCode)
-                        .filter(expectedIcaoCodes::contains)
-                        .collectList()
-                        .map(foundCodes -> {
-                            System.out.println("[DEBUG_LOG] Found airports: " + foundCodes);
-                            return foundCodes.size() == expectedIcaoCodes.size();
-                        })
-        )
-        .expectNext(true)
-        .verifyComplete();
+                        airports.map(Airport::getIcaoCode)
+                                .filter(expectedIcaoCodes::contains)
+                                .collectList()
+                                .map(foundCodes -> {
+                                    System.out.println("[DEBUG_LOG] Found airports: " + foundCodes);
+                                    return foundCodes.size() == expectedIcaoCodes.size();
+                                })
+                )
+                .expectNext(true)
+                .verifyComplete();
     }
 
     @Test
@@ -59,20 +59,20 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
         List<String> expectedIcaoCodes = Arrays.asList("B738", "A320", "B77W", "A388", "E190");
 
         // Fetch all aircraft types from the repository
-        Flux<AircraftType> aircraftTypes = aircraftTypeRepository.findAll();
+        Flux<Aircraft> aircraftTypes = aircraftRepository.findAll();
 
         // Verify that all expected aircraft types exist
         StepVerifier.create(
-                aircraftTypes.map(AircraftType::getIcaoCode)
-                        .filter(expectedIcaoCodes::contains)
-                        .collectList()
-                        .map(foundCodes -> {
-                            System.out.println("[DEBUG_LOG] Found aircraft types: " + foundCodes);
-                            return foundCodes.size() == expectedIcaoCodes.size();
-                        })
-        )
-        .expectNext(true)
-        .verifyComplete();
+                        aircraftTypes.map(Aircraft::getIcaoCode)
+                                .filter(expectedIcaoCodes::contains)
+                                .collectList()
+                                .map(foundCodes -> {
+                                    System.out.println("[DEBUG_LOG] Found aircraft types: " + foundCodes);
+                                    return foundCodes.size() == expectedIcaoCodes.size();
+                                })
+                )
+                .expectNext(true)
+                .verifyComplete();
     }
 
     @Test
@@ -85,15 +85,15 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
 
         // Verify that all expected airlines exist
         StepVerifier.create(
-                airlines.map(Airline::getIcaoCode)
-                        .filter(expectedIcaoCodes::contains)
-                        .collectList()
-                        .map(foundCodes -> {
-                            System.out.println("[DEBUG_LOG] Found airlines: " + foundCodes);
-                            return foundCodes.size() == expectedIcaoCodes.size();
-                        })
-        )
-        .expectNext(true)
-        .verifyComplete();
+                        airlines.map(Airline::getIcaoCode)
+                                .filter(expectedIcaoCodes::contains)
+                                .collectList()
+                                .map(foundCodes -> {
+                                    System.out.println("[DEBUG_LOG] Found airlines: " + foundCodes);
+                                    return foundCodes.size() == expectedIcaoCodes.size();
+                                })
+                )
+                .expectNext(true)
+                .verifyComplete();
     }
 }
