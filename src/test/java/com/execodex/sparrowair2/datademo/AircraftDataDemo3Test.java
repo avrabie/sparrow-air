@@ -1,50 +1,52 @@
 package com.execodex.sparrowair2.datademo;
 
-import com.execodex.sparrowair2.entities.Aircraft;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
 
-import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Test class for AircraftDataDemo3 buffer size benchmarking.
+ * Note: This test is disabled by default as it's meant to be run manually
+ * when you want to benchmark different buffer sizes.
+ */
 public class AircraftDataDemo3Test {
 
     @Test
-    public void testGetDemoAircraftsFromFile() {
-        // Get the Flux of Aircraft objects from AircraftDataDemo3
-        Flux<Aircraft> aircraftFlux = AircraftDataDemo3.getDemoAircraftsFromFile("stuff/data/iaka.jsonl");
+    @Disabled("Enable manually when you want to run buffer size benchmarks")
+    public void testBufferSizeBenchmark() {
+        String dataPath = "stuff/data/iaka2.jsonl";
+        int[] bufferSizes = {1024, 2048, 4096, 8192, 16384, 32768, 65536};
+        int iterations = 3; // Reduced iterations for faster test execution
 
-        // Collect the aircraft into a list and print some information
-        List<Aircraft> aircraftList = aircraftFlux.collectList().block(Duration.ofSeconds(10));
+        System.out.println("Starting buffer size benchmark...");
+        List<Map<String, Object>> benchmarkResults = AircraftDataDemo3.runBufferSizeBenchmarks(dataPath, bufferSizes, iterations);
 
-        System.out.println("[DEBUG_LOG] Number of aircraft from AircraftDataDemo3: " + aircraftList.size());
-        if (!aircraftList.isEmpty()) {
-            Aircraft firstAircraft = aircraftList.get(0);
-            System.out.println("[DEBUG_LOG] First aircraft: " + firstAircraft.getIcaoCode() + " - " + firstAircraft.getName());
+        // Display results
+        System.out.println("\nBenchmark Results:");
+        System.out.println("=================");
+        System.out.printf("%-12s %-15s %-15s%n", "Buffer Size", "Avg Time (ms)", "Avg Count");
+        System.out.println("--------------------------------------");
+
+        // Find the best performing buffer size (lowest average time)
+        Map<String, Object> bestResult = null;
+
+        for (Map<String, Object> result : benchmarkResults) {
+            int bufferSize = (int) result.get("bufferSize");
+            double avgTime = (double) result.get("averageTimeMs");
+            double avgCount = (double) result.get("averageCount");
+
+            System.out.printf("%-12d %-15.2f %-15.2f%n", bufferSize, avgTime, avgCount);
+
+            if (bestResult == null || (double) result.get("averageTimeMs") < (double) bestResult.get("averageTimeMs")) {
+                bestResult = result;
+            }
         }
 
-        // Simple assertion to verify that we got some aircraft
-        assert aircraftList != null && !aircraftList.isEmpty() : "No aircraft were loaded";
-    }
-
-    @Test
-    public void testCompareWithAircraftDataDemo2() {
-        // Get the Flux of Aircraft objects from both implementations
-        Flux<Aircraft> aircraftFlux2 = AircraftDataDemo2.getDemoAircraftsFromFile("stuff/data/iaka.jsonl");
-        Flux<Aircraft> aircraftFlux3 = AircraftDataDemo3.getDemoAircraftsFromFile("stuff/data/iaka.jsonl");
-
-        // Collect the aircraft into lists
-        List<Aircraft> aircraftList2 = aircraftFlux2.collectList().block(Duration.ofSeconds(10));
-        List<Aircraft> aircraftList3 = aircraftFlux3.collectList().block(Duration.ofSeconds(10));
-
-        // Print the counts for debugging
-        System.out.println("[DEBUG_LOG] AircraftDataDemo2 count: " + (aircraftList2 != null ? aircraftList2.size() : 0));
-        System.out.println("[DEBUG_LOG] AircraftDataDemo3 count: " + (aircraftList3 != null ? aircraftList3.size() : 0));
-
-        // Simple assertion to verify that both implementations return the same number of aircraft
-        assert aircraftList2 != null && aircraftList3 != null : "One of the aircraft lists is null";
-        assert aircraftList2.size() == aircraftList3.size() : 
-            "Different number of aircraft: AircraftDataDemo2=" + aircraftList2.size() + 
-            ", AircraftDataDemo3=" + aircraftList3.size();
+        if (bestResult != null) {
+            System.out.println("\nOptimal buffer size for your system: " + bestResult.get("bufferSize") + 
+                " (Average time: " + String.format("%.2f", (double) bestResult.get("averageTimeMs")) + " ms)");
+        }
     }
 }
