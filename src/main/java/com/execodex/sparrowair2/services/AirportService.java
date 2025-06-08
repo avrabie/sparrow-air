@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.Airport2;
+import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class AirportService {
     }
 
     // Get all airports
-    public Flux<Airport2> getAllAirports() {
+    public Flux<Airport> getAllAirports() {
         return airportRepository.findAll()
                 .doOnError(e -> logger.error("Error retrieving all airports", e))
                 .onErrorResume(e -> {
@@ -30,7 +30,7 @@ public class AirportService {
     }
 
     // Get airport by ICAO code
-    public Mono<Airport2> getAirportByIcaoCode(String icaoCode) {
+    public Mono<Airport> getAirportByIcaoCode(String icaoCode) {
         return airportRepository.findById(icaoCode)
                 .doOnError(e -> logger.error("Error retrieving airport with ICAO code: {}", icaoCode, e))
                 .onErrorResume(e -> {
@@ -42,23 +42,23 @@ public class AirportService {
     }
 
     // Create a new airport
-    public Mono<Airport2> createAirport(Airport2 airport2) {
-        return airportRepository.insert(airport2)
+    public Mono<Airport> createAirport(Airport airport) {
+        return airportRepository.insert(airport)
                 .doOnSuccess(a -> logger.info("Created airport with ICAO code: {}", a.getIcaoCode()))
                 .doOnError(e -> {
                     if (e instanceof DuplicateKeyException) {
-                        logger.error("Duplicate key error when creating airport with ICAO code: {}", airport2.getIcaoCode(), e);
+                        logger.error("Duplicate key error when creating airport with ICAO code: {}", airport.getIcaoCode(), e);
                     } else {
-                        logger.error("Error creating airport with ICAO code: {}", airport2.getIcaoCode(), e);
+                        logger.error("Error creating airport with ICAO code: {}", airport.getIcaoCode(), e);
                     }
                 })
                 .onErrorResume(e -> Mono.error(e));
     }
 
     // Update an existing airport
-    public Mono<Airport2> updateAirport(String icaoCode, Airport2 airport2) {
-        airport2.setIcaoCode(icaoCode); // Ensure the ID is set correctly
-        return airportRepository.save(airport2)
+    public Mono<Airport> updateAirport(String icaoCode, Airport airport) {
+        airport.setIcaoCode(icaoCode); // Ensure the ID is set correctly
+        return airportRepository.save(airport)
                 .doOnSuccess(a -> logger.info("Updated airport with ICAO code: {}", a.getIcaoCode()))
                 .doOnError(e -> logger.error("Error updating airport with ICAO code: {}", icaoCode, e))
                 .onErrorResume(e -> Mono.error(e));
@@ -76,11 +76,11 @@ public class AirportService {
     }
 
     // Calculates the distance between two airports using Haversine formula, in kilometers
-    public double distance(Airport2 airport21, Airport2 airport2 ) {
+    public double distance(Airport airport21, Airport airport) {
         double lat1 = airport21.getLatitude();
         double lon1 = airport21.getLongitude();
-        double lat2 = airport2.getLatitude();
-        double lon2 = airport2.getLongitude();
+        double lat2 = airport.getLatitude();
+        double lon2 = airport.getLongitude();
 
         // Haversine formula to calculate the distance between two points on the Earth
         final int R = 6371; // Radius of the Earth in kilometers

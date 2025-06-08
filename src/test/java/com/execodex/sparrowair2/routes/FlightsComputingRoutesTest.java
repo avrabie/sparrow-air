@@ -44,7 +44,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
         flightRepository.deleteAll().block();
 
         // Create test airports if they don't exist
-        Airport2 lhr = Airport2.builder()
+        Airport lhr = Airport.builder()
                 .icaoCode("EGLL")
                 .name("London Heathrow Airport")
                 .city("London")
@@ -53,7 +53,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .longitude(-0.4614)
                 .build();
 
-        Airport2 cdg = Airport2.builder()
+        Airport cdg = Airport.builder()
                 .icaoCode("LFPG")
                 .name("Paris Charles de Gaulle Airport")
                 .city("Paris")
@@ -62,7 +62,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .longitude(2.5479)
                 .build();
 
-        Airport2 jfk = Airport2.builder()
+        Airport jfk = Airport.builder()
                 .icaoCode("KJFK")
                 .name("John F. Kennedy International Airport")
                 .city("New York")

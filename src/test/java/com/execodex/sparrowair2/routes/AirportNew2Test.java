@@ -1,7 +1,7 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
-import com.execodex.sparrowair2.entities.Airport2;
+import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.repositories.AirportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 //        "spring.r2dbc.pool.max-size=1",
 //        "local.server.port=0"
 })
-public class Airport2Test extends AbstractTestcontainersTest {
+public class AirportNew2Test extends AbstractTestcontainersTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -34,7 +34,7 @@ public class Airport2Test extends AbstractTestcontainersTest {
     public void testCreateAirport() {
 
 
-        Airport2 airport2 = Airport2.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("KLA3")
                 .name("Los Angeles International Airport")
                 .city("Los Angeles")
@@ -47,17 +47,17 @@ public class Airport2Test extends AbstractTestcontainersTest {
         webTestClient.post()
                 .uri("/airports")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(airport2), Airport2.class)
+                .body(Mono.just(airport), Airport.class)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(Airport2.class)
-                .isEqualTo(airport2);
+                .expectBody(Airport.class)
+                .isEqualTo(airport);
     }
 
     @Test
     public void testGetAllAirports() {
         // Create a test airport
-        Airport2 airport2 = Airport2.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("KJFK")
                 .name("John F. Kennedy International Airport")
                 .city("New York")
@@ -68,21 +68,21 @@ public class Airport2Test extends AbstractTestcontainersTest {
                 .build();
 
         // Save the airport and wait for it to complete
-        Airport2 savedAirport2 = airportRepository.insert(airport2).block();
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.get()
                 .uri("/airports")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Airport2.class)
-                .contains(airport2);
+                .expectBodyList(Airport.class)
+                .contains(airport);
     }
 
     @Test
     public void testGetAirportByIcaoCode() {
         // Create a test airport
-        Airport2 airport2 = Airport2.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("KORD")
                 .name("O'Hare International Airport")
                 .city("Chicago")
@@ -93,21 +93,21 @@ public class Airport2Test extends AbstractTestcontainersTest {
                 .build();
 
         // Save the airport and wait for it to complete
-        Airport2 savedAirport2 = airportRepository.insert(airport2).block();
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.get()
                 .uri("/airports/{icaoCode}", "KORD")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Airport2.class)
-                .isEqualTo(airport2);
+                .expectBody(Airport.class)
+                .isEqualTo(airport);
     }
 
     @Test
     public void testUpdateAirport() {
         // Create a test airport
-        Airport2 airport2 = Airport2.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("KSFO")
                 .name("San Francisco International Airport")
                 .city("San Francisco")
@@ -118,10 +118,10 @@ public class Airport2Test extends AbstractTestcontainersTest {
                 .build();
 
         // Save the airport and wait for it to complete
-        Airport2 savedAirport2 = airportRepository.insert(airport2).block();
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         // Update the airport
-        Airport2 updatedAirport2 = Airport2.builder()
+        Airport updatedAirport = Airport.builder()
                 .icaoCode("KSFO") // Same ICAO code
                 .name("San Francisco International Airport")
                 .city("San Francisco")
@@ -134,17 +134,17 @@ public class Airport2Test extends AbstractTestcontainersTest {
         webTestClient.put()
                 .uri("/airports/{icaoCode}", "KSFO")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(updatedAirport2), Airport2.class)
+                .body(Mono.just(updatedAirport), Airport.class)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Airport2.class)
-                .isEqualTo(updatedAirport2);
+                .expectBody(Airport.class)
+                .isEqualTo(updatedAirport);
     }
 
     @Test
     public void testDeleteAirport() {
         // Create a test airport
-        Airport2 airport2 = Airport2.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("KATL")
                 .name("Hartsfield-Jackson Atlanta International Airport")
                 .city("Atlanta")
@@ -155,7 +155,7 @@ public class Airport2Test extends AbstractTestcontainersTest {
                 .build();
 
         // Save the airport and wait for it to complete
-        Airport2 savedAirport2 = airportRepository.insert(airport2).block();
+        Airport savedAirport = airportRepository.insert(airport).block();
 
         webTestClient.delete()
                 .uri("/airports/{icaoCode}", "KATL")

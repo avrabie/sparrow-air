@@ -45,6 +45,7 @@ public class HelloRoutes {
         return RouterFunctions.route()
                 .GET("/hello", handlers::handleHelloRequest)
                 .POST("populate/aircrafts", handlers::handlePopulateAircrafts)
+                .POST("populate/airports", handlers::handlePopulateAirports)
                 .build();
     }
 

@@ -6,7 +6,7 @@
 When implementing a POST request endpoint for creating new Airport entities, we encountered an issue where Spring Data R2DBC's `ReactiveCrudRepository.save()` method was performing an update operation instead of an insert. This happened because we were using a manually set ID (`icaoCode`) as the primary key for our Airport entity.
 
 ```java
-@Table(name = "airport2s")
+@Table(name = "airports")
 public class Airport {
     @Id
     @Column(value = "icao_code")
@@ -35,26 +35,26 @@ To solve this issue, we implemented a custom insert method in our repository int
 ```java
 @Repository
 public interface AirportRepository extends ReactiveCrudRepository<Airport, String> {
-    @Query("INSERT INTO airport2s (icao_code, name, city, country, timezone, latitude, longitude) " +
-           "VALUES (:#{#airport2.icaoCode}, :#{#airport2.name}, :#{#airport2.city}, :#{#airport2.country}, " +
-           ":#{#airport2.timezone}, :#{#airport2.latitude}, :#{#airport2.longitude}) RETURNING *")
-    Mono<Airport> insert(Airport airport2);
+    @Query("INSERT INTO airports (icao_code, name, city, country, timezone, latitude, longitude) " +
+           "VALUES (:#{#airport.icaoCode}, :#{#airport.name}, :#{#airport.city}, :#{#airport.country}, " +
+           ":#{#airport.timezone}, :#{#airport.latitude}, :#{#airport.longitude}) RETURNING *")
+    Mono<Airport> insert(Airport airport);
 }
 ```
 
-Then, in our handler, we used this custom method for creating new airport2s:
+Then, in our handler, we used this custom method for creating new airports:
 
 ```java
 public Mono<ServerResponse> createAirport(ServerRequest request) {
     return request.bodyToMono(Airport.class)
             .flatMap(airportRepository::insert)  // Using custom insert method
-            .flatMap(airport2 -> ServerResponse
+            .flatMap(airport -> ServerResponse
                     .status(HttpStatus.CREATED)
                     .contentType(APPLICATION_JSON)
-                    .bodyValue(airport2))
+                    .bodyValue(airport))
             .onErrorResume(e -> ServerResponse
                     .status(HttpStatus.CONFLICT)
-                    .bodyValue("Could not create airport2: " + e.getMessage()));
+                    .bodyValue("Could not create airport: " + e.getMessage()));
 }
 ```
 

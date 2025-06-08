@@ -14,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Airport2 {
+public class Airport {
     @Id
     @Column(value = "icao_code")
     private String icaoCode; // ICAO 4-letter code (e.g., "KLAX")

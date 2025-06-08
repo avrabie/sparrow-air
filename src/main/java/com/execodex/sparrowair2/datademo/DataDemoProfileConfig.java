@@ -54,13 +54,13 @@ public class DataDemoProfileConfig {
      * @return A Flux of generated Airport objects.
      */
     @Bean(name = "airportDataGenerator")
-    public Flux<Airport2> generateAirport(AirportService airportService) {
+    public Flux<Airport> generateAirport(AirportService airportService) {
 
 
         // Insert sample airports into the database
-        List<Airport2> airport2s = SampleDataDemo.getDemoAirports();
+        List<Airport> airports = SampleDataDemo.getDemoAirports();
 
-        Flux<Airport2> airportFlux = Flux.fromIterable(airport2s)
+        Flux<Airport> airportFlux = Flux.fromIterable(airports)
                 .flatMap(airport -> airportService
                         .getAirportByIcaoCode(airport.getIcaoCode())
                         .hasElement()

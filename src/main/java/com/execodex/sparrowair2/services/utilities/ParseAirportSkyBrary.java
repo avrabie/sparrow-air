@@ -1,0 +1,186 @@
+package com.execodex.sparrowair2.services.utilities;
+
+import com.execodex.sparrowair2.entities.AirportNew;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/**
+ * Service for parsing airport information from HTML files.
+ */
+@Service
+public class ParseAirportSkyBrary {
+    private final WebClient webClient;
+
+    public ParseAirportSkyBrary(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder != null ? webClientBuilder.baseUrl("https://skybrary.aero").build() : null;
+    }
+
+
+
+    /**
+     * Fetches and parses airport data from Skybrary website.
+     * 
+     * @param airportIcaoCode The ICAO code of the airport (e.g., "KJFK")
+     * @return A Mono containing the parsed Airport data
+     */
+    public Mono<AirportNew> parseOnlineAirport(String airportIcaoCode) {
+        String path = "/airports/" + airportIcaoCode.toLowerCase();
+
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(this::parseHtmlContent)
+                .map(airportNew -> {
+                    airportNew.setIcaoCode(airportIcaoCode.toUpperCase());
+                    return airportNew;
+                });
+    }
+
+    /**
+     * Parses HTML content from a file and extracts airport information.
+     * 
+     * @param filePath The path to the HTML file
+     * @return The extracted Airport object
+     * @throws IOException If there's an error reading the file
+     */
+    public AirportNew parseHtmlFile(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        String htmlContent = Files.readString(path);
+        return parseHtmlContent(htmlContent);
+    }
+
+    /**
+     * Parses HTML content and extracts airport information.
+     * 
+     * @param htmlContent The HTML content to parse
+     * @return The extracted Airport object
+     */
+    private AirportNew parseHtmlContent(String htmlContent) {
+        Document doc = Jsoup.parse(htmlContent);
+
+        AirportNew airportNew = new AirportNew();
+
+        // Extract airport data
+        extractAirportData(airportNew, doc);
+
+        return airportNew;
+    }
+
+    /**
+     * Extracts airport information from the HTML document.
+     *
+     * @param airportNew The Airport object to populate
+     * @param doc The HTML document to extract data from
+     */
+    private void extractAirportData(AirportNew airportNew, Document doc) {
+        // Extract ICAO code
+        Element icaoElement = doc.selectFirst("div.field-label:contains(ICAO code) + div.field-items div.field-item");
+        if (icaoElement != null) {
+            airportNew.setIcaoCode(icaoElement.text().trim());
+        }
+
+        // Extract IATA code
+        Element iataElement = doc.selectFirst("div.field-label:contains(IATA Code) + div.field-items div.field-item");
+        if (iataElement != null) {
+            airportNew.setIataCode(iataElement.text().trim());
+        }
+
+        // Extract name
+        Element nameElement = doc.selectFirst("h1.title");
+        if (nameElement != null) {
+            airportNew.setName(nameElement.text().trim());
+        }
+
+        // Extract ICAO region
+        Element regionElement = doc.selectFirst("div.field-label:contains(ICAO Region) + div.field-items div.field-item");
+        if (regionElement != null) {
+            airportNew.setIcaoRegion(regionElement.text().trim());
+        }
+
+        // Extract ICAO territory
+        Element territoryElement = doc.selectFirst("div.field-label:contains(ICAO Territory) + div.field-items div.field-item a");
+        if (territoryElement != null) {
+            airportNew.setIcaoTerritory(territoryElement.text().trim());
+        }
+
+        // Extract location
+        Element locationElement = doc.selectFirst("div.field-label:contains(Location) + div.field-items div.field-item");
+        if (locationElement != null) {
+            airportNew.setLocation(locationElement.text().trim());
+        }
+
+        // Extract city
+        Element cityElement = doc.selectFirst("div.field-label:contains(Serving) + div.field-items div.field-item");
+        if (cityElement != null) {
+            airportNew.setCity(cityElement.text().trim());
+        }
+
+        // Extract country (from territory)
+        if (territoryElement != null) {
+            airportNew.setCountry(territoryElement.text().trim());
+        }
+
+        // Extract elevation
+        Element elevationElement = doc.selectFirst("div.field-label:contains(Elevation) + div.field-items div.field-item");
+        if (elevationElement != null) {
+            String elevationText = elevationElement.text().trim();
+            // Remove " ft" from the end if present
+            if (elevationText.endsWith(" ft")) {
+                elevationText = elevationText.substring(0, elevationText.length() - 3);
+            }
+            airportNew.setElevation(elevationText);
+        }
+
+        // Extract coordinates (latitude and longitude)
+        Element coordinatesElement = doc.selectFirst("div.field-label:contains(Coordinates) + div.field-items div.field-item");
+        if (coordinatesElement != null) {
+            // Extract latitude
+            Element latElement = coordinatesElement.selectFirst("span.dms-lat");
+            if (latElement != null) {
+                String latText = latElement.text().trim();
+                airportNew.setLatitude(latText);
+            }
+
+            // Extract longitude
+            Element lonElement = coordinatesElement.selectFirst("span.dms-lon");
+            if (lonElement != null) {
+                String lonText = lonElement.text().trim();
+                airportNew.setLongitude(lonText);
+            }
+        }
+
+        // Extract KC Code
+        Element kcCodeElement = doc.selectFirst("div.field-label:contains(KCC) + div.field-items div.field-item");
+        if (kcCodeElement != null) {
+            airportNew.setKCCode(kcCodeElement.text().trim());
+        }
+
+        // Extract Airport BS
+        Element bsElement = doc.selectFirst("div.field-label:contains(Airport BS) + div.field-items div.field-item");
+        if (bsElement != null) {
+            airportNew.setAirportBS(bsElement.text().trim());
+        }
+
+        // Extract Airport LOS
+        Element losElement = doc.selectFirst("div.field-label:contains(Airport LOS) + div.field-items div.field-item");
+        if (losElement != null) {
+            airportNew.setAirportLOS(losElement.text().trim());
+        }
+
+        // Extract Airport RE
+        Element reElement = doc.selectFirst("div.field-label:contains(Airport RE) + div.field-items div.field-item");
+        if (reElement != null) {
+            airportNew.setAirportRE(reElement.text().trim());
+        }
+    }
+}

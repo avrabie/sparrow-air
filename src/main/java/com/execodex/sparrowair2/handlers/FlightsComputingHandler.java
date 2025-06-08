@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Airport2;
+import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.computing.FlightsComputing;
 import org.springframework.http.HttpStatus;
@@ -59,15 +59,15 @@ public class FlightsComputingHandler {
                 airportService.getAirportByIcaoCode(arrivalIcao)
             )
             .flatMap(tuple -> {
-                Airport2 departureAirport2 = tuple.getT1();
-                Airport2 arrivalAirport2 = tuple.getT2();
+                Airport departureAirport = tuple.getT1();
+                Airport arrivalAirport = tuple.getT2();
 
-                if (departureAirport2 == null || arrivalAirport2 == null) {
+                if (departureAirport == null || arrivalAirport == null) {
                     return ServerResponse.badRequest()
                             .bodyValue("One or both of the specified airports could not be found");
                 }
 
-                return flightsComputing.getRoute(departureAirport2, arrivalAirport2)
+                return flightsComputing.getRoute(departureAirport, arrivalAirport)
                     .flatMap(route -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(route));
@@ -90,15 +90,15 @@ public class FlightsComputingHandler {
                 airportService.getAirportByIcaoCode(arrivalIcao)
             )
             .flatMap(tuple -> {
-                Airport2 departureAirport2 = tuple.getT1();
-                Airport2 arrivalAirport2 = tuple.getT2();
+                Airport departureAirport = tuple.getT1();
+                Airport arrivalAirport = tuple.getT2();
 
-                if (departureAirport2 == null || arrivalAirport2 == null) {
+                if (departureAirport == null || arrivalAirport == null) {
                     return ServerResponse.badRequest()
                             .bodyValue("One or both of the specified airports could not be found");
                 }
 
-                return flightsComputing.getRouteMinimumCost(departureAirport2, arrivalAirport2)
+                return flightsComputing.getRouteMinimumCost(departureAirport, arrivalAirport)
                     .flatMap(route -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(route));
