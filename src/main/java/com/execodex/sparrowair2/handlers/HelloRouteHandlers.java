@@ -81,4 +81,30 @@ public class HelloRouteHandlers {
                             .bodyValue("Error retrieving aircrafts");
                 });
     }
+
+    /**
+     * Handles requests to get all airport ICAO codes from Skybrary.
+     * 
+     * @param request The server request
+     * @return A server response containing a list of ICAO codes
+     */
+    public Mono<ServerResponse> handleGetAirportLinks(ServerRequest request) {
+        int pages = Integer.parseInt(request.queryParam("pages").orElseGet(()->"2"));
+        Flux<String> airportIcaoCodes = parseAirportSkyBrary.crawlAirportLinks(pages)
+                .map(icaoCode -> "\""+icaoCode+"\", ") // Ensure ICAO codes are uppercase
+                .doOnNext(icaoCode -> System.out.println("Found airport ICAO code: " + icaoCode))
+                .onErrorResume(e -> {
+                    System.err.println("Error crawling airport links: " + e.getMessage());
+                    return Flux.empty(); // Return empty flux on error
+                });
+
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(airportIcaoCodes, String.class)
+                .onErrorResume(e -> {
+                    System.err.println("Error retrieving airport links: " + e.getMessage());
+                    return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .bodyValue("Error retrieving airport links");
+                });
+    }
 }

@@ -4,14 +4,17 @@ import com.execodex.sparrowair2.entities.AirportNew;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 /**
  * Service for parsing airport information from HTML files.
@@ -22,6 +25,64 @@ public class ParseAirportSkyBrary {
 
     public ParseAirportSkyBrary(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder != null ? webClientBuilder.baseUrl("https://skybrary.aero").build() : null;
+    }
+
+    /**
+     * Crawls the Skybrary airports page and extracts all ICAO code links.
+     * Handles pagination to fetch all airports across multiple pages.
+     * 
+     * @return A Flux of ICAO codes
+     * @param totalPages
+     */
+    public Flux<String> crawlAirportLinks(int totalPages) {
+        // There are 4800 airports in total, with 200 per page = 24 pages
+        final int itemsPerPage = 200;
+
+        return Flux.range(1, totalPages)
+                .flatMap(page -> fetchAirportPage(page, itemsPerPage));
+    }
+
+    /**
+     * Fetches a single page of airport data.
+     * 
+     * @param page The page number to fetch
+     * @param itemsPerPage The number of items per page
+     * @return A Flux of ICAO codes from the specified page
+     */
+    private Flux<String> fetchAirportPage(int page, int itemsPerPage) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/airports")
+                        .queryParam("items_per_page", itemsPerPage)
+                        .queryParam("page", page)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMapMany(this::extractIcaoCodes);
+    }
+
+    /**
+     * Extracts ICAO codes from the HTML content of the airports page.
+     * 
+     * @param htmlContent The HTML content to parse
+     * @return A Flux of ICAO codes
+     */
+    private Flux<String> extractIcaoCodes(String htmlContent) {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements links = doc.select("a[href^=/airports/]");
+
+        // ICAO codes are typically 4 characters, consisting of letters and numbers
+        Pattern icaoPattern = Pattern.compile("^[A-Z0-9]{4}$");
+
+        return Flux.fromIterable(links)
+                .map(link -> {
+                    String href = link.attr("href");
+                    // Extract the part after /airports/
+                    String potentialIcao = href.substring("/airports/".length());
+                    return potentialIcao.toUpperCase();
+                })
+                .filter(code -> !code.isEmpty() && icaoPattern.matcher(code).matches())
+                .distinct();
     }
 
 
