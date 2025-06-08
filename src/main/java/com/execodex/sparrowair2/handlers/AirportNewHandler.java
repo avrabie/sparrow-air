@@ -1,7 +1,7 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.services.AirportService;
+import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.services.AirportNewService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -12,26 +12,29 @@ import reactor.core.publisher.Mono;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
-public class AirportHandler {
+public class AirportNewHandler {
 
-    private final AirportService airportService;
+    private final AirportNewService airportNewService;
 
-    public AirportHandler(AirportService airportService) {
-        this.airportService = airportService;
+    public AirportNewHandler(AirportNewService airportNewService) {
+        this.airportNewService = airportNewService;
     }
 
     // Get all airports
     public Mono<ServerResponse> getAllAirports(ServerRequest request) {
+        Integer page = request.queryParam("page").map(Integer::parseInt).orElse(null);
+        Integer size = request.queryParam("size").map(Integer::parseInt).orElse(null);
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(airportService.getAllAirports(), Airport.class)
+                .body(airportNewService.getAllAirports(page, size), AirportNew.class)
                 .onErrorResume(this::handleError);
     }
 
     // Get airport by ICAO code
     public Mono<ServerResponse> getAirportByIcaoCode(ServerRequest request) {
         String icaoCode = request.pathVariable("icaoCode");
-        return airportService.getAirportByIcaoCode(icaoCode)
+        return airportNewService.getAirportByIcaoCode(icaoCode)
                 .flatMap(airport -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(airport))
@@ -41,8 +44,8 @@ public class AirportHandler {
 
     // Create a new airport
     public Mono<ServerResponse> createAirport(ServerRequest request) {
-        return request.bodyToMono(Airport.class)
-                .flatMap(airportService::createAirport)
+        return request.bodyToMono(AirportNew.class)
+                .flatMap(airportNewService::createAirport)
                 .flatMap(airport -> ServerResponse
                         .status(HttpStatus.CREATED)
                         .contentType(APPLICATION_JSON)
@@ -60,8 +63,8 @@ public class AirportHandler {
     // Update an existing airport
     public Mono<ServerResponse> updateAirport(ServerRequest request) {
         String icaoCode = request.pathVariable("icaoCode");
-        return request.bodyToMono(Airport.class)
-                .flatMap(airport -> airportService.updateAirport(icaoCode, airport))
+        return request.bodyToMono(AirportNew.class)
+                .flatMap(airport -> airportNewService.updateAirport(icaoCode, airport))
                 .flatMap(updatedAirport -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(updatedAirport))
@@ -72,8 +75,8 @@ public class AirportHandler {
     // Delete an airport
     public Mono<ServerResponse> deleteAirport(ServerRequest request) {
         String icaoCode = request.pathVariable("icaoCode");
-        return airportService.getAirportByIcaoCode(icaoCode)
-                .flatMap(airport -> airportService.deleteAirport(icaoCode)
+        return airportNewService.getAirportByIcaoCode(icaoCode)
+                .flatMap(airport -> airportNewService.deleteAirport(icaoCode)
                         .then(ServerResponse.noContent().build()))
                 .switchIfEmpty(ServerResponse.notFound().build())
                 .onErrorResume(this::handleError);
@@ -89,14 +92,14 @@ public class AirportHandler {
                     .bodyValue("Both 'from' and 'to' ICAO codes are required");
         }
 
-        Mono<Airport> fromAirport = airportService.getAirportByIcaoCode(fromIcaoCode);
-        Mono<Airport> toAirport = airportService.getAirportByIcaoCode(toIcaoCode);
+        Mono<AirportNew> fromAirport = airportNewService.getAirportByIcaoCode(fromIcaoCode);
+        Mono<AirportNew> toAirport = airportNewService.getAirportByIcaoCode(toIcaoCode);
 
         return Mono.zip(fromAirport, toAirport)
                 .flatMap(tuple -> {
-                    Airport airport21 = tuple.getT1();
-                    Airport airport = tuple.getT2();
-                    double distance = airportService.distance(airport21, airport);
+                    AirportNew airport1 = tuple.getT1();
+                    AirportNew airport2 = tuple.getT2();
+                    double distance = airportNewService.distance(airport1, airport2);
                     return ServerResponse.ok()
                             .contentType(APPLICATION_JSON)
                             .bodyValue(new DistanceResponse(fromIcaoCode, toIcaoCode, distance));
@@ -134,6 +137,6 @@ public class AirportHandler {
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .bodyValue("An error in AirportHandler occurred: " + error.getMessage());
+                .bodyValue("An error in AirportNewHandler occurred: " + error.getMessage());
     }
 }

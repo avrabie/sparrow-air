@@ -1,7 +1,6 @@
 package com.execodex.sparrowair2.handlers;
 
 import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.services.AirportService;
 import com.execodex.sparrowair2.services.computing.FlightsComputing;
 import org.springframework.http.HttpStatus;
@@ -9,8 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 

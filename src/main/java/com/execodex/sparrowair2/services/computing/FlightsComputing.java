@@ -146,8 +146,8 @@ public class FlightsComputing {
                 .switchIfEmpty(Mono.empty());
     }
 
-    private Mono<Void> processFlights(Collection<Flight> flights, Airport departureAirport, Airport arrivalAirport, 
-                                     List<Flight> route, List<Airport> visitedAirports, int index) {
+    private Mono<Void> processFlights(Collection<Flight> flights, Airport departureAirport, Airport arrivalAirport,
+                                      List<Flight> route, List<Airport> visitedAirports, int index) {
         // Base case: if we've processed all flights
         if (index >= flights.size()) {
             return Mono.empty();

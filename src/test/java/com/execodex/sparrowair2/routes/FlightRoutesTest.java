@@ -97,7 +97,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         airlineRepository.insert(airline5).block();
 
         // Create test airports
-        Airport airport1 = Airport.builder()
+        Airport airport21 = Airport.builder()
                 .icaoCode("KJFK")
                 .name("John F. Kennedy International Airport")
                 .city("New York")
@@ -107,7 +107,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .longitude(-73.7781)
                 .build();
 
-        Airport airport2 = Airport.builder()
+        Airport airport = Airport.builder()
                 .icaoCode("EGLL")
                 .name("London Heathrow Airport")
                 .city("London")
@@ -117,7 +117,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .longitude(-0.4543)
                 .build();
 
-        Airport airport3 = Airport.builder()
+        Airport airport23 = Airport.builder()
                 .icaoCode("RJTT")
                 .name("Tokyo Haneda Airport")
                 .city("Tokyo")
@@ -127,7 +127,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .longitude(139.7798)
                 .build();
 
-        Airport airport4 = Airport.builder()
+        Airport airport24 = Airport.builder()
                 .icaoCode("YSSY")
                 .name("Sydney Kingsford Smith Airport")
                 .city("Sydney")
@@ -137,7 +137,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .longitude(151.1753)
                 .build();
 
-        Airport airport5 = Airport.builder()
+        Airport airport25 = Airport.builder()
                 .icaoCode("EDDF")
                 .name("Frankfurt Airport")
                 .city("Frankfurt")
@@ -147,7 +147,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
                 .longitude(8.5622)
                 .build();
 
-        Airport airport6 = Airport.builder()
+        Airport airport26 = Airport.builder()
                 .icaoCode("OMDB")
                 .name("Dubai International Airport")
                 .city("Dubai")
@@ -159,12 +159,12 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
 
         // Save airports
         airportRepository.deleteAll().block();
-        airportRepository.insert(airport1).block();
-        airportRepository.insert(airport2).block();
-        airportRepository.insert(airport3).block();
-        airportRepository.insert(airport4).block();
-        airportRepository.insert(airport5).block();
-        airportRepository.insert(airport6).block();
+        airportRepository.insert(airport21).block();
+        airportRepository.insert(airport).block();
+        airportRepository.insert(airport23).block();
+        airportRepository.insert(airport24).block();
+        airportRepository.insert(airport25).block();
+        airportRepository.insert(airport26).block();
 
         // Create test aircraft types
         Aircraft aircraftType1 = Aircraft.builder()
