@@ -32,7 +32,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("B738")
                 .modelName("Boeing 737-800")
                 .manufacturer("Boeing")
-                .seatingCapacity(189)
                 .maxRangeKm(5765)
                 .mtow(79010)
                 .build();
@@ -54,7 +53,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A320")
                 .modelName("Airbus A320")
                 .manufacturer("Airbus")
-                .seatingCapacity(180)
                 .maxRangeKm(6150)
                 .mtow(77000)
                 .build();
@@ -78,7 +76,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A321")
                 .modelName("Airbus A321")
                 .manufacturer("Airbus")
-                .seatingCapacity(220)
                 .maxRangeKm(5950)
                 .mtow(89000)
                 .build();
@@ -102,7 +99,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("B777")
                 .modelName("Boeing 777")
                 .manufacturer("Boeing")
-                .seatingCapacity(396)
                 .maxRangeKm(9700)
                 .mtow(299370)
                 .build();
@@ -126,7 +122,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A380")
                 .modelName("Airbus A380")
                 .manufacturer("Airbus")
-                .seatingCapacity(853)
                 .maxRangeKm(14800)
                 .mtow(575000)
                 .build();
@@ -139,7 +134,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("A380") // Same ICAO code
                 .modelName("Airbus A380-800") // Updated model name
                 .manufacturer("Airbus")
-                .seatingCapacity(853)
                 .maxRangeKm(14800)
                 .mtow(575000)
                 .build();
@@ -161,7 +155,6 @@ public class AircraftTypeRoutesTest extends AbstractTestcontainersTest {
                 .icaoCode("B747")
                 .modelName("Boeing 747")
                 .manufacturer("Boeing")
-                .seatingCapacity(660)
                 .maxRangeKm(14200)
                 .mtow(447700)
                 .build();
