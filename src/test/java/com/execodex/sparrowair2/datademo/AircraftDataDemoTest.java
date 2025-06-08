@@ -11,7 +11,7 @@ import java.util.Map;
  * Note: This test is disabled by default as it's meant to be run manually
  * when you want to benchmark different buffer sizes.
  */
-public class AircraftDataDemo3Test {
+public class AircraftDataDemoTest {
 
     @Test
     @Disabled("Enable manually when you want to run buffer size benchmarks")
@@ -21,7 +21,7 @@ public class AircraftDataDemo3Test {
         int iterations = 3; // Reduced iterations for faster test execution
 
         System.out.println("Starting buffer size benchmark...");
-        List<Map<String, Object>> benchmarkResults = AircraftDataDemo3.runBufferSizeBenchmarks(dataPath, bufferSizes, iterations);
+        List<Map<String, Object>> benchmarkResults = AircraftDataDemo.runBufferSizeBenchmarks(dataPath, bufferSizes, iterations);
 
         // Display results
         System.out.println("\nBenchmark Results:");

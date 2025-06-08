@@ -1,4 +1,4 @@
-package com.execodex.sparrowair2.datademo;
+package com.execodex.sparrowair2.datademo.archive;
 
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.fasterxml.jackson.databind.ObjectMapper;

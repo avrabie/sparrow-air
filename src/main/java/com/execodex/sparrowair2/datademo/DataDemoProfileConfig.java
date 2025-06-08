@@ -83,7 +83,7 @@ public class DataDemoProfileConfig {
 
     @Bean(name = "aircraftDataGenerato")
     public Flux<Aircraft> generateAircraft(AircraftService aircraftService) {
-        Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo3.getDemoAircraftsFromFile("stuff/data/iaka2.jsonl");
+        Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo.getDemoAircraftsFromFile("stuff/data/iaka2.jsonl");
         return demoAircraftsFromFile.flatMap(aircraft -> aircraftService
                 .getAircraftByIcaoCode(aircraft.getIcaoCode())
                 .hasElement()
