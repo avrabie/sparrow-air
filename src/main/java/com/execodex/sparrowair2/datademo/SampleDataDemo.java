@@ -154,60 +154,6 @@ public class SampleDataDemo {
         return sampleAirports;
     }
 
-    public static List<AircraftType> getDemoAircraftTypes() {
-        List<AircraftType> sampleAircraftTypes = Arrays.asList(
-                AircraftType.builder()
-                        .icaoCode("B738")
-                        .modelName("737-800")
-                        .manufacturer("Boeing")
-                        .maxRangeKm(5765)
-                        .mtow(79010)
-                        .build(),
-                AircraftType.builder()
-                        .icaoCode("A320")
-                        .modelName("A320-200")
-                        .manufacturer("Airbus")
-                        .maxRangeKm(6100)
-                        .mtow(77000)
-                        .build(),
-                AircraftType.builder()
-                        .icaoCode("B77W")
-                        .modelName("777-300ER")
-                        .manufacturer("Boeing")
-                        .maxRangeKm(13650)
-                        .mtow(351500)
-                        .build(),
-                AircraftType.builder()
-                        .icaoCode("A388")
-                        .modelName("A380-800")
-                        .manufacturer("Airbus")
-                        .maxRangeKm(15700)
-                        .mtow(575000)
-                        .build(),
-                AircraftType.builder()
-                        .icaoCode("E190")
-                        .modelName("E190")
-                        .manufacturer("Embraer")
-                        .maxRangeKm(4537)
-                        .mtow(51800)
-                        .build(),
-                AircraftType.builder()
-                        .icaoCode("CRJ2")
-                        .modelName("CRJ-200")
-                        .manufacturer("Bombardier")
-                        .maxRangeKm(3150)
-                        .mtow(23133)
-                        .build(),
-                AircraftType.builder()
-                        .modelName("ATR 72-500")
-                        .icaoCode("AT75")
-                        .manufacturer("ATR")
-                        .maxRangeKm(1500)
-                        .mtow(22000)
-                        .build()
-        );
-        return sampleAircraftTypes;
-    }
 
     public static List<Airline> getSampleAirlines(){
         List<Airline> sampleAirlines = Arrays.asList(

@@ -154,6 +154,32 @@ public class AircraftRoutes {
                                     @ApiResponse(responseCode = "404", description = "Aircraft not found")
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/aircraft/skybrary/{icaoCode}",
+                    method = RequestMethod.GET,
+                    beanClass = AircraftHandler.class,
+                    beanMethod = "parseOnlineAircraft",
+                    operation = @Operation(
+                            operationId = "parseOnlineAircraft",
+                            summary = "Parse online aircraft data by ICAO code",
+                            tags = {"Aircraft ✈️"},
+                            parameters = {
+                                    @Parameter(name = "icaoCode", in = ParameterIn.PATH, required = true,
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "404",
+                                            description = "Aircraft not found"
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> aircraftRoutesFunction() {
@@ -163,6 +189,7 @@ public class AircraftRoutes {
                 .POST("aircraft", accept(MediaType.APPLICATION_JSON), aircraftHandler::createAircraft)
                 .PUT("aircraft/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftHandler::updateAircraft)
                 .DELETE("aircraft/{icaoCode}", aircraftHandler::deleteAircraft)
+                .GET("aircraft/skybrary/{icaoCode}", accept(MediaType.APPLICATION_JSON), aircraftHandler::parseOnlineAircraft)
                 .build();
     }
 }

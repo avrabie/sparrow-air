@@ -23,8 +23,7 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService,
-                                                   AircraftService aircraftService, AircraftTypeService aircraftTypeService,
+    public CommandLineRunner initializeAirportData(AirportService airportService, AircraftService aircraftService,
                                                    AirlineService airlineService, FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
                                                    BookingService bookingService, SeatService seatService,
@@ -34,7 +33,6 @@ public class DataDemoProfileConfig {
 
             // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirport(airportService)
-                    .thenMany(generateAircraftType(aircraftTypeService))
                     .thenMany(generateAircraft(aircraftService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
@@ -104,29 +102,29 @@ public class DataDemoProfileConfig {
      * @return A Flux of generated AircraftType objects.
      */
 
-    @Bean(name = "aircraftTypeDataGenerator")
-    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService) {
-        List<AircraftType> demoAircraftTypes = SampleDataDemo.getDemoAircraftTypes();
-
-        // Insert sample aircraft types into the database
-        Flux<AircraftType> aircraftTypeFlux = Flux.fromIterable(demoAircraftTypes)
-                .flatMap(aircraftType -> aircraftTypeService
-                        .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
-                        .hasElement()
-                        .flatMap(existingAircraftType -> {
-                            if (existingAircraftType) {
-                                logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
-                                return Mono.empty();
-                            }
-                            return aircraftTypeService.createAircraftType(aircraftType);
-                        })
-                        .onErrorResume(e -> {
-                            logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
-                            return Mono.empty();
-                        })
-                );
-        return aircraftTypeFlux;
-    }
+//    @Bean(name = "aircraftTypeDataGenerator")
+//    public Flux<AircraftType> generateAircraftType(AircraftTypeService aircraftTypeService) {
+//        List<AircraftType> demoAircraftTypes = SampleDataDemo.getDemoAircraftTypes();
+//
+//        // Insert sample aircraft types into the database
+//        Flux<AircraftType> aircraftTypeFlux = Flux.fromIterable(demoAircraftTypes)
+//                .flatMap(aircraftType -> aircraftTypeService
+//                        .getAircraftTypeByIcaoCode(aircraftType.getIcaoCode())
+//                        .hasElement()
+//                        .flatMap(existingAircraftType -> {
+//                            if (existingAircraftType) {
+//                                logger.info("Aircraft type {} already exists, skipping creation", aircraftType.getIcaoCode());
+//                                return Mono.empty();
+//                            }
+//                            return aircraftTypeService.createAircraftType(aircraftType);
+//                        })
+//                        .onErrorResume(e -> {
+//                            logger.warn("Could not create aircraft type {}: {}", aircraftType.getIcaoCode(), e.getMessage());
+//                            return Mono.empty();
+//                        })
+//                );
+//        return aircraftTypeFlux;
+//    }
 
     /**
      * Generates sample airlines and inserts them into the database if they do not already exist.
