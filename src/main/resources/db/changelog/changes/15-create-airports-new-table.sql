@@ -3,7 +3,7 @@
 -- changeset execodex:15
 CREATE TABLE airports_new (
     icao_code VARCHAR(4) PRIMARY KEY NOT NULL,
-    iata_code VARCHAR(3),
+    iata_code VARCHAR(4),
     name VARCHAR(255) NOT NULL,
     icao_region VARCHAR(50),
     icao_territory VARCHAR(50),
