@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/changes/13-add-premium-economy-seats-to-airline-fleet.sql
   - include:
       file: db/changelog/changes/15-create-airports-new-table.sql
+  - include:
+      file: db/changelog/changes/16-create-countries-table.sql

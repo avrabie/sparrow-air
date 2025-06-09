@@ -27,4 +27,7 @@ public interface AirportNewRepository extends ReactiveCrudRepository<AirportNew,
 
     // Method for pagination
     Flux<AirportNew> findAllBy(Pageable pageable);
+    // Custom query to find airports by country
+    @Query("SELECT * FROM airports_new WHERE country = :country")
+    Flux<AirportNew> findByCountry(String country, Pageable pageable);
 }

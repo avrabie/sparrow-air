@@ -46,6 +46,21 @@ public class AirportNewService {
                 });
     }
 
+    // Get airports by country with pagination
+    public Flux<AirportNew> getAirportsByCountry(String country, Integer page, Integer size) {
+
+        Pageable pageable = (page == null || size == null)
+                ? Pageable.unpaged()
+                : PageRequest.of(page, size);
+
+        return airportNewRepository.findByCountry(country, pageable)
+                .doOnError(e -> logger.error("Error retrieving airports by country: {} with pagination", country, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving airports by country: {} with pagination", country, e);
+                    return Flux.error(e);
+                });
+    }
+
     // Get airport by ICAO code
     public Mono<AirportNew> getAirportByIcaoCode(String icaoCode) {
         return airportNewRepository.findById(icaoCode)

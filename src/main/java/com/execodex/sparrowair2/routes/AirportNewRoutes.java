@@ -57,6 +57,33 @@ public class AirportNewRoutes {
                     )
             ),
             @RouterOperation(
+                    path = "/airportsnew/country/{country}",
+                    method = RequestMethod.GET,
+                    beanClass = AirportNewHandler.class,
+                    beanMethod = "getAirportsByCountry",
+                    operation = @Operation(
+                            operationId = "getAirportsByCountry",
+                            summary = "Get airports by country",
+                            description = "Returns a list of airports in the specified country. Supports pagination with optional 'page' and 'size' query parameters.",
+                            tags = {"Airports New \uD83D\uDEEC\uD83C\uDF0E"},
+                            parameters = {
+                                    @Parameter(name = "country", in = ParameterIn.PATH, required = true, description = "Country name",
+                                              content = @Content(schema = @Schema(type = "string"))),
+                                    @Parameter(name = "page", in = ParameterIn.QUERY, required = false, description = "Page number (zero-based)",
+                                              content = @Content(schema = @Schema(type = "integer"))),
+                                    @Parameter(name = "size", in = ParameterIn.QUERY, required = false, description = "Page size",
+                                              content = @Content(schema = @Schema(type = "integer")))
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
                     path = "/airportsnew/distance",
                     method = RequestMethod.GET,
                     beanClass = AirportNewHandler.class,
@@ -199,6 +226,7 @@ public class AirportNewRoutes {
     public RouterFunction<ServerResponse> airportNewRoutesFunction() {
         return RouterFunctions.route()
                 .GET("airportsnew", accept(MediaType.APPLICATION_JSON), airportNewHandler::getAllAirports)
+                .GET("airportsnew/country/{country}", accept(MediaType.APPLICATION_JSON), airportNewHandler::getAirportsByCountry)
                 .GET("airportsnew/distance", accept(MediaType.APPLICATION_JSON), airportNewHandler::calculateDistance)
                 .GET("airportsnew/{icaoCode}", accept(MediaType.APPLICATION_JSON), airportNewHandler::getAirportByIcaoCode)
                 .POST("airportsnew", accept(MediaType.APPLICATION_JSON), airportNewHandler::createAirport)

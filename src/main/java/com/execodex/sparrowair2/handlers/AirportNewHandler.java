@@ -31,6 +31,18 @@ public class AirportNewHandler {
                 .onErrorResume(this::handleError);
     }
 
+    // Get airports by country
+    public Mono<ServerResponse> getAirportsByCountry(ServerRequest request) {
+        String country = request.pathVariable("country");
+        Integer page = request.queryParam("page").map(Integer::parseInt).orElse(null);
+        Integer size = request.queryParam("size").map(Integer::parseInt).orElse(null);
+
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(airportNewService.getAirportsByCountry(country, page, size), AirportNew.class)
+                .onErrorResume(this::handleError);
+    }
+
     // Get airport by ICAO code
     public Mono<ServerResponse> getAirportByIcaoCode(ServerRequest request) {
         String icaoCode = request.pathVariable("icaoCode");

@@ -24,7 +24,7 @@ public class DataDemoProfileConfig {
 
     @Bean
     public CommandLineRunner initializeAirportData(AirportService airportService, AirportNewService airportNewService,
-                                                   AircraftService aircraftService,
+                                                   AircraftService aircraftService, CountryService countryService,
                                                    AirlineService airlineService, FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
                                                    BookingService bookingService, SeatService seatService,
@@ -36,6 +36,7 @@ public class DataDemoProfileConfig {
             generateAirport(airportService)
                     .thenMany(generateAirportNewFromFile(airportNewService))
                     .thenMany(generateAircraft(aircraftService))
+                    .thenMany(generateCountry(countryService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
                     .thenMany(generateFlight(flightService, airlineFleetService))
@@ -143,6 +144,36 @@ public class DataDemoProfileConfig {
                         })
                 );
         return airlineFlux;
+    }
+
+    /**
+     * Generates sample countries and inserts them into the database if they do not already exist.
+     *
+     * @param countryService The service to interact with country data.
+     * @return A Flux of generated Country objects.
+     */
+    @Bean(name = "countryDataGenerator")
+    public Flux<Country> generateCountry(CountryService countryService) {
+        List<Country> sampleCountries = SampleDataDemo.getSampleCountries();
+
+        // Insert sample countries into the database
+        Flux<Country> countryFlux = Flux.fromIterable(sampleCountries)
+                .flatMap(country -> countryService
+                        .getCountryByCode(country.getCode())
+                        .hasElement()
+                        .flatMap(existingCountry -> {
+                            if (existingCountry) {
+                                logger.info("Country {} already exists, skipping creation", country.getCode());
+                                return Mono.empty();
+                            }
+                            return countryService.createCountry(country);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create country {}: {}", country.getCode(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return countryFlux;
     }
 
     /**
