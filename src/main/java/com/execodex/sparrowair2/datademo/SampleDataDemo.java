@@ -512,7 +512,7 @@ public class SampleDataDemo {
                 Country.builder().code("HR").name("Croatia").capital("Zagreb").continent("Europe").currency("EUR").language("Croatian").build(),
                 Country.builder().code("RS").name("Serbia").capital("Belgrade").continent("Europe").currency("RSD").language("Serbian").build(),
                 Country.builder().code("UA").name("Ukraine").capital("Kyiv").continent("Europe").currency("UAH").language("Ukrainian").build(),
-                Country.builder().code("RU").name("Russia").capital("Moscow").continent("Europe/Asia").currency("RUB").language("Russian").build(),
+                Country.builder().code("RU").name("Russian Federation").capital("Moscow").continent("Europe/Asia").currency("RUB").language("Russian").build(),
                 Country.builder().code("TR").name("Turkey").capital("Ankara").continent("Europe/Asia").currency("TRY").language("Turkish").build(),
                 Country.builder().code("JP").name("Japan").capital("Tokyo").continent("Asia").currency("JPY").language("Japanese").build(),
                 Country.builder().code("CN").name("China").capital("Beijing").continent("Asia").currency("CNY").language("Mandarin").build(),
