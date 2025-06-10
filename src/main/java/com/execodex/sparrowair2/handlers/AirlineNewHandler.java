@@ -117,6 +117,17 @@ public class AirlineNewHandler {
                 .onErrorResume(this::handleError);
     }
 
+    // Get airline by IATA code
+    public Mono<ServerResponse> getAirlineByIataCode(ServerRequest request) {
+        String iataCode = request.pathVariable("iataCode");
+        return airlineNewService.getAirlineByIataCode(iataCode)
+                .flatMap(airline -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(airline))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(this::handleError);
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse

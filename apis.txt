@@ -1,0 +1,6 @@
+// This file contains a list of API endpoints and their descriptions.
+ac615b82-44b8-4b1c-8f0d-3a2b5e6c7d8e
+
+// ICAO authorization API
+ac615b82-44b8-4ee5-b68c-5d753755c474
+

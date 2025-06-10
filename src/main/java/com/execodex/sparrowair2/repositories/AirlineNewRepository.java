@@ -38,4 +38,8 @@ public interface AirlineNewRepository extends ReactiveCrudRepository<AirlineNew,
     // Custom query to find airline by ICAO code
     @Query("SELECT * FROM airlines_new WHERE icao_code = :icaoCode")
     Mono<AirlineNew> findByIcaoCode(String icaoCode);
+
+    // Custom query to find airline by IATA code
+    @Query("SELECT * FROM airlines_new WHERE iata = :iataCode")
+    Mono<AirlineNew> findByIataCode(String iataCode);
 }

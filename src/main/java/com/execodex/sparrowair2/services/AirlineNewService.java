@@ -126,4 +126,13 @@ public class AirlineNewService {
                     return Mono.error(e);
                 });
     }
+
+    public Mono<AirlineNew> getAirlineByIataCode(String iataCode) {
+        return airlineNewRepository.findByIataCode(iataCode)
+                .doOnError(e -> logger.error("Error retrieving airline with IATA code: {}", iataCode, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving airline with IATA code: {}", iataCode, e);
+                    return Mono.error(e);
+                });
+    }
 }
