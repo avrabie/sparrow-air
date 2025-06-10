@@ -1,6 +1,5 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.Airport;
 import com.execodex.sparrowair2.entities.AirportNew;
 import org.junit.jupiter.api.Test;
 

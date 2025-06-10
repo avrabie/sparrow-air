@@ -3,8 +3,8 @@ databaseChangeLog:
       file: db/changelog/changes/01-create-airlines-table.sql
   - include:
       file: db/changelog/changes/15-create-airports-new-table.sql
-  - include:
-      file: db/changelog/changes/02-create-airports-table.sql
+#  - include:
+#      file: db/changelog/changes/02-create-airports-table.sql
   - include:
       file: db/changelog/changes/03-create-aircraft-types-table.sql
   - include:
