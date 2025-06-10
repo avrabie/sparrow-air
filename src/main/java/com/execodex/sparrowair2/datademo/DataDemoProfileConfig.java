@@ -23,7 +23,7 @@ public class DataDemoProfileConfig {
     private static final Logger logger = LoggerFactory.getLogger(DataDemoProfileConfig.class);
 
     @Bean
-    public CommandLineRunner initializeAirportData(AirportService airportService, AirportNewService airportNewService,
+    public CommandLineRunner initializeAirportData( AirportNewService airportNewService,
                                                    AircraftService aircraftService, CountryService countryService,
                                                    AirlineService airlineService, FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
@@ -33,8 +33,8 @@ public class DataDemoProfileConfig {
             logger.info("Initializing sample data for 'datademo' profile");
 
             // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
-            generateAirport(airportService)
-                    .thenMany(generateAirportNewFromFile(airportNewService))
+            generateAirportNewFromFile(airportNewService)
+//                    .thenMany(generateAirportNewFromFile(airportNewService))
                     .thenMany(generateAircraft(aircraftService))
                     .thenMany(generateCountry(countryService))
                     .thenMany(generateAirline(airlineService))
@@ -50,37 +50,32 @@ public class DataDemoProfileConfig {
         };
     }
 
-    /**
-     * Generates sample airports and inserts them into the database if they do not already exist.
-     *
-     * @param airportService The service to interact with airport data.
-     * @return A Flux of generated Airport objects.
-     */
-    @Bean(name = "airportDataGenerator")
-    public Flux<Airport> generateAirport(AirportService airportService) {
 
-
-        // Insert sample airports into the database
-        List<Airport> airports = SampleDataDemo.getDemoAirports();
-
-        Flux<Airport> airportFlux = Flux.fromIterable(airports)
-                .flatMap(airport -> airportService
-                        .getAirportByIcaoCode(airport.getIcaoCode())
-                        .hasElement()
-                        .flatMap(existingAirport -> {
-                            if (existingAirport) {
-                                logger.info("Airport {} already exists, skipping creation", airport.getIcaoCode());
-                                return Mono.empty();
-                            }
-                            return airportService.createAirport(airport);
-                        })
-                        .onErrorResume(e -> {
-                            logger.warn("Could not create airport {}: {}", airport.getIcaoCode(), e.getMessage());
-                            return Mono.empty();
-                        })
-                );
-        return airportFlux;
-    }
+//    @Bean(name = "airportDataGenerator")
+//    public Flux<Airport> generateAirport(AirportService airportService) {
+//
+//
+//        // Insert sample airports into the database
+//        List<Airport> airports = SampleDataDemo.getDemoAirports();
+//
+//        Flux<Airport> airportFlux = Flux.fromIterable(airports)
+//                .flatMap(airport -> airportService
+//                        .getAirportByIcaoCode(airport.getIcaoCode())
+//                        .hasElement()
+//                        .flatMap(existingAirport -> {
+//                            if (existingAirport) {
+//                                logger.info("Airport {} already exists, skipping creation", airport.getIcaoCode());
+//                                return Mono.empty();
+//                            }
+//                            return airportService.createAirport(airport);
+//                        })
+//                        .onErrorResume(e -> {
+//                            logger.warn("Could not create airport {}: {}", airport.getIcaoCode(), e.getMessage());
+//                            return Mono.empty();
+//                        })
+//                );
+//        return airportFlux;
+//    }
 
     @Bean(name = "airportNewDataGeneratorFromFile")
     public Flux<AirportNew> generateAirportNewFromFile(AirportNewService airportNewService) {

@@ -3,9 +3,10 @@ package com.execodex.sparrowair2.configs;
 import com.execodex.sparrowair2.entities.Aircraft;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.Airport;
+import com.execodex.sparrowair2.entities.AirportNew;
 import com.execodex.sparrowair2.repositories.AircraftRepository;
 import com.execodex.sparrowair2.repositories.AirlineRepository;
-import com.execodex.sparrowair2.repositories.AirportRepository;
+import com.execodex.sparrowair2.repositories.AirportNewRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +24,7 @@ import java.util.List;
 public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
 
     @Autowired
-    private AirportRepository airportRepository;
+    private AirportNewRepository airportNewRepository;
 
     @Autowired
     private AircraftRepository aircraftRepository;
@@ -37,11 +38,11 @@ public class DataDemoProfileConfigTest extends AbstractTestcontainersTest {
         List<String> expectedIcaoCodes = Arrays.asList("KJFK", "EGLL", "RJTT", "YSSY", "EDDF");
 
         // Fetch all airports from the repository
-        Flux<Airport> airports = airportRepository.findAll();
+        Flux<AirportNew> airports = airportNewRepository.findAll();
 
         // Verify that all expected airports exist
         StepVerifier.create(
-                        airports.map(Airport::getIcaoCode)
+                        airports.map(AirportNew::getIcaoCode)
                                 .filter(expectedIcaoCodes::contains)
                                 .collectList()
                                 .map(foundCodes -> {

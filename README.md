@@ -2,9 +2,13 @@
 
 ## Project Overview
 
-Sparrow Air  is a fun pet project focused on building a reactive airline management system using
-a step by step vibe coding (with manual interventions when it breaks the project or goes too astray).
-The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity. 
+**Sparrow Air is a fun pet project focused on building a reactive airline management system using Dijkstra's algorithm for flight path optimization.** 
+
+The project is designed to be a learning experience, exploring the principles of reactive programming and leveraging modern technologies like Spring Boot, PostgreSQL, and React.
+Mostly it is a step by step vibe coding when trying to create a new feature
+but unfortunately manual intervention is required to make it work, or to refactor it.
+The project aims to leverage reactive programming principles throughout the entire stack while carefully considering database isolation levels to ensure data consistency and integrity.
+At the end of the day, if you are booking a ticket, you want to be sure that the flight is available and that you are not double-booked, like air-compenies are doing these days in real life.
 We're just getting started, but the goal is to create a fully reactive application.
 
 ## Getting Started

@@ -27,7 +27,7 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
     private AirlineRepository airlineRepository;
 
     @Autowired
-    private AirportRepository airportRepository;
+    private AirportNewRepository airportNewRepository;
 
     @Autowired
     private AircraftRepository aircraftRepository;
@@ -97,74 +97,70 @@ public class FlightRoutesTest extends AbstractTestcontainersTest {
         airlineRepository.insert(airline5).block();
 
         // Create test airports
-        Airport airport21 = Airport.builder()
+        AirportNew airport21 = AirportNew.builder()
                 .icaoCode("KJFK")
                 .name("John F. Kennedy International Airport")
                 .city("New York")
                 .country("United States")
-                .timezone("America/New_York")
+                .icaoRegion("North America")
                 .latitude(40.6413)
                 .longitude(-73.7781)
                 .build();
 
-        Airport airport = Airport.builder()
+        AirportNew airport = AirportNew.builder()
                 .icaoCode("EGLL")
                 .name("London Heathrow Airport")
                 .city("London")
                 .country("United Kingdom")
-                .timezone("Europe/London")
+                .icaoRegion("Europe")
                 .latitude(51.4700)
                 .longitude(-0.4543)
                 .build();
 
-        Airport airport23 = Airport.builder()
+        AirportNew airport23 = AirportNew.builder()
                 .icaoCode("RJTT")
                 .name("Tokyo Haneda Airport")
                 .city("Tokyo")
                 .country("Japan")
-                .timezone("Asia/Tokyo")
                 .latitude(35.5494)
                 .longitude(139.7798)
                 .build();
 
-        Airport airport24 = Airport.builder()
+        AirportNew airport24 = AirportNew.builder()
                 .icaoCode("YSSY")
                 .name("Sydney Kingsford Smith Airport")
                 .city("Sydney")
                 .country("Australia")
-                .timezone("Australia/Sydney")
                 .latitude(-33.9399)
                 .longitude(151.1753)
                 .build();
 
-        Airport airport25 = Airport.builder()
+        AirportNew airport25 = AirportNew.builder()
                 .icaoCode("EDDF")
                 .name("Frankfurt Airport")
                 .city("Frankfurt")
                 .country("Germany")
-                .timezone("Europe/Berlin")
                 .latitude(50.0379)
                 .longitude(8.5622)
                 .build();
 
-        Airport airport26 = Airport.builder()
+        AirportNew airport26 = AirportNew.builder()
                 .icaoCode("OMDB")
                 .name("Dubai International Airport")
                 .city("Dubai")
                 .country("United Arab Emirates")
-                .timezone("Asia/Dubai")
                 .latitude(25.2532)
                 .longitude(55.3657)
                 .build();
 
         // Save airports
-        airportRepository.deleteAll().block();
-        airportRepository.insert(airport21).block();
-        airportRepository.insert(airport).block();
-        airportRepository.insert(airport23).block();
-        airportRepository.insert(airport24).block();
-        airportRepository.insert(airport25).block();
-        airportRepository.insert(airport26).block();
+        airportNewRepository.deleteAll().block();
+        airportNewRepository.insert(airport21).block();
+        airportNewRepository.insert(airport).block();
+        airportNewRepository.insert(airport23).block();
+        airportNewRepository.insert(airport24).block();
+        airportNewRepository.insert(airport25).block();
+        airportNewRepository.insert(airport26).block();
 
         // Create test aircraft types
         Aircraft aircraftType1 = Aircraft.builder()

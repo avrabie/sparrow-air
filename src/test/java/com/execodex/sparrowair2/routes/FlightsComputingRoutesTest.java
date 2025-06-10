@@ -27,7 +27,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
     private FlightRepository flightRepository;
 
     @Autowired
-    private AirportRepository airportRepository;
+    private AirportNewRepository airportNewRepository;
 
     @Autowired
     private AirlineRepository airlineRepository;
@@ -44,7 +44,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
         flightRepository.deleteAll().block();
 
         // Create test airports if they don't exist
-        Airport lhr = Airport.builder()
+        AirportNew lhr = AirportNew.builder()
                 .icaoCode("EGLL")
                 .name("London Heathrow Airport")
                 .city("London")
@@ -53,7 +53,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .longitude(-0.4614)
                 .build();
 
-        Airport cdg = Airport.builder()
+        AirportNew cdg = AirportNew.builder()
                 .icaoCode("LFPG")
                 .name("Paris Charles de Gaulle Airport")
                 .city("Paris")
@@ -62,7 +62,7 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .longitude(2.5479)
                 .build();
 
-        Airport jfk = Airport.builder()
+        AirportNew jfk = AirportNew.builder()
                 .icaoCode("KJFK")
                 .name("John F. Kennedy International Airport")
                 .city("New York")
@@ -72,14 +72,14 @@ public class FlightsComputingRoutesTest extends AbstractTestcontainersTest {
                 .build();
 
         // Save airports if they don't exist
-        airportRepository.findById("EGLL")
-                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(lhr)))
+        airportNewRepository.findById("EGLL")
+                .switchIfEmpty(Mono.defer(() -> airportNewRepository.insert(lhr)))
                 .block();
-        airportRepository.findById("LFPG")
-                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(cdg)))
+        airportNewRepository.findById("LFPG")
+                .switchIfEmpty(Mono.defer(() -> airportNewRepository.insert(cdg)))
                 .block();
-        airportRepository.findById("KJFK")
-                .switchIfEmpty(Mono.defer(() -> airportRepository.insert(jfk)))
+        airportNewRepository.findById("KJFK")
+                .switchIfEmpty(Mono.defer(() -> airportNewRepository.insert(jfk)))
                 .block();
 
         // Create test airlines

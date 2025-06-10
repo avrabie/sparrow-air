@@ -1,8 +1,9 @@
 package com.execodex.sparrowair2.services.computing;
 
-import com.execodex.sparrowair2.entities.Airport;
+
+import com.execodex.sparrowair2.entities.AirportNew;
 import com.execodex.sparrowair2.entities.Flight;
-import com.execodex.sparrowair2.services.AirportService;
+import com.execodex.sparrowair2.services.AirportNewService;
 import com.execodex.sparrowair2.services.FlightService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -12,12 +13,12 @@ import java.util.*;
 
 @Service
 public class FlightsComputing {
-    private final AirportService airportService;
+    private final AirportNewService airportNewService;
     private final FlightService flightService;
-    private Map<Airport, List<Airport>> airportListMap = new HashMap<>();
+    private Map<AirportNew, List<AirportNew>> airportListMap = new HashMap<>();
 
-    public FlightsComputing(AirportService airportService, FlightService flightService) {
-        this.airportService = airportService;
+    public FlightsComputing(AirportNewService airportNewService, FlightService flightService) {
+        this.airportNewService = airportNewService;
         this.flightService = flightService;
     }
     // This class is responsible for computing flight-related data
@@ -34,7 +35,7 @@ public class FlightsComputing {
      *
      * @return A Mono emitting a map of airports to their destination airports
      */
-    public Mono<Map<Airport, List<Airport>>> computeFlightsMatrix() {
+    public Mono<Map<AirportNew, List<AirportNew>>> computeFlightsMatrix() {
         // If we already have computed the matrix, return it
         if (!airportListMap.isEmpty()) {
             return Mono.just(airportListMap);
@@ -50,12 +51,12 @@ public class FlightsComputing {
      *
      * @return A Mono emitting the refreshed flights matrix
      */
-    public Mono<Map<Airport, List<Airport>>> refreshFlightsMatrix() {
-        Map<String, Airport> airportMap = new HashMap<>();
+    public Mono<Map<AirportNew, List<AirportNew>>> refreshFlightsMatrix() {
+        Map<String, AirportNew> airportMap = new HashMap<>();
 
         // First, get all airports and create a map of ICAO code to Airport
-        return airportService.getAllAirports()
-                .collectMap(Airport::getIcaoCode, airport -> airport)
+        return airportNewService.getAllAirports()
+                .collectMap(AirportNew::getIcaoCode, airport -> airport)
                 .flatMap(airports -> {
                     airportMap.putAll(airports);
 
@@ -64,17 +65,17 @@ public class FlightsComputing {
                             .collectMultimap(Flight::getDepartureAirportIcao, flight -> flight.getArrivalAirportIcao());
                 })
                 .map(flightMap -> {
-                    Map<Airport, List<Airport>> result = new HashMap<>();
+                    Map<AirportNew, List<AirportNew>> result = new HashMap<>();
 
                     // For each airport, find all its destination airports
                     for (String departureIcao : airportMap.keySet()) {
-                        Airport departureAirport = airportMap.get(departureIcao);
-                        List<Airport> destinationAirports = new ArrayList<>();
+                        AirportNew departureAirport = airportMap.get(departureIcao);
+                        List<AirportNew> destinationAirports = new ArrayList<>();
 
                         // Get all destination ICAO codes for this departure airport
                         if (flightMap.containsKey(departureIcao)) {
                             for (String arrivalIcao : flightMap.get(departureIcao)) {
-                                Airport arrivalAirport = airportMap.get(arrivalIcao);
+                                AirportNew arrivalAirport = airportMap.get(arrivalIcao);
                                 if (arrivalAirport != null) {
                                     destinationAirports.add(arrivalAirport);
                                 }
@@ -90,7 +91,7 @@ public class FlightsComputing {
 
     public Flux<Map<String, Collection<String>>> airpotToAirportsIcao() {
 
-        Flux<String> airportIcaoCodes = airportService.getAllAirports().map(Airport::getIcaoCode);
+        Flux<String> airportIcaoCodes = airportNewService.getAllAirports().map(AirportNew::getIcaoCode);
         Flux<Map<String, Collection<String>>> airpotToAirportsFlights =
                 airportIcaoCodes
                         .flatMap(airportIcaoCode -> flightService
@@ -103,7 +104,7 @@ public class FlightsComputing {
 
     public Flux<Map<String, Collection<Flight>>> airpotsToFlights() {
 
-        Flux<String> airportIcaoCodes = airportService.getAllAirports().map(Airport::getIcaoCode);
+        Flux<String> airportIcaoCodes = airportNewService.getAllAirports().map(AirportNew::getIcaoCode);
         Flux<Map<String, Collection<Flight>>> airpotToAirportsFlights =
                 airportIcaoCodes
                         .flatMap(airportIcaoCode -> flightService
@@ -115,14 +116,14 @@ public class FlightsComputing {
     }
 
     // this method will determine the route from one airport to another and will return the list Flights
-    public Mono<List<Flight>> getRoute(Airport departureAirport, Airport arrivalAirport) {
+    public Mono<List<Flight>> getRoute(AirportNew departureAirport, AirportNew arrivalAirport) {
         // If departure and arrival are the same, return empty route
         if (departureAirport.getIcaoCode().equals(arrivalAirport.getIcaoCode())) {
             return Mono.just(new ArrayList<>());
         }
 
         List<Flight> route = new ArrayList<>();
-        List<Airport> visitedAirports = new ArrayList<>();
+        List<AirportNew> visitedAirports = new ArrayList<>();
         visitedAirports.add(departureAirport);
 
         // Start the search from the departure airport
@@ -130,7 +131,7 @@ public class FlightsComputing {
                 .thenReturn(route);
     }
 
-    private Mono<Void> findRoute(Airport departureAirport, Airport arrivalAirport, List<Flight> route, List<Airport> visitedAirports) {
+    private Mono<Void> findRoute(AirportNew departureAirport, AirportNew arrivalAirport, List<Flight> route, List<AirportNew> visitedAirports) {
         // Get all flights from the departure airport
 
         return flightService.getAllFlightsFromAirportCode(departureAirport.getIcaoCode())
@@ -146,8 +147,8 @@ public class FlightsComputing {
                 .switchIfEmpty(Mono.empty());
     }
 
-    private Mono<Void> processFlights(Collection<Flight> flights, Airport departureAirport, Airport arrivalAirport,
-                                      List<Flight> route, List<Airport> visitedAirports, int index) {
+    private Mono<Void> processFlights(Collection<Flight> flights, AirportNew departureAirport, AirportNew arrivalAirport,
+                                      List<Flight> route, List<AirportNew> visitedAirports, int index) {
         // Base case: if we've processed all flights
         if (index >= flights.size()) {
             return Mono.empty();
@@ -167,7 +168,7 @@ public class FlightsComputing {
         }
 
         // Get the next airport
-        return airportService.getAirportByIcaoCode(nextAirportIcao)
+        return airportNewService.getAirportByIcaoCode(nextAirportIcao)
                 .flatMap(nextAirport -> {
                     // Add the flight to the route
                     route.add(flight);
@@ -204,19 +205,19 @@ public class FlightsComputing {
 
 
     // Using Dijkstra's algorithm to find the minimum cost route
-    public Mono<List<Flight>> getRouteMinimumCost(Airport departureAirport, Airport arrivalAirport){
+    public Mono<List<Flight>> getRouteMinimumCost(AirportNew departureAirport, AirportNew arrivalAirport){
         // If departure and arrival are the same, return empty route
         if (departureAirport.getIcaoCode().equals(arrivalAirport.getIcaoCode())) {
             return Mono.just(new ArrayList<>());
         }
 
         // Get all airports and flights to build the graph
-        Mono<List<Flight>> result = airportService.getAllAirports()
+        Mono<List<Flight>> result = airportNewService.getAllAirports()
                 .collectList()
                 .flatMap(airports -> {
                     // Create a map of ICAO code to Airport for easy lookup
-                    Map<String, Airport> airportMap = new HashMap<>();
-                    for (Airport airport : airports) {
+                    Map<String, AirportNew> airportMap = new HashMap<>();
+                    for (AirportNew airport : airports) {
                         airportMap.put(airport.getIcaoCode(), airport);
                     }
 
@@ -231,7 +232,7 @@ public class FlightsComputing {
         return result;
     }
 
-    private List<Flight> applyDijkstra(Airport source, Airport target, List<Airport> airports, List<Flight> flights, Map<String, Airport> airportMap) {
+    private List<Flight> applyDijkstra(AirportNew source, AirportNew target, List<AirportNew> airports, List<Flight> flights, Map<String, AirportNew> airportMap) {
         // Create a map of airport ICAO code to its outgoing flights
         Map<String, List<Flight>> outgoingFlights = new HashMap<>();
         for (Flight flight : flights) {
@@ -243,7 +244,7 @@ public class FlightsComputing {
         Map<String, Flight> previousFlights = new HashMap<>();
         Set<String> unvisited = new HashSet<>();
 
-        for (Airport airport : airports) {
+        for (AirportNew airport : airports) {
             String icaoCode = airport.getIcaoCode();
             distances.put(icaoCode, Double.MAX_VALUE);
             unvisited.add(icaoCode);
@@ -272,7 +273,7 @@ public class FlightsComputing {
             unvisited.remove(current);
 
             // Get the current airport
-            Airport currentAirport = airportMap.get(current);
+            AirportNew currentAirport = airportMap.get(current);
 
             // Update distances to neighbors
             List<Flight> currentOutgoingFlights = outgoingFlights.getOrDefault(current, Collections.emptyList());
@@ -282,8 +283,8 @@ public class FlightsComputing {
                     continue; // Skip already visited airports
                 }
 
-                Airport neighborAirport = airportMap.get(neighborIcao);
-                double distance = airportService.distance(currentAirport, neighborAirport);
+                AirportNew neighborAirport = airportMap.get(neighborIcao);
+                double distance = airportNewService.distance(currentAirport, neighborAirport);
                 double newDistance = distances.get(current) + distance;
 
                 if (newDistance < distances.get(neighborIcao)) {

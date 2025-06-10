@@ -1,7 +1,9 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Airport;
-import com.execodex.sparrowair2.services.AirportService;
+//import com.execodex.sparrowair2.entities.Airport;
+
+import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.services.AirportNewService;
 import com.execodex.sparrowair2.services.computing.FlightsComputing;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -15,9 +17,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class FlightsComputingHandler {
 
     private final FlightsComputing flightsComputing;
-    private final AirportService airportService;
+    private final AirportNewService airportService;
 
-    public FlightsComputingHandler(FlightsComputing flightsComputing, AirportService airportService) {
+    public FlightsComputingHandler(FlightsComputing flightsComputing, AirportNewService airportService) {
         this.flightsComputing = flightsComputing;
         this.airportService = airportService;
     }
@@ -55,24 +57,24 @@ public class FlightsComputingHandler {
         }
 
         return Mono.zip(
-                airportService.getAirportByIcaoCode(departureIcao),
-                airportService.getAirportByIcaoCode(arrivalIcao)
-            )
-            .flatMap(tuple -> {
-                Airport departureAirport = tuple.getT1();
-                Airport arrivalAirport = tuple.getT2();
+                        airportService.getAirportByIcaoCode(departureIcao),
+                        airportService.getAirportByIcaoCode(arrivalIcao)
+                )
+                .flatMap(tuple -> {
+                    AirportNew departureAirport = tuple.getT1();
+                    AirportNew arrivalAirport = tuple.getT2();
 
-                if (departureAirport == null || arrivalAirport == null) {
-                    return ServerResponse.badRequest()
-                            .bodyValue("One or both of the specified airports could not be found");
-                }
+                    if (departureAirport == null || arrivalAirport == null) {
+                        return ServerResponse.badRequest()
+                                .bodyValue("One or both of the specified airports could not be found");
+                    }
 
-                return flightsComputing.getRoute(departureAirport, arrivalAirport)
-                    .flatMap(route -> ServerResponse.ok()
-                        .contentType(APPLICATION_JSON)
-                        .bodyValue(route));
-            })
-            .onErrorResume(this::handleError);
+                    return flightsComputing.getRoute(departureAirport, arrivalAirport)
+                            .flatMap(route -> ServerResponse.ok()
+                                    .contentType(APPLICATION_JSON)
+                                    .bodyValue(route));
+                })
+                .onErrorResume(this::handleError);
     }
 
     // Get minimum cost route between two airports
@@ -86,23 +88,23 @@ public class FlightsComputingHandler {
         }
 
         return Mono.zip(
-                airportService.getAirportByIcaoCode(departureIcao),
-                airportService.getAirportByIcaoCode(arrivalIcao)
-            )
-            .flatMap(tuple -> {
-                Airport departureAirport = tuple.getT1();
-                Airport arrivalAirport = tuple.getT2();
+                        airportService.getAirportByIcaoCode(departureIcao),
+                        airportService.getAirportByIcaoCode(arrivalIcao)
+                )
+                .flatMap(tuple -> {
+                    AirportNew departureAirport = tuple.getT1();
+                    AirportNew arrivalAirport = tuple.getT2();
 
-                if (departureAirport == null || arrivalAirport == null) {
-                    return ServerResponse.badRequest()
-                            .bodyValue("One or both of the specified airports could not be found");
-                }
+                    if (departureAirport == null || arrivalAirport == null) {
+                        return ServerResponse.badRequest()
+                                .bodyValue("One or both of the specified airports could not be found");
+                    }
 
-                return flightsComputing.getRouteMinimumCost(departureAirport, arrivalAirport)
-                    .flatMap(route -> ServerResponse.ok()
-                        .contentType(APPLICATION_JSON)
-                        .bodyValue(route));
-            })
-            .onErrorResume(this::handleError);
+                    return flightsComputing.getRouteMinimumCost(departureAirport, arrivalAirport)
+                            .flatMap(route -> ServerResponse.ok()
+                                    .contentType(APPLICATION_JSON)
+                                    .bodyValue(route));
+                })
+                .onErrorResume(this::handleError);
     }
 }

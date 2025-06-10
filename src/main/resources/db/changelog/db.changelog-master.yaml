@@ -2,6 +2,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/01-create-airlines-table.sql
   - include:
+      file: db/changelog/changes/15-create-airports-new-table.sql
+  - include:
       file: db/changelog/changes/02-create-airports-table.sql
   - include:
       file: db/changelog/changes/03-create-aircraft-types-table.sql
@@ -27,7 +29,5 @@ databaseChangeLog:
       file: db/changelog/changes/12-alter-flights-table-replace-aircraft-type-with-airline-fleet.sql
   - include:
       file: db/changelog/changes/13-add-premium-economy-seats-to-airline-fleet.sql
-  - include:
-      file: db/changelog/changes/15-create-airports-new-table.sql
   - include:
       file: db/changelog/changes/16-create-countries-table.sql
