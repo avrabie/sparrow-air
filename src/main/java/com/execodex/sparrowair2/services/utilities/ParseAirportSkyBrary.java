@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services.utilities;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

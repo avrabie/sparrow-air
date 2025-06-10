@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

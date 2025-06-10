@@ -1,4 +1,4 @@
-package com.execodex.sparrowair2.entities;
+package com.execodex.sparrowair2.entities.skybrary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

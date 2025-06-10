@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.repositories.AirportNewRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

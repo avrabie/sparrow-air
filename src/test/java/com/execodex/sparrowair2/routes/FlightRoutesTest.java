@@ -2,6 +2,8 @@ package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
 import com.execodex.sparrowair2.entities.*;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.execodex.sparrowair2.services.computing;
 
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.entities.Flight;
 import com.execodex.sparrowair2.services.AirportNewService;
 import com.execodex.sparrowair2.services.FlightService;

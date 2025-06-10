@@ -1,7 +1,7 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Aircraft;
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.model.AircraftIcaoRequest;
 import com.execodex.sparrowair2.model.AirportIcaoRequest;
 import com.execodex.sparrowair2.services.utilities.ParseAircraftSkyBrary;

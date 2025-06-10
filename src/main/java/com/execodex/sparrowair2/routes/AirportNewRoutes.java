@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.routes;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.handlers.AirportNewHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

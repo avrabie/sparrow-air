@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
 import com.execodex.sparrowair2.repositories.AircraftRepository;
 import com.execodex.sparrowair2.services.utilities.ParseAircraftSkyBrary;
 import org.slf4j.Logger;

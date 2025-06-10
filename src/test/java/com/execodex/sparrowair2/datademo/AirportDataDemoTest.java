@@ -1,6 +1,7 @@
 package com.execodex.sparrowair2.datademo;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.datademo.skybrary.AirportDataDemo;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;

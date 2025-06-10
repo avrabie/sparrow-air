@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
 import com.execodex.sparrowair2.services.AircraftService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;

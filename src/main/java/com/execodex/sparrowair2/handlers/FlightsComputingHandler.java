@@ -2,7 +2,7 @@ package com.execodex.sparrowair2.handlers;
 
 //import com.execodex.sparrowair2.entities.Airport;
 
-import com.execodex.sparrowair2.entities.AirportNew;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.services.AirportNewService;
 import com.execodex.sparrowair2.services.computing.FlightsComputing;
 import org.springframework.http.HttpStatus;

@@ -1,5 +1,6 @@
 package com.execodex.sparrowair2.datademo;
 
+import com.execodex.sparrowair2.datademo.skybrary.AircraftDataDemo;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

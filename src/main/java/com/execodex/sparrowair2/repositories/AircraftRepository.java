@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.repositories;
 
-import com.execodex.sparrowair2.entities.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;

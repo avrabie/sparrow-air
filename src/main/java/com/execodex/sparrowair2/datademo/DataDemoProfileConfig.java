@@ -1,7 +1,13 @@
 package com.execodex.sparrowair2.datademo;
 
+import com.execodex.sparrowair2.datademo.kaggle.AirlineDataDemo;
+import com.execodex.sparrowair2.datademo.skybrary.AircraftDataDemo;
+import com.execodex.sparrowair2.datademo.skybrary.AirportDataDemo;
 import com.execodex.sparrowair2.entities.*;
 import com.execodex.sparrowair2.entities.gds.Country;
+import com.execodex.sparrowair2.entities.kaggle.AirlineNew;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.AirportNew;
 import com.execodex.sparrowair2.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +32,8 @@ public class DataDemoProfileConfig {
     @Bean
     public CommandLineRunner initializeAirportData( AirportNewService airportNewService,
                                                    AircraftService aircraftService, CountryService countryService,
-                                                   AirlineService airlineService, FlightService flightService,
+                                                   AirlineService airlineService, AirlineNewService airlineNewService,
+                                                    FlightService flightService,
                                                    PassengerService passengerService, AirlineFleetService airlineFleetService,
                                                    BookingService bookingService, SeatService seatService,
                                                    BookingSegmentService bookingSegmentService) {
@@ -36,8 +43,9 @@ public class DataDemoProfileConfig {
             // Insert sample airports, aircraft types, airlines, airline fleet, flights, and passengers into the database
             generateAirportNewFromFile(airportNewService)
 //                    .thenMany(generateAirportNewFromFile(airportNewService))
-                    .thenMany(generateAircraft(aircraftService))
+                    .thenMany(generateAircraftFromFile(aircraftService))
                     .thenMany(generateCountry(countryService))
+                    .thenMany(generateAirlineNewFromFile(airlineNewService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
                     .thenMany(generateFlight(flightService, airlineFleetService))
@@ -51,32 +59,6 @@ public class DataDemoProfileConfig {
         };
     }
 
-
-//    @Bean(name = "airportDataGenerator")
-//    public Flux<Airport> generateAirport(AirportService airportService) {
-//
-//
-//        // Insert sample airports into the database
-//        List<Airport> airports = SampleDataDemo.getDemoAirports();
-//
-//        Flux<Airport> airportFlux = Flux.fromIterable(airports)
-//                .flatMap(airport -> airportService
-//                        .getAirportByIcaoCode(airport.getIcaoCode())
-//                        .hasElement()
-//                        .flatMap(existingAirport -> {
-//                            if (existingAirport) {
-//                                logger.info("Airport {} already exists, skipping creation", airport.getIcaoCode());
-//                                return Mono.empty();
-//                            }
-//                            return airportService.createAirport(airport);
-//                        })
-//                        .onErrorResume(e -> {
-//                            logger.warn("Could not create airport {}: {}", airport.getIcaoCode(), e.getMessage());
-//                            return Mono.empty();
-//                        })
-//                );
-//        return airportFlux;
-//    }
 
     @Bean(name = "airportNewDataGeneratorFromFile")
     public Flux<AirportNew> generateAirportNewFromFile(AirportNewService airportNewService) {
@@ -95,8 +77,8 @@ public class DataDemoProfileConfig {
     }
 
     @Bean(name = "aircraftDataGenerato")
-    public Flux<Aircraft> generateAircraft(AircraftService aircraftService) {
-        Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo.getDemoAircraftsFromFile("stuff/data/iaka2.jsonl");
+    public Flux<Aircraft> generateAircraftFromFile(AircraftService aircraftService) {
+        Flux<Aircraft> demoAircraftsFromFile = AircraftDataDemo.getDemoAircraftsFromFile("stuff/data/aircraft/aircrafts.jsonl");
         return demoAircraftsFromFile.flatMap(aircraft -> aircraftService
                 .getAircraftByIcaoCode(aircraft.getIcaoCode())
                 .hasElement()
@@ -110,14 +92,30 @@ public class DataDemoProfileConfig {
         );
     }
 
+    @Bean(name = "airlineNewDataGenerator")
+    public Flux<AirlineNew> generateAirlineNewFromFile(AirlineNewService airlineNewService) {
+        Flux<AirlineNew> demoAirlinesFromFile = AirlineDataDemo.getDemoAirlinesFromFile("stuff/data/airlines/airlines.csv");
 
+        // Insert sample airlines into the database
+        Flux<AirlineNew> airlineFlux = demoAirlinesFromFile
+                .flatMap(airline -> airlineNewService
+                        .getAirlineByIcaoCode(airline.getIcaoCode())
+                        .hasElement()
+                        .flatMap(existingAirline -> {
+                            if (existingAirline) {
+                                logger.info("Airline {} already exists, skipping creation", airline.getIcaoCode());
+                                return Mono.empty();
+                            }
+                            return airlineNewService.createAirline(airline);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create airline {}: {}", airline.getIcaoCode(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return airlineFlux;
+    }
 
-    /**
-     * Generates sample airlines and inserts them into the database if they do not already exist.
-     *
-     * @param airlineService The service to interact with airline data.
-     * @return A Flux of generated Airline objects.
-     */
     @Bean(name = "airlineDataGenerator")
     public Flux<Airline> generateAirline(AirlineService airlineService) {
         List<Airline> sampleAirlines = SampleDataDemo.getSampleAirlines();
@@ -142,12 +140,7 @@ public class DataDemoProfileConfig {
         return airlineFlux;
     }
 
-    /**
-     * Generates sample countries and inserts them into the database if they do not already exist.
-     *
-     * @param countryService The service to interact with country data.
-     * @return A Flux of generated Country objects.
-     */
+
     @Bean(name = "countryDataGenerator")
     public Flux<Country> generateCountry(CountryService countryService) {
         List<Country> sampleCountries = SampleDataDemo.getSampleCountries();

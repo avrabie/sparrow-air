@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.datademo.archive;
 
-import com.execodex.sparrowair2.entities.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ClassPathResource;

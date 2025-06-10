@@ -1,7 +1,7 @@
 package com.execodex.sparrowair2.routes;
 
 import com.execodex.sparrowair2.configs.AbstractTestcontainersTest;
-import com.execodex.sparrowair2.entities.Aircraft;
+import com.execodex.sparrowair2.entities.skybrary.Aircraft;
 import com.execodex.sparrowair2.entities.Airline;
 import com.execodex.sparrowair2.entities.AirlineFleet;
 import com.execodex.sparrowair2.repositories.AircraftRepository;
