@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.handlers;
 
-import com.execodex.sparrowair2.entities.Country;
+import com.execodex.sparrowair2.entities.gds.Country;
 import com.execodex.sparrowair2.services.CountryService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;

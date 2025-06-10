@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.routes;
 
-import com.execodex.sparrowair2.entities.Country;
+import com.execodex.sparrowair2.entities.gds.Country;
 import com.execodex.sparrowair2.handlers.CountryHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

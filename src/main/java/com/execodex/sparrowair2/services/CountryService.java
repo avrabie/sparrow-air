@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services;
 
-import com.execodex.sparrowair2.entities.Country;
+import com.execodex.sparrowair2.entities.gds.Country;
 import com.execodex.sparrowair2.repositories.CountryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
