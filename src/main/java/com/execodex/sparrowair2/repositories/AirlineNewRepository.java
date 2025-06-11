@@ -42,4 +42,9 @@ public interface AirlineNewRepository extends ReactiveCrudRepository<AirlineNew,
     // Custom query to find airline by IATA code
     @Query("SELECT * FROM airlines_new WHERE iata = :iataCode")
     Mono<AirlineNew> findByIataCode(String iataCode);
+
+    // Custom query to find airlines by name containing a string
+    @Query("SELECT * FROM airlines_new WHERE name LIKE CONCAT('%', :nameContains, '%')")
+    Flux<AirlineNew> findByNameContaining(String nameContains);
+
 }

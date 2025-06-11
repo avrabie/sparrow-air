@@ -135,4 +135,14 @@ public class AirlineNewService {
                     return Mono.error(e);
                 });
     }
+
+    // Get airlines by name containing a string
+    public Flux<AirlineNew> getAirlinesByNameContaining(String nameContains) {
+        return airlineNewRepository.findByNameContaining(nameContains)
+                .doOnError(e -> logger.error("Error retrieving airlines with name containing: {}", nameContains, e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving airlines with name containing: {}", nameContains, e);
+                    return Flux.error(e);
+                });
+    }
 }

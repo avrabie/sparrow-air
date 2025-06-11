@@ -128,6 +128,15 @@ public class AirlineNewHandler {
                 .onErrorResume(this::handleError);
     }
 
+    // Get airlines by name containing a string
+    public Mono<ServerResponse> getAirlinesByNameContaining(ServerRequest request) {
+        String nameContains = request.pathVariable("nameContains");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(airlineNewService.getAirlinesByNameContaining(nameContains), AirlineNew.class)
+                .onErrorResume(this::handleError);
+    }
+
     // Common error handler
     private Mono<ServerResponse> handleError(Throwable error) {
         return ServerResponse

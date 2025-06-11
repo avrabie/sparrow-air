@@ -269,6 +269,29 @@ public class AirlineNewRoutes {
                                     )
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/airlinesnew/name/{nameContains}",
+                    method = RequestMethod.GET,
+                    beanClass = AirlineNewHandler.class,
+                    beanMethod = "getAirlinesByNameContaining",
+                    operation = @Operation(
+                            operationId = "getAirlinesByNameContaining",
+                            summary = "Get airlines by name containing a string",
+                            description = "Returns a list of airlines where the name contains the specified string",
+                            tags = {"Airlines New ✈️🌍"},
+                            parameters = {
+                                    @Parameter(name = "nameContains", in = ParameterIn.PATH, required = true, description = "String to search for in airline names",
+                                              content = @Content(schema = @Schema(type = "string")))
+                            },
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Successful operation",
+                                            content = @Content(mediaType = "application/json")
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> airlineNewRoutesFunction() {
@@ -278,6 +301,7 @@ public class AirlineNewRoutes {
                 .GET("airlinesnew/active/{active}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::getAirlinesByActive)
                 .GET("airlinesnew/icao/{icaoCode}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::getAirlineByIcaoCode)
                 .GET("airlinesnew/iata/{iataCode}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::getAirlineByIataCode)
+                .GET("airlinesnew/name/{nameContains}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::getAirlinesByNameContaining)
                 .GET("airlinesnew/{airlineId}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::getAirlineById)
                 .POST("airlinesnew", accept(MediaType.APPLICATION_JSON), airlineNewHandler::createAirline)
                 .PUT("airlinesnew/{airlineId}", accept(MediaType.APPLICATION_JSON), airlineNewHandler::updateAirline)
