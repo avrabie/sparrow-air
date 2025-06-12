@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services.caa;
 
-import com.execodex.sparrowair2.entities.caa.AircraftRegistration;
+import com.execodex.sparrowair2.entities.caa.MdaAircraftRegistration;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class MoldavianCaaAircraftParserImpl implements MoldavianCaaAircraftParse
     private static final Logger logger = LoggerFactory.getLogger(MoldavianCaaAircraftParserImpl.class);
 
     @Override
-    public Flux<AircraftRegistration> parseAircraftRegistrations(Path path) {
+    public Flux<MdaAircraftRegistration> parseAircraftRegistrations(Path path) {
         return Mono.fromCallable(() -> extractTextFromPdf(path))
                 .flatMapMany(this::parseTextToAircraftRegistrations)
                 .subscribeOn(Schedulers.boundedElastic());
@@ -58,8 +58,8 @@ public class MoldavianCaaAircraftParserImpl implements MoldavianCaaAircraftParse
      * @param text The text extracted from the PDF
      * @return A Flux of AircraftRegistration objects
      */
-    private Flux<AircraftRegistration> parseTextToAircraftRegistrations(String text) {
-        List<AircraftRegistration> registrations = new ArrayList<>();
+    private Flux<MdaAircraftRegistration> parseTextToAircraftRegistrations(String text) {
+        List<MdaAircraftRegistration> registrations = new ArrayList<>();
 
         // Split the text into lines
         String[] lines = text.split("\\r?\\n");
@@ -68,7 +68,7 @@ public class MoldavianCaaAircraftParserImpl implements MoldavianCaaAircraftParse
         // This is a simplified approach and may need adjustment based on the actual PDF structure
         Pattern regNumberPattern = Pattern.compile("(ER-[A-Z0-9]+)");
 
-        AircraftRegistration.AircraftRegistrationBuilder builder = null;
+        MdaAircraftRegistration.MdaAircraftRegistrationBuilder builder = null;
 
         for (String line : lines) {
             // Skip empty lines
@@ -86,7 +86,7 @@ public class MoldavianCaaAircraftParserImpl implements MoldavianCaaAircraftParse
 
                 // Start a new registration
                 String registrationNumber = regNumberMatcher.group(1);
-                builder = AircraftRegistration.builder()
+                builder = MdaAircraftRegistration.builder()
                         .registrationNumber(registrationNumber);
 
                 // Try to extract other information from the line
@@ -111,7 +111,7 @@ public class MoldavianCaaAircraftParserImpl implements MoldavianCaaAircraftParse
      * @param line The line of text
      * @param builder The builder for the current AircraftRegistration
      */
-    private void extractAircraftInfo(String line, AircraftRegistration.AircraftRegistrationBuilder builder) {
+    private void extractAircraftInfo(String line, MdaAircraftRegistration.MdaAircraftRegistrationBuilder builder) {
         // This is a simplified approach and may need adjustment based on the actual PDF structure
 
         // Check if the line contains table data

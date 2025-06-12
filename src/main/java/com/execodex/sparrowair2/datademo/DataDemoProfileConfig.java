@@ -1,9 +1,11 @@
 package com.execodex.sparrowair2.datademo;
 
+import com.execodex.sparrowair2.datademo.faa.FaaAircraftRegistrationDataDemo;
 import com.execodex.sparrowair2.datademo.kaggle.AirlineDataDemo;
 import com.execodex.sparrowair2.datademo.skybrary.AircraftDataDemo;
 import com.execodex.sparrowair2.datademo.skybrary.AirportDataDemo;
 import com.execodex.sparrowair2.entities.*;
+import com.execodex.sparrowair2.entities.caa.FaaAircraftRegistration;
 import com.execodex.sparrowair2.entities.gds.Country;
 import com.execodex.sparrowair2.entities.kaggle.AirlineNew;
 import com.execodex.sparrowair2.entities.skybrary.Aircraft;
@@ -31,6 +33,7 @@ public class DataDemoProfileConfig {
 
     @Bean
     public CommandLineRunner initializeAirportData( AirportNewService airportNewService,
+                                                    FaaAircraftRegistrationService faaAircraftRegistrationService,
                                                    AircraftService aircraftService, CountryService countryService,
                                                    AirlineService airlineService, AirlineNewService airlineNewService,
                                                     FlightService flightService,
@@ -46,6 +49,7 @@ public class DataDemoProfileConfig {
                     .thenMany(generateAircraftFromFile(aircraftService))
                     .thenMany(generateCountry(countryService))
                     .thenMany(generateAirlineNewFromFile(airlineNewService))
+                    .thenMany(generateFaaAircraftRegistrationFromFile(faaAircraftRegistrationService))
                     .thenMany(generateAirline(airlineService))
                     .thenMany(generateAirlineFleet(airlineFleetService))
                     .thenMany(generateFlight(flightService, airlineFleetService))
@@ -114,6 +118,30 @@ public class DataDemoProfileConfig {
                         })
                 );
         return airlineFlux;
+    }
+
+    @Bean(name = "faaAircraftRegistrationDataGenerator")
+    public Flux<FaaAircraftRegistration> generateFaaAircraftRegistrationFromFile(FaaAircraftRegistrationService faaAircraftRegistrationService) {
+
+        Flux<FaaAircraftRegistration> faaAircraftRegistrationsFromFile = FaaAircraftRegistrationDataDemo.getFaaAircraftRegistrationsFromFile("stuff/data/faa/master-100.txt");
+        // Insert sample FAA aircraft registrations into the database
+        Flux<FaaAircraftRegistration> registrationFlux = faaAircraftRegistrationsFromFile
+                .flatMap(registration -> faaAircraftRegistrationService
+                        .getFaaAircraftRegistrationByNNumber(registration.getNNumber())
+                        .hasElement()
+                        .flatMap(existingRegistration -> {
+                            if (existingRegistration) {
+                                logger.info("FAA Aircraft Registration {} already exists, skipping creation", registration.getNNumber());
+                                return Mono.empty();
+                            }
+                            return faaAircraftRegistrationService.createFaaAircraftRegistration(registration);
+                        })
+                        .onErrorResume(e -> {
+                            logger.warn("Could not create FAA aircraft registration {}: {}", registration.getNNumber(), e.getMessage());
+                            return Mono.empty();
+                        })
+                );
+        return registrationFlux;
     }
 
     @Bean(name = "airlineDataGenerator")

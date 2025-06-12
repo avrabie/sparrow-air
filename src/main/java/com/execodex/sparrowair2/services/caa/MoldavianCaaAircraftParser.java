@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services.caa;
 
-import com.execodex.sparrowair2.entities.caa.AircraftRegistration;
+import com.execodex.sparrowair2.entities.caa.MdaAircraftRegistration;
 import reactor.core.publisher.Flux;
 
 import java.nio.file.Path;
@@ -16,5 +16,5 @@ public interface MoldavianCaaAircraftParser {
      * @param path The path to the PDF file
      * @return A Flux containing the parsed AircraftRegistration data
      */
-    Flux<AircraftRegistration> parseAircraftRegistrations(Path path);
+    Flux<MdaAircraftRegistration> parseAircraftRegistrations(Path path);
 }
