@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.services.caa;
 
-import com.execodex.sparrowair2.entities.caa.AircraftRegistration;
+import com.execodex.sparrowair2.entities.caa.MdaAircraftRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -9,7 +9,6 @@ import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 class MoldavianCaaAircraftParserImplTest {
 
@@ -26,7 +25,7 @@ class MoldavianCaaAircraftParserImplTest {
         Path pdfPath = new ClassPathResource("stuff/data/mcaa/Registrul_Aerian_al_Republicii_Moldova.pdf").getFile().toPath();
 
         // Parse the PDF
-        Flux<AircraftRegistration> registrations = parser.parseAircraftRegistrations(pdfPath);
+        Flux<MdaAircraftRegistration> registrations = parser.parseAircraftRegistrations(pdfPath);
 
         // Verify that we get at least one registration
         StepVerifier.create(registrations.collectList())

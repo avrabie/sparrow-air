@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.execodex.sparrowair2.entities.caa.AircraftRegistration;
+import com.execodex.sparrowair2.entities.caa.MdaAircraftRegistration;
 
 /**
  * Routes for CAA (Civil Aviation Authority) related endpoints.
@@ -43,7 +43,7 @@ public class CaaRoutes {
                                             description = "Successful operation",
                                             content = @Content(
                                                     mediaType = "application/json",
-                                                    schema = @Schema(implementation = AircraftRegistration.class)
+                                                    schema = @Schema(implementation = MdaAircraftRegistration.class)
                                             )
                                     ),
                                     @ApiResponse(

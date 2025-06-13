@@ -1,6 +1,6 @@
 package com.execodex.sparrowair2.routes;
 
-import com.execodex.sparrowair2.entities.caa.AircraftRegistration;
+import com.execodex.sparrowair2.entities.caa.MdaAircraftRegistration;
 import com.execodex.sparrowair2.handlers.CaaRouteHandlers;
 import com.execodex.sparrowair2.services.caa.MoldavianCaaAircraftParser;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,15 +27,15 @@ class CaaRoutesTest {
         mockParser = Mockito.mock(MoldavianCaaAircraftParser.class);
 
         // Create sample data
-        List<AircraftRegistration> sampleData = Arrays.asList(
-                AircraftRegistration.builder()
+        List<MdaAircraftRegistration> sampleData = Arrays.asList(
+                MdaAircraftRegistration.builder()
                         .registrationNumber("ER-AAA")
                         .aircraftType("Boeing 737")
                         .msn("12345")
                         .ownerName("Sample Airline")
                         .countryOfRegistration("Moldova")
                         .build(),
-                AircraftRegistration.builder()
+                MdaAircraftRegistration.builder()
                         .registrationNumber("ER-BBB")
                         .aircraftType("Airbus A320")
                         .msn("67890")
@@ -67,17 +67,17 @@ class CaaRoutesTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .expectBodyList(AircraftRegistration.class)
+                .expectBodyList(MdaAircraftRegistration.class)
                 .hasSize(2)
                 .contains(
-                        AircraftRegistration.builder()
+                        MdaAircraftRegistration.builder()
                                 .registrationNumber("ER-AAA")
                                 .aircraftType("Boeing 737")
                                 .msn("12345")
                                 .ownerName("Sample Airline")
                                 .countryOfRegistration("Moldova")
                                 .build(),
-                        AircraftRegistration.builder()
+                        MdaAircraftRegistration.builder()
                                 .registrationNumber("ER-BBB")
                                 .aircraftType("Airbus A320")
                                 .msn("67890")
