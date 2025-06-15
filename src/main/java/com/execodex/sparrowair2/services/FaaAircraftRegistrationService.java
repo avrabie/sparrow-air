@@ -5,6 +5,8 @@ import com.execodex.sparrowair2.repositories.FaaAircraftRegistrationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +27,21 @@ public class FaaAircraftRegistrationService {
                 .doOnError(e -> logger.error("Error retrieving all FAA aircraft registrations", e))
                 .onErrorResume(e -> {
                     logger.error("Error retrieving all FAA aircraft registrations", e);
+                    return Flux.error(e);
+                });
+    }
+
+    // Get all FAA aircraft registrations with pagination
+    public Flux<FaaAircraftRegistration> getAllFaaAircraftRegistrations(Integer page, Integer size) {
+        if (page == null || size == null) {
+            return getAllFaaAircraftRegistrations();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return faaAircraftRegistrationRepository.findAllBy(pageable)
+                .doOnError(e -> logger.error("Error retrieving FAA aircraft registrations with pagination", e))
+                .onErrorResume(e -> {
+                    logger.error("Error retrieving FAA aircraft registrations with pagination", e);
                     return Flux.error(e);
                 });
     }

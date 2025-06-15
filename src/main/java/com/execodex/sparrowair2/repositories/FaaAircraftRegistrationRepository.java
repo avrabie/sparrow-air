@@ -1,6 +1,7 @@
 package com.execodex.sparrowair2.repositories;
 
 import com.execodex.sparrowair2.entities.caa.FaaAircraftRegistration;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,9 @@ public interface FaaAircraftRegistrationRepository extends ReactiveCrudRepositor
             ":#{#faaAircraftRegistration.modeScodeHex}) " +
             "RETURNING *")
     Mono<FaaAircraftRegistration> insert(FaaAircraftRegistration faaAircraftRegistration);
+
+    // Method for pagination
+    Flux<FaaAircraftRegistration> findAllBy(Pageable pageable);
 
     // Custom query methods for specific fields
     Flux<FaaAircraftRegistration> findByEngineMfrModelCode(String engineMfrModelCode);

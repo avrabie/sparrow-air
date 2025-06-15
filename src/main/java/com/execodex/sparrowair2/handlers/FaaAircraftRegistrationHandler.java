@@ -33,9 +33,12 @@ public class FaaAircraftRegistrationHandler {
 
     // Get all FAA aircraft registrations
     public Mono<ServerResponse> getAllFaaAircraftRegistrations(ServerRequest request) {
+        Integer page = request.queryParam("page").map(Integer::parseInt).orElse(null);
+        Integer size = request.queryParam("size").map(Integer::parseInt).orElse(null);
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(faaAircraftRegistrationService.getAllFaaAircraftRegistrations(), FaaAircraftRegistration.class)
+                .body(faaAircraftRegistrationService.getAllFaaAircraftRegistrations(page, size), FaaAircraftRegistration.class)
                 .onErrorResume(this::handleError);
     }
 
