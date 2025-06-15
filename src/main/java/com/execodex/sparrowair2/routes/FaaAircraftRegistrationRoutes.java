@@ -270,6 +270,38 @@ public class FaaAircraftRegistrationRoutes {
                                     )
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/faa-aircraft-registrations/upload",
+                    method = RequestMethod.POST,
+                    beanClass = FaaAircraftRegistrationHandler.class,
+                    beanMethod = "uploadFaaAircraftRegistrationsFile",
+                    operation = @Operation(
+                            operationId = "uploadFaaAircraftRegistrationsFile",
+                            summary = "Upload FAA aircraft registrations from a file",
+                            description = "Uploads and processes a file containing FAA aircraft registrations",
+                            tags = {"FAA Aircraft Registration 📝"},
+                            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                    description = "File containing FAA aircraft registrations",
+                                    required = true,
+                                    content = @Content(mediaType = "multipart/form-data")
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "File processed successfully",
+                                            content = @Content(mediaType = "application/json")
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "400",
+                                            description = "Bad request, file not provided or invalid"
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "500",
+                                            description = "Internal server error"
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> faaAircraftRegistrationRoutesFunction() {
@@ -282,6 +314,7 @@ public class FaaAircraftRegistrationRoutes {
                 .GET("faa-aircraft-registrations/mode-s-code/{modeSCode}", accept(MediaType.APPLICATION_JSON), faaAircraftRegistrationHandler::getFaaAircraftRegistrationsByModeSCode)
                 .GET("faa-aircraft-registrations/mode-scode-hex/{modeScodeHex}", accept(MediaType.APPLICATION_JSON), faaAircraftRegistrationHandler::getFaaAircraftRegistrationsByModeScodeHex)
                 .POST("faa-aircraft-registrations", accept(MediaType.APPLICATION_JSON), faaAircraftRegistrationHandler::createFaaAircraftRegistration)
+                .POST("faa-aircraft-registrations/upload", faaAircraftRegistrationHandler::uploadFaaAircraftRegistrationsFile)
                 .PUT("faa-aircraft-registrations/{nNumber}", accept(MediaType.APPLICATION_JSON), faaAircraftRegistrationHandler::updateFaaAircraftRegistration)
                 .DELETE("faa-aircraft-registrations/{nNumber}", faaAircraftRegistrationHandler::deleteFaaAircraftRegistration)
                 .build();

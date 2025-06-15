@@ -122,4 +122,31 @@ public class FaaAircraftRegistrationService {
                 )
                 .switchIfEmpty(Mono.empty());
     }
+
+    /**
+     * Bulk insert FAA aircraft registrations
+     * @param registrations Flux of FaaAircraftRegistration objects to insert
+     * @return Flux of inserted FaaAircraftRegistration objects
+     */
+    public Flux<FaaAircraftRegistration> bulkInsertFaaAircraftRegistrations(Flux<FaaAircraftRegistration> registrations) {
+        return registrations
+                .flatMap(registration -> faaAircraftRegistrationRepository.insert(registration)
+                        .doOnSuccess(r -> logger.info("Created FAA aircraft registration with N-Number: {}", r.getNNumber()))
+                        .doOnError(e -> {
+                            if (e instanceof DuplicateKeyException) {
+                                logger.warn("Duplicate key error when creating FAA aircraft registration with N-Number: {}", registration.getNNumber());
+                            } else {
+                                logger.error("Error creating FAA aircraft registration with N-Number: {}", registration.getNNumber(), e);
+                            }
+                        })
+                        .onErrorResume(e -> {
+                            if (e instanceof DuplicateKeyException) {
+                                // Skip duplicate entries
+                                return Mono.empty();
+                            }
+                            return Mono.error(e);
+                        })
+                )
+                .doOnComplete(() -> logger.info("Completed bulk insertion of FAA aircraft registrations"));
+    }
 }
