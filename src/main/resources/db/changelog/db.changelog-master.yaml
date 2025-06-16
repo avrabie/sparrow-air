@@ -33,3 +33,5 @@ databaseChangeLog:
       file: db/changelog/changes/16-create-countries-table.sql
   - include:
       file: db/changelog/changes/18-create-faa-aircraft-registration-table.sql
+  - include:
+      file: db/changelog/changes/19-create-messages-table.sql
